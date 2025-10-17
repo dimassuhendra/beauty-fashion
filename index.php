@@ -120,7 +120,6 @@
         </div>
     </section>
 
-    ---
 
     <section id="populer-terkini" class="hero">
         <div class="container">
