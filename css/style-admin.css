@@ -1,0 +1,61 @@
+:root {
+    --bs-pink-primary: #ff69b4;
+    --bs-gradient-start: #ff69b4;
+    --bs-gradient-end: #4b0082;
+    --bs-sidebar-color: #fce4ec;
+    --bs-active-bg: #ff69b4;
+}
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+#content {
+    width: 100%;
+    padding: 20px;
+    transition: all 0.3s;
+}
+.btn-pink-primary {
+    background-color: var(--bs-pink-primary);
+    border-color: var(--bs-pink-primary);
+    color: white;
+}
+
+.btn-pink-primary:hover {
+    background-color: #e65a9a;
+    /* Warna sedikit lebih gelap */
+    border-color: #e65a9a;
+    color: white;
+}
+
+/* ================================= */
+/*            Menu Dashboard        */
+/* ================================ */
+.card-pink {
+    border-left: 5px solid var(--bs-pink-primary);
+    border-radius: 0.5rem;
+}
+
+.text-pink-primary {
+    color: var(--bs-pink-primary) !important;
+}
+
+/* ================================= */
+/*      Manajemen Produk Dashboard   */
+/* ================================ */
+.btn-action-group .btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+}
+.modal-header-pink {
+    background-color: var(--bs-pink-primary);
+    color: white;
+}
+
+/* Styling tambahan untuk foto produk di tabel */
+.product-image-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 0.375rem;
+}
