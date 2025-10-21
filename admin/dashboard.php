@@ -1,3 +1,7 @@
+<?php
+include '../db_connect.php';
+include './proses/get_dashboard.php';
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -6,17 +10,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin | Beauty Fashion</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Asumsi style-admin.css mendefinisikan .text-pink-primary dan .card-pink -->
     <link rel="stylesheet" href="/beauty-fashion/css/style-admin.css">
+    <style>
+    /* Gaya tambahan sementara jika style-admin.css tidak tersedia */
+    .text-pink-primary {
+        color: #d63384;
+    }
+
+    .card-pink {
+        border-left: 5px solid #d63384;
+    }
+    </style>
 </head>
 
 <body>
 
     <div class="wrapper">
-        <?php include 'sidebar.php' ?>
-
-        <div id="content">
+        <?php include 'sidebar.php';?>
+        <div id="content" class="p-4">
             <nav class="navbar navbar-expand-lg navbar-light bg-light rounded-3 mb-4 shadow-sm">
                 <div class="container-fluid">
                     <h2 class="text-pink-primary fw-bold mb-0">Selamat Datang, Admin!</h2>
@@ -28,7 +42,9 @@
                 </div>
             </nav>
 
+            <!-- Bagian Metrik/Card -->
             <div class="row g-4 mb-5">
+                <!-- Card 1: Total Penjualan (Bulan Ini) -->
                 <div class="col-md-3">
                     <div class="card card-pink shadow-sm h-100">
                         <div class="card-body">
@@ -39,12 +55,16 @@
                                 <div class="col">
                                     <div class="text-uppercase text-muted fw-bold mb-1">
                                         Total Penjualan (Bulan Ini)</div>
-                                    <div class="h5 mb-0 fw-bold text-gray-800">Rp 45.670.000</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
+                                        <?php echo formatRupiah($total_sales_this_month); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 2: Pesanan Baru (Pending) -->
                 <div class="col-md-3">
                     <div class="card card-pink shadow-sm h-100">
                         <div class="card-body">
@@ -54,13 +74,17 @@
                                 </div>
                                 <div class="col">
                                     <div class="text-uppercase text-muted fw-bold mb-1">
-                                        Pesanan Baru (Pending)</div>
-                                    <div class="h5 mb-0 fw-bold text-gray-800">25</div>
+                                        Pesanan Baru (Pending Pembayaran)</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
+                                        <?php echo number_format($count_pending_orders); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 3: Total Produk Terdaftar -->
                 <div class="col-md-3">
                     <div class="card card-pink shadow-sm h-100">
                         <div class="card-body">
@@ -70,13 +94,17 @@
                                 </div>
                                 <div class="col">
                                     <div class="text-uppercase text-muted fw-bold mb-1">
-                                        Total Produk Terdaftar</div>
-                                    <div class="h5 mb-0 fw-bold text-gray-800">150</div>
+                                        Total Produk Aktif</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
+                                        <?php echo number_format($count_total_products); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 4: Pelanggan Baru (Hari Ini) -->
                 <div class="col-md-3">
                     <div class="card card-pink shadow-sm h-100">
                         <div class="card-body">
@@ -87,16 +115,21 @@
                                 <div class="col">
                                     <div class="text-uppercase text-muted fw-bold mb-1">
                                         Pelanggan Baru (Hari Ini)</div>
-                                    <div class="h5 mb-0 fw-bold text-gray-800">12</div>
+                                    <div class="h5 mb-0 fw-bold text-gray-800">
+                                        <?php echo number_format($count_new_users_today); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Bagian Tabel Pesanan Terbaru -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3 bg-white">
-                    <h6 class="m-0 fw-bold" style="color: var(--bs-pink-primary);">Pesanan Terbaru</h6>
+                    <h6 class="m-0 fw-bold" style="color: var(--bs-pink-primary, #d63384);">Pesanan Terbaru (Pending &
+                        Diproses)</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -112,30 +145,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php if ($recent_orders->num_rows > 0): ?>
+                                <?php while($row = $recent_orders->fetch_assoc()): ?>
                                 <tr>
-                                    <td>#BF2025001</td>
-                                    <td>Ani Nurlela</td>
-                                    <td>15/10/2025</td>
-                                    <td>Rp 350.000</td>
-                                    <td><span class="badge bg-warning">Menunggu Pembayaran</span></td>
+                                    <td><?php echo htmlspecialchars($row['order_code']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                                    <td><?php echo date('d/m/Y', strtotime($row['order_date'])); ?></td>
+                                    <td><?php echo formatRupiah($row['final_amount']); ?></td>
+                                    <td><?php echo getStatusBadge($row['order_status']); ?></td>
                                     <td><button class="btn btn-sm btn-outline-secondary">Detail</button></td>
                                 </tr>
+                                <?php endwhile; ?>
+                                <?php else: ?>
                                 <tr>
-                                    <td>#BF2025002</td>
-                                    <td>Budi Santoso</td>
-                                    <td>14/10/2025</td>
-                                    <td>Rp 580.000</td>
-                                    <td><span class="badge bg-success">Dikirim</span></td>
-                                    <td><button class="btn btn-sm btn-outline-secondary">Detail</button></td>
+                                    <td colspan="6" class="text-center">Tidak ada pesanan terbaru yang perlu diproses.
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td>#BF2025003</td>
-                                    <td>Citra Dewi</td>
-                                    <td>14/10/2025</td>
-                                    <td>Rp 120.000</td>
-                                    <td><span class="badge bg-info">Sedang Diproses</span></td>
-                                    <td><button class="btn btn-sm btn-outline-secondary">Detail</button></td>
-                                </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -145,11 +171,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-
-    <script>
-    // Saat ini, sidebar tidak bisa di-toggle, tapi bisa ditambahkan jika dibutuhkan
+        xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
 </body>
 
