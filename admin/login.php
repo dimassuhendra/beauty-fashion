@@ -31,7 +31,7 @@
             <h3 class="text-pink fw-bold mb-4">Admin! 👋</h3>
             <h4 class="mb-4">Masuk ke Akun Anda</h4>
 
-            <form action="admin_dashboard.php" method="POST">
+            <form action="proses/proses_login.php" method="POST">
                 <div class="mb-3">
                     <label for="usernameInput" class="form-label visually-hidden">Username Admin</label>
                     <input type="text" class="form-control form-control-lg" id="usernameInput"
