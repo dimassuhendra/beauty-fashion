@@ -18,39 +18,7 @@ $is_status_redirect = isset($_GET['status']) && isset($_GET['message']);
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css">
-
     <link rel="stylesheet" href="/beauty-fashion/css/style-admin.css">
-    <style>
-    /* Gaya kustom untuk badge status pesanan */
-    .badge-pending {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    .badge-processing {
-        background-color: #0d6efd;
-    }
-
-    .badge-shipped {
-        background-color: #198754;
-    }
-
-    .badge-completed {
-        background-color: #6c757d;
-    }
-
-    .badge-cancelled {
-        background-color: #dc3545;
-    }
-
-    /* DataTables Styling */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background-color: var(--bs-pink-primary) !important;
-        border-color: var(--bs-pink-primary) !important;
-        color: white !important;
-    }
-    </style>
 </head>
 
 <body>
