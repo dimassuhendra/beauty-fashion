@@ -85,7 +85,7 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
                 </div>
 
                 <div class="text-center create-account">
-                    Belum punya akun? <a href="register.php" class="text-pink fw-bold">Daftar di sini</a>
+                    Belum punya akun? <a href="signup.php" class="text-pink fw-bold">Daftar di sini</a>
                 </div>
                 <div class="text-center create-account">
                     <a href="index.php" class="text-pink fw-bold">Kembali ke Beranda</a>
