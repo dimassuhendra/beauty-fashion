@@ -159,8 +159,6 @@ include 'proses/get_index.php';
         </div>
     </section>
 
-    ---
-
     <section id="produk-tersedia" class="bg-white">
         <div class="container">
             <h2 class="text-center mb-5 text-pink-primary fw-bold">Koleksi Produk Tersedia</h2>
@@ -188,7 +186,7 @@ include 'proses/get_index.php';
             </div>
 
             <div class="text-center mt-5">
-                <a href="all_product.php" class="btn btn-lg btn-outline-pink btn-pink">Lihat Semua Produk Lainnya
+                <a href="all-product.php" class="btn btn-lg btn-outline-pink btn-pink">Lihat Semua Produk Lainnya
                     (<?php echo $conn->query("SELECT COUNT(id) FROM products WHERE is_active = 1")->fetch_row()[0]; ?>+)</a>
             </div>
         </div>
