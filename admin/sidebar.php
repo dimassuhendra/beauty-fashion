@@ -123,23 +123,23 @@ $active_page = basename($_SERVER['PHP_SELF']);
         <li class="<?php echo ($active_page == 'manajemen-produk.php' ? 'active' : ''); ?>">
             <a href="manajemen-produk.php"><i class="fas fa-boxes me-2"></i> Manajemen Produk</a>
         </li>
-        <li class="<?php echo ($active_page == 'pesanan_baru.php' ? 'active' : ''); ?>">
-            <a href="pesanan_baru.php"><i class="fas fa-clipboard-list me-2"></i> Pesanan Baru</a>
+        <li class="<?php echo ($active_page == 'pesanan-baru.php' ? 'active' : ''); ?>">
+            <a href="pesanan-baru.php"><i class="fas fa-clipboard-list me-2"></i> Pesanan Baru</a>
         </li>
-        <li class="<?php echo ($active_page == 'data_pelanggan.php' ? 'active' : ''); ?>">
-            <a href="data_pelanggan.php"><i class="fas fa-users me-2"></i> Data Pelanggan</a>
+        <li class="<?php echo ($active_page == 'data-pelanggan.php' ? 'active' : ''); ?>">
+            <a href="data-pelanggan.php"><i class="fas fa-users me-2"></i> Data Pelanggan</a>
         </li>
-        <li class="<?php echo ($active_page == 'laporan_penjualan.php' ? 'active' : ''); ?>">
-            <a href="laporan_penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
+        <li class="<?php echo ($active_page == 'laporan-penjualan.php' ? 'active' : ''); ?>">
+            <a href="laporan-penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
         </li>
-        <li class="<?php echo ($active_page == 'kelola_promo.php' ? 'active' : ''); ?>">
-            <a href="kelola_promo.php"><i class="fas fa-tags me-2"></i> Kelola Promo</a>
+        <li class="<?php echo ($active_page == 'kelola-promo.php' ? 'active' : ''); ?>">
+            <a href="kelola-promo.php"><i class="fas fa-tags me-2"></i> Kelola Promo</a>
         </li>
     </ul>
 
     <ul class="list-unstyled components mt-3">
         <li style="position: absolute; bottom: 20px; width: 100%; padding: 0 20px; z-index: 10;">
-            <a href="admin_login.php" class="btn btn-sm btn-light d-block text-pink-primary fw-bold">
+            <a href="login.php" class="btn btn-sm btn-light d-block text-pink-primary fw-bold">
                 <i class="fas fa-sign-out-alt me-2"></i> Keluar
             </a>
         </li>
