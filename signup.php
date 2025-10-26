@@ -34,7 +34,7 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
             <div class="circle"></div>
 
             <div class="content">
-                <h1 class="display-4 fw-bold">Jadilah Bagian Kami !</h1>
+                <h1 class="display-4 fw-bold">Jadilah Bagian Kami</h1>
                 <p class="lead mb-4">Daftar sekarang dan nikmati penawaran eksklusif khusus member baru.</p>
                 <small class="text-white-50">#BeautyFashionMember</small>
             </div>
