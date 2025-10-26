@@ -69,8 +69,7 @@
                     <div class="carousel-item">
                         <div class="row row-cols-1 row-cols-md-3 g-4">
                             <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center"><img
-                                        src="https://via.placeholder.com/400x300/f06292/ffffff?text=VOUCHER+BARU"
+                                <div class="card border-0 shadow-sm h-100 text-center"><img src="assets/img/pic4.jpeg"
                                         class="card-img-top" alt="Voucher Baru">
                                     <div class="card-body">
                                         <h5 class="card-title text-pink-primary">Voucher Member</h5>
@@ -79,8 +78,7 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center"><img
-                                        src="https://via.placeholder.com/400x300/ec407a/ffffff?text=CASHBACK"
+                                <div class="card border-0 shadow-sm h-100 text-center"><img src="assets/img/pic5.jpeg"
                                         class="card-img-top" alt="Cashback">
                                     <div class="card-body">
                                         <h5 class="card-title text-pink-primary">Cashback 10%</h5>
@@ -89,8 +87,7 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center"><img
-                                        src="https://via.placeholder.com/400x300/e91e63/ffffff?text=EXTRA+SALE"
+                                <div class="card border-0 shadow-sm h-100 text-center"><img src="assets/img/pic6.png"
                                         class="card-img-top" alt="Extra Sale">
                                     <div class="card-body">
                                         <h5 class="card-title text-pink-primary">Extra Sale</h5>
