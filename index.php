@@ -36,19 +36,7 @@
                         <div class="row row-cols-1 row-cols-md-3 g-4">
                             <div class="col">
                                 <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="https://via.placeholder.com/400x300/ff99cc/ffffff?text=DISKON+50%25"
-                                        class="card-img-top" alt="Diskon 50%">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Diskon Tengah Tahun</h5>
-                                        <p class="card-text">Dapatkan potongan hingga 50% untuk semua Dress Musim Panas.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="https://via.placeholder.com/400x300/ff69b4/ffffff?text=GRATIS+ONGKIR"
-                                        class="card-img-top" alt="Gratis Ongkir">
+                                    <img src="assets/img/1aaa.png" class="card-img-top" alt="Gratis Ongkir">
                                     <div class="card-body">
                                         <h5 class="card-title text-pink-primary">Gratis Ongkir</h5>
                                         <p class="card-text">Belanja minimal Rp 150.000, dapatkan pengiriman gratis ke
@@ -58,8 +46,17 @@
                             </div>
                             <div class="col">
                                 <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="https://via.placeholder.com/400x300/ff3399/ffffff?text=BELI+1+GRATIS+1"
-                                        class="card-img-top" alt="Beli 1 Gratis 1">
+                                    <img src="assets/img/2bb.png" class="card-img-top" alt="Diskon 50%">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-pink-primary">Diskon Tengah Tahun</h5>
+                                        <p class="card-text">Dapatkan potongan hingga 50% untuk semua Dress Musim Panas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card border-0 shadow-sm h-100 text-center">
+                                    <img src="assets/img/3cc.png" class="card-img-top" alt="Beli 1 Gratis 1">
                                     <div class="card-body">
                                         <h5 class="card-title text-pink-primary">Promo Beli 1 Gratis 1</h5>
                                         <p class="card-text">Khusus untuk koleksi Aksesori dan Tas pilihan. Jangan
