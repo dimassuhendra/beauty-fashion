@@ -58,7 +58,7 @@ $user_name = $is_logged_in ? explode(' ', $_SESSION['user_name'])[0] : '';
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item text-danger" href="proses_logout.php"><i
+                        <li><a class="dropdown-item text-danger" href="proses/proses_logout.php"><i
                                     class="fas fa-sign-out-alt me-2"></i> Keluar</a></li>
                     </ul>
                 </div>
