@@ -141,9 +141,9 @@ $active_page = basename($_SERVER['PHP_SELF']);
         <li class="<?php echo ($active_page == 'manajemen-penjualan.php' ? 'active' : ''); ?>">
             <a href="manajemen-penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
         </li>
-        <li class="<?php echo ($active_page == 'manajemen-promo.php' ? 'active' : ''); ?>">
+        <!-- <li class="<?php echo ($active_page == 'manajemen-promo.php' ? 'active' : ''); ?>">
             <a href="manajemen-promo.php"><i class="fas fa-tags me-2"></i> Kelola Promo</a>
-        </li>
+        </li> -->
     </ul>
 
     <div style="position: absolute; bottom: 20px; width: 100%; padding: 0 20px; z-index: 10;">
