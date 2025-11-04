@@ -1,3 +1,44 @@
+<?php
+@require_once 'db_connect.php'; 
+
+// Pengecekan koneksi (mengatasi error undefined variable $conn)
+if (!isset($conn) || @$conn->connect_error) {
+    // Tentukan pesan error yang akan ditampilkan di produk card
+    $error_message = "Gagal terhubung ke database: " . (@$conn ? $conn->connect_error : "Variabel koneksi (\$conn) tidak terdefinisi. Cek path include 'db_connect.php'.");
+    $is_connected = false;
+    $products = [];
+} else {
+    $is_connected = true;
+    $error_message = '';
+
+    // Query untuk mengambil 4 produk unggulan
+    $sql = "
+        SELECT id, name, price, stock
+        FROM products 
+        -- Ambil 4 produk terbaru atau produk dengan stok terbanyak
+        ORDER BY id DESC 
+        LIMIT 4
+    ";
+
+    $result = $conn->query($sql);
+    $products = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+    }
+    
+    // Tutup koneksi setelah selesai mengambil data
+    $conn->close();
+}
+
+// --------------------------------------------------------------------
+// 2. TENTUKAN TAMPILAN BERDASARKAN KONEKSI
+// --------------------------------------------------------------------
+
+$featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
+
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -7,94 +48,7 @@
     <title>Beauty-Fashion | Toko Pakaian Pria & Wanita</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-    /* ------------------------------------- */
-    /* 1. Kustomisasi Tema Pink */
-    /* ------------------------------------- */
-    :root {
-        /* Warna Dasar untuk Light Mode */
-        --primary-pink: #ff69b4;
-        /* Hot Pink */
-        --light-bg: #f8f9fa;
-        /* Background umum */
-        --light-text: #212529;
-        /* Teks umum */
-    }
-
-    /* ------------------------------------- */
-    /* 2. Dark Mode Styles */
-    /* ------------------------------------- */
-    [data-bs-theme="dark"] {
-        /* Warna untuk Dark Mode */
-        --bs-body-bg: #212529;
-        /* Background gelap */
-        --bs-body-color: #f8f9fa;
-        /* Teks terang */
-        --bs-card-bg: #343a40;
-        /* Card gelap */
-        --bs-card-color: #f8f9fa;
-    }
-
-    /* Terapkan warna primary pink kustom ke Bootstrap */
-    .btn-primary,
-    .bg-primary,
-    .text-primary {
-        --bs-btn-bg: var(--primary-pink);
-        --bs-btn-border-color: var(--primary-pink);
-        --bs-btn-hover-bg: #e55a9b;
-        /* Pink sedikit lebih gelap */
-        --bs-btn-hover-border-color: #e55a9b;
-        --bs-btn-active-bg: #cc4f8a;
-        --bs-btn-active-border-color: #cc4f8a;
-        --bs-btn-color: #fff;
-    }
-
-    /* Navigasi kustom untuk memastikan tombol dark mode terlihat */
-    .navbar-custom {
-        background-color: var(--light-bg);
-        /* Warna latar nav default (light) */
-    }
-
-    [data-bs-theme="dark"] .navbar-custom {
-        background-color: var(--bs-body-bg) !important;
-        border-bottom: 1px solid #495057;
-    }
-
-    /* Kustomisasi Teks Link Nav */
-    .navbar-nav .nav-link {
-        color: var(--light-text);
-        font-weight: 500;
-    }
-
-    [data-bs-theme="dark"] .navbar-nav .nav-link {
-        color: #f8f9fa;
-    }
-
-    /* Efek hover pada produk */
-    .product-card {
-        transition: transform 0.3s ease-in-out;
-        border-color: rgba(255, 105, 180, 0.3);
-        /* Pink border ringan */
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
-    }
-
-    /* Hero section styling */
-    .hero-section {
-        padding: 100px 0;
-        background: linear-gradient(135deg, var(--primary-pink), #ffc0cb);
-        /* Pink Gradient */
-        color: #fff;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    [data-bs-theme="dark"] .hero-section {
-        background: linear-gradient(135deg, #1c1f23, var(--primary-pink));
-    }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body data-bs-theme="light">
@@ -109,12 +63,18 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#pria">Pakaian Pria</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#wanita">Pakaian Wanita</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#lainnya">Aksesoris</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="products.php?category=alat-sholat-pria&stock=available&min_price=&max_price=">Pakaian
+                            Pria</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="products.php?category=pakaian-wanita&stock=available&min_price=&max_price=">Pakaian
+                            Wanita</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="products.php?category=aksesori-muslim&stock=available&min_price=&max_price=">Aksesoris</a>
+                    </li>
                 </ul>
                 <div class="d-flex">
-                    <button class="btn btn-outline-primary me-2">Masuk / Daftar</button>
+                    <a href="login.php" class="btn btn-outline-primary me-2">Masuk / Daftar</a>
 
                     <button id="theme-toggle" class="btn btn-outline-secondary" title="Ganti Mode Gelap/Terang">
                         <i class="fas fa-moon"></i>
@@ -135,89 +95,54 @@
     </header>
 
     <main class="container py-5" id="produk">
-        <h2 class="text-center mb-5" style="color: var(--primary-pink);">Produk Unggulan</h2>
+        <h2 class="text-center mb-5" style="color: var(--primary-pink);"><?php echo $featured_title; ?></h2>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            <div class="col">
-                <div class="card h-100 product-card">
-                    <div class="card-img-top bg-light text-center p-5" style="height: 250px;">
-
-                        <p class="text-muted mt-2">Gambar Produk Wanita</p>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Dress Elegan (ID: 001)</h5>
-                        <p class="card-text text-success fw-bold">Rp 250.000</p>
-                        <p class="card-text small text-muted">Stok: 12 (Data dari Database)</p>
-                        <a href="#" class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 product-card">
-                    <div class="card-img-top bg-light text-center p-5" style="height: 250px;">
-
-                        <p class="text-muted mt-2">Gambar Produk Pria</p>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Kemeja Casual Pria (ID: 002)</h5>
-                        <p class="card-text text-success fw-bold">Rp 180.000</p>
-                        <p class="card-text small text-muted">Stok: 25 (Data dari Database)</p>
-                        <a href="#" class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 product-card">
-                    <div class="card-img-top bg-light text-center p-5" style="height: 250px;">
-
-                        <p class="text-muted mt-2">Gambar Aksesori</p>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Tas Fashion Mewah (ID: 003)</h5>
-                        <p class="card-text text-success fw-bold">Rp 350.000</p>
-                        <p class="card-text small text-muted">Stok: 8 (Data dari Database)</p>
-                        <a href="#" class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card h-100 product-card">
-                    <div class="card-img-top bg-light text-center p-5" style="height: 250px;">
-
-                        <p class="text-muted mt-2">Gambar Produk Wanita</p>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Blazer Wanita Kantor (ID: 004)</h5>
-                        <p class="card-text text-success fw-bold">Rp 315.000</p>
-                        <p class="card-text small text-muted">Stok: 15 (Data dari Database)</p>
-                        <a href="#" class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
-                    </div>
-                </div>
-            </div>
+        <?php if (!$is_connected): ?>
+        <div class="alert alert-danger text-center" role="alert">
+            <i class="fas fa-database me-2"></i> **Kesalahan Koneksi Database:** <?php echo $error_message; ?>
+            <p class="mb-0 mt-2 small">Produk tidak dapat dimuat. Harap periksa file `db_connect.php` dan jalurnya.</p>
         </div>
+        <?php elseif (empty($products)): ?>
+        <div class="alert alert-info text-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i> **Informasi:** Belum ada produk unggulan yang ditemukan di database.
+        </div>
+        <?php else: ?>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <?php foreach ($products as $product): ?>
+            <div class="col">
+                <div class="card h-100 product-card">
+                    <div class="card-img-top bg-light text-center p-5"
+                        style="height: 250px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-tshirt fa-3x text-muted"></i>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
+                        <p class="card-text text-success fw-bold">Rp
+                            <?php echo number_format($product['price'], 0, ',', '.'); ?></p>
+                        <p class="card-text small text-muted">Stok:
+                            <?php echo number_format($product['stock'], 0); ?> (ID:
+                            <?php echo $product['id']; ?>)</p>
+                        <a href="product_detail.php?id=<?php echo $product['id']; ?>"
+                            class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
 
         <div class="text-center mt-5">
-            <button class="btn btn-outline-primary btn-lg">Lihat Semua Koleksi</button>
+            <a href="products.php" class="btn btn-outline-primary btn-lg">Lihat Semua Koleksi</a>
             <p class="mt-3 small text-muted">Seluruh produk di atas diambil secara dinamis dari **Database** oleh sistem
                 *Backend* Anda.</p>
         </div>
     </main>
 
-    <footer class="bg-dark text-white pt-5 pb-3">
-        <div class="container text-center">
-            <p>&copy; 2025 Beauty-Fashion. Konten ini dikelola penuh oleh **Admin**.</p>
-            <div class="small">
-                <a href="#" class="text-white mx-2">Kebijakan Privasi</a> |
-                <a href="#" class="text-white mx-2">Syarat & Ketentuan</a>
-            </div>
-        </div>
-    </footer>
+    <?php include 'footer.php' ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    /* START: JS Halaman Pengguna (Dark Mode) */
     // Logika Dark/Light Mode
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
@@ -250,6 +175,7 @@
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         applyTheme(newTheme);
     });
+    /* END: JS Halaman Pengguna (Dark Mode) */
     </script>
 </body>
 
