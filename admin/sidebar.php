@@ -135,8 +135,8 @@ $active_page = basename($_SERVER['PHP_SELF']);
         <li class="<?php echo ($active_page == 'pesanan-baru.php' ? 'active' : ''); ?>">
             <a href="pesanan-baru.php"><i class="fas fa-clipboard-list me-2"></i> Pesanan Baru</a>
         </li>
-        <li class="<?php echo ($active_page == 'data-pelanggan.php' ? 'active' : ''); ?>">
-            <a href="data-pelanggan.php"><i class="fas fa-users me-2"></i> Data Pelanggan</a>
+        <li class="<?php echo ($active_page == 'manajemen-pelanggan.php' ? 'active' : ''); ?>">
+            <a href="manajemen-pelanggan.php"><i class="fas fa-users me-2"></i> Manajemen Pelanggan</a>
         </li>
         <li class="<?php echo ($active_page == 'laporan-penjualan.php' ? 'active' : ''); ?>">
             <a href="laporan-penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
