@@ -1,394 +1,498 @@
 <?php
-// PASTIKAN BARIS INI ADA DI PALING ATAS
-session_start(); 
-
-// --- Bagian 1: Koneksi dan Logika READ, FILTER, SORTING ---
-
-$servername = "localhost";
-$username = "root"; 
-$password = "";     
-$dbname = "beauty"; 
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Koneksi database gagal: " . $conn->connect_error);
-}
-
-// Logika Filtering dan Sorting
-$category_filter = isset($_GET['category']) ? $_GET['category'] : 'all';
-$status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
-$sort_column = isset($_GET['sort']) ? $_GET['sort'] : 'id';
-$sort_order = isset($_GET['order']) && in_array(strtoupper($_GET['order']), ['ASC', 'DESC']) ? strtoupper($_GET['order']) : 'ASC';
-
-$sql = "SELECT p.*, c.name as category_name, c.id as category_id 
-        FROM products p 
-        JOIN categories c ON p.category_id = c.id 
-        WHERE 1=1"; 
-
-if ($category_filter !== 'all' && is_numeric($category_filter)) {
-    $sql .= " AND p.category_id = " . (int)$category_filter;
-}
-
-if ($status_filter !== 'all') {
-    $status_value = ($status_filter === 'active') ? 1 : 0;
-    $sql .= " AND p.is_active = " . $status_value;
-}
-
-$valid_columns = ['id', 'name', 'sku', 'price', 'stock', 'category_name', 'is_active'];
-if (in_array($sort_column, $valid_columns)) {
-    $sort_field = ($sort_column === 'category_name') ? 'c.name' : 'p.' . $sort_column;
-    $sql .= " ORDER BY $sort_field $sort_order";
-} else {
-    $sql .= " ORDER BY p.id ASC"; 
-}
-
-$result = $conn->query($sql);
-$categories_result = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
-
-function get_sort_link($column, $current_sort, $current_order, $category_filter, $status_filter) {
-    $new_order = 'ASC';
-    if ($current_sort === $column && $current_order === 'ASC') {
-        $new_order = 'DESC';
-    }
-    $filter_params = "&category=" . $category_filter . "&status=" . $status_filter;
-    return "?sort=" . $column . "&order=" . $new_order . $filter_params;
-}
-
-$categories_array = [];
-if ($categories_result && $categories_result->num_rows > 0) {
-    $categories_result->data_seek(0);
-    while ($cat = $categories_result->fetch_assoc()) {
-        $categories_array[] = $cat;
-    }
-}
-
-// --- Bagian 2: Ambil pesan Feedback dari Session ---
-$feedback_message = '';
-$feedback_type = '';
-
-if (isset($_SESSION['feedback_msg'])) {
-    $feedback_message = $_SESSION['feedback_msg'];
-    $feedback_type = $_SESSION['feedback_type'] ?? 'info';
-    
-    // HAPUS pesan dari session agar tidak muncul lagi setelah refresh
-    unset($_SESSION['feedback_msg']);
-    unset($_SESSION['feedback_type']);
-}
+include '../db_connect.php';
+include 'proses/get_manajemen-produk.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Produk</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-    .table th a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .table th a:hover {
-        text-decoration: underline;
-    }
-
-    .product-img {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-    </style>
+    <title>Manajemen Produk | Beauty Fashion</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="container mt-5">
-        <h2 class="mb-4">📋 Manajemen Produk</h2>
+<body id="body-admin">
+    <?php include 'sidebar.php' ?>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <button type="button" class="btn btn-success" onclick="openProductModal('add')">
-                ➕ Tambah Produk
-            </button>
+    <div class="main-content">
+        <header class="mb-4">
+            <h1 class="text-color">Manajemen Produk</h1>
+            <p class="lead">Kelola daftar produk, kategori, stok, dan harga.</p>
+        </header>
+
+        <?php if (!empty($message)): ?>
+        <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
+            <?php echo $message; ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <?php endif; ?>
 
-        <form method="GET" class="form-inline mb-4">
-            <input type="hidden" name="sort" value="<?= htmlspecialchars($sort_column) ?>">
-            <input type="hidden" name="order" value="<?= htmlspecialchars($sort_order) ?>">
+        <div class="card shadow-sm p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                <button class="btn btn-pink mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="fas fa-plus me-1"></i> Tambah Produk
+                </button>
 
-            <label for="category_filter" class="mr-2">Filter Kategori:</label>
-            <select name="category" id="category_filter" class="form-control mr-3">
-                <option value="all">Semua Kategori</option>
-                <?php 
-                foreach ($categories_array as $cat): 
-                ?>
-                <option value="<?= $cat['id'] ?>" <?= ($category_filter == $cat['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($cat['name']) ?>
-                </option>
-                <?php endforeach; ?>
-            </select>
+                <form method="GET" class="d-flex flex-wrap align-items-center gap-3">
+                    <div class="input-group input-group-sm" style="width: auto;">
+                        <label class="input-group-text" for="limit">Tampil</label>
+                        <select name="limit" id="limit" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                            <option value="10" <?php echo $limit == 10 ? 'selected' : ''; ?>>10</option>
+                            <option value="25" <?php echo $limit == 25 ? 'selected' : ''; ?>>25</option>
+                            <option value="50" <?php echo $limit == 50 ? 'selected' : ''; ?>>50</option>
+                        </select>
+                    </div>
 
-            <label for="status_filter" class="mr-2">Filter Status:</label>
-            <select name="status" id="status_filter" class="form-control mr-3">
-                <option value="all" <?= ($status_filter == 'all') ? 'selected' : '' ?>>Semua Data</option>
-                <option value="active" <?= ($status_filter == 'active') ? 'selected' : '' ?>>Aktif</option>
-                <option value="inactive" <?= ($status_filter == 'inactive') ? 'selected' : '' ?>>Non-aktif</option>
-            </select>
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <input type="text" name="s" class="form-control" placeholder="Cari SKU atau Nama Produk..."
+                            value="<?php echo htmlspecialchars($search); ?>">
+                        <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
+                        <?php if (!empty($search)): ?>
+                        <a href="manajemen-produk.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
+                            title="Reset Pencarian"><i class="fas fa-times"></i></a>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
 
-            <button type="submit" class="btn btn-primary">Terapkan Filter</button>
-            <a href="products.php" class="btn btn-secondary ml-2">Reset Filter</a>
-        </form>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('id', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'id' ? 'active-sort' : ''; ?>">
+                                    #
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'id' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('sku', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'sku' ? 'active-sort' : ''; ?>">
+                                    SKU
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'sku' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col" style="width: 20%;">
+                                <a href="<?php echo get_sort_link('name', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'name' ? 'active-sort' : ''; ?>">
+                                    Nama Produk
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'name' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('category_name', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'category_name' ? 'active-sort' : ''; ?>">
+                                    Kategori
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'category_name' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('price', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'price' ? 'active-sort' : ''; ?>">
+                                    Harga
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'price' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('stock', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'stock' ? 'active-sort' : ''; ?>">
+                                    Stok
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'stock' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('is_active', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'is_active' ? 'active-sort' : ''; ?>">
+                                    Status
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'is_active' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (count($products) > 0): ?>
+                        <?php foreach ($products as $p): ?>
+                        <tr>
+                            <td><?php echo $p['id']; ?></td>
+                            <td><?php echo $p['sku']; ?></td>
+                            <td>
+                                <?php if (!empty($p['image_url'])): ?>
+                                <img src="../uploads/product/<?php echo $p['image_url']; ?>"
+                                    alt="<?php echo $p['name']; ?>" class="product-image-thumb me-2">
+                                <?php else: ?>
+                                <i class="fas fa-image me-2 text-muted"></i>
+                                <?php endif; ?>
+                                <?php echo $p['name']; ?>
+                            </td>
+                            <td><?php echo $p['category_name']; ?></td>
+                            <td>Rp<?php echo number_format($p['price'], 0, ',', '.'); ?></td>
+                            <td>
+                                <span
+                                    class="badge bg-<?php echo $p['stock'] > 20 ? 'success' : ($p['stock'] > 0 ? 'warning' : 'danger'); ?>">
+                                    <?php echo $p['stock']; ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-<?php echo $p['is_active'] ? 'success' : 'secondary'; ?>">
+                                    <?php echo $p['is_active'] ? 'Aktif' : 'Non-aktif'; ?>
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-warning me-1 btn-edit-product"
+                                    data-bs-toggle="modal" data-bs-target="#editProductModal"
+                                    data-id="<?php echo $p['id']; ?>"
+                                    data-name="<?php echo htmlspecialchars($p['name']); ?>"
+                                    data-sku="<?php echo $p['sku']; ?>"
+                                    data-category-id="<?php echo $p['category_id']; ?>"
+                                    data-price="<?php echo $p['price']; ?>" data-stock="<?php echo $p['stock']; ?>"
+                                    data-is-active="<?php echo $p['is_active']; ?>"
+                                    data-image-url="<?php echo $p['image_url']; ?>">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete-product" data-bs-toggle="modal"
+                                    data-bs-target="#deleteProductModal" data-id="<?php echo $p['id']; ?>"
+                                    data-name="<?php echo htmlspecialchars($p['name']); ?>">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php else: ?>
+                        <tr>
+                            <td colspan="8" class="text-center">Tidak ada data produk ditemukan.</td>
+                        </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="product-table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th><a
-                                href="<?= get_sort_link('id', $sort_column, $sort_order, $category_filter, $status_filter) ?>">ID
-                                <?= ($sort_column === 'id') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a></th>
-                        <th>Gambar</th>
-                        <th><a
-                                href="<?= get_sort_link('sku', $sort_column, $sort_order, $category_filter, $status_filter) ?>">SKU
-                                <?= ($sort_column === 'sku') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a></th>
-                        <th><a
-                                href="<?= get_sort_link('name', $sort_column, $sort_order, $category_filter, $status_filter) ?>">Nama
-                                Produk <?= ($sort_column === 'name') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a>
-                        </th>
-                        <th><a
-                                href="<?= get_sort_link('category_name', $sort_column, $sort_order, $category_filter, $status_filter) ?>">Kategori
-                                <?= ($sort_column === 'category_name') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a>
-                        </th>
-                        <th><a
-                                href="<?= get_sort_link('price', $sort_column, $sort_order, $category_filter, $status_filter) ?>">Harga
-                                <?= ($sort_column === 'price') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a></th>
-                        <th><a
-                                href="<?= get_sort_link('stock', $sort_column, $sort_order, $category_filter, $status_filter) ?>">Stok
-                                <?= ($sort_column === 'stock') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a></th>
-                        <th><a
-                                href="<?= get_sort_link('is_active', $sort_column, $sort_order, $category_filter, $status_filter) ?>">Status
-                                <?= ($sort_column === 'is_active') ? (($sort_order === 'ASC') ? '▲' : '▼') : '' ?></a>
-                        </th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($result->num_rows > 0): ?>
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= $row['id'] ?></td>
-                        <td>
-                            <?php 
-                                    $image_path = 'uploads/product/' . htmlspecialchars($row['image_url']);
-                                    // Pengecekan path relatif dari products.php (admin/uploads/product/...)
-                                    if (!empty($row['image_url']) && file_exists($image_path)) { 
-                                        echo '<img src="' . $image_path . '" alt="' . htmlspecialchars($row['name']) . '" class="product-img">';
-                                    } else {
-                                        echo '[No Image]';
-                                    }
-                                    ?>
-                        </td>
-                        <td><?= htmlspecialchars($row['sku']) ?></td>
-                        <td><?= htmlspecialchars($row['name']) ?></td>
-                        <td><?= htmlspecialchars($row['category_name']) ?></td>
-                        <td>Rp<?= number_format($row['price'], 0, ',', '.') ?></td>
-                        <td><?= $row['stock'] ?></td>
-                        <td>
-                            <span class="badge badge-<?= $row['is_active'] ? 'success' : 'danger' ?>">
-                                <?= $row['is_active'] ? 'Aktif' : 'Non-aktif' ?>
-                            </span>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-info btn-edit-product"
-                                data-product='<?= json_encode($row) ?>' onclick="openProductModal('edit', this)">
-                                Edit
-                            </button>
-                            <a href="proses/proses_manajemen-produk.php?action=delete&id=<?= $row['id'] ?>"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin ingin menghapus produk <?= htmlspecialchars($row['name']) ?>?')">Hapus</a>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                    <?php else: ?>
-                    <tr>
-                        <td colspan="9" class="text-center">Tidak ada data produk yang ditemukan.</td>
-                    </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted">Menampilkan <?php echo count($products); ?> dari <?php echo $total_rows; ?>
+                    total produk.</small>
+
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <?php if ($total_pages > 1): ?>
+                        <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                            <a class="page-link"
+                                href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        <?php 
+                            // Tampilkan maksimal 5 link halaman di sekitar halaman saat ini
+                            $start = max(1, $page - 2);
+                            $end = min($total_pages, $page + 2);
+
+                            for ($i = $start; $i <= $end; $i++): 
+                                $is_active = $i == $page ? 'active' : '';
+                                $page_link = "?page=$i&limit=$limit&s=$search&sort=$sort&order=$order";
+                            ?>
+                        <li class="page-item <?php echo $is_active; ?>">
+                            <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
+                        </li>
+                        <?php endfor; ?>
+
+                        <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                            <a class="page-link"
+                                href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <?php endif; ?>
+                    </ul>
+                </nav>
+            </div>
         </div>
 
     </div>
 
-    <?php $conn->close(); ?>
-
-    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel"
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <form id="productForm" action="proses/proses_manajemen-produk.php" method="POST"
-                    enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="productModalLabel">Tambah Produk Baru</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Tambah Produk Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="manajemen-produk.php" enctype="multipart/form-data">
                     <div class="modal-body">
-                        <input type="hidden" name="action" id="modal_action" value="add">
-                        <input type="hidden" name="id" id="modal_id" value="">
+                        <input type="hidden" name="action" value="add">
 
-                        <div class="form-group">
-                            <label for="modal_name">Nama Produk <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="modal_name" name="name" required>
+                        <div class="mb-3">
+                            <label for="add_name" class="form-label">Nama Produk</label>
+                            <input type="text" class="form-control" id="add_name" name="name" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="modal_category_id">Kategori <span class="text-danger">*</span></label>
-                                <select class="form-control" id="modal_category_id" name="category_id" required>
-                                    <option value="">Pilih Kategori</option>
-                                    <?php foreach ($categories_array as $cat): ?>
-                                    <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="modal_sku">SKU <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="modal_sku" name="sku" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="modal_price">Harga (Rp) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="modal_price" name="price" step="any"
-                                    min="0" required>
-                            </div>
+                        <div class="mb-3">
+                            <label for="add_sku" class="form-label">SKU/Kode Produk</label>
+                            <input type="text" class="form-control" id="add_sku" name="sku" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="modal_stock">Stok <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="modal_stock" name="stock" min="0"
-                                    required>
+                        <div class="mb-3">
+                            <label for="add_category_id" class="form-label">Kategori</label>
+                            <select class="form-select" id="add_category_id" name="category_id" required>
+                                <option value="">Pilih Kategori</option>
+                                <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="add_price" class="form-label">Harga (Rp)</label>
+                                <input type="number" class="form-control" id="add_price" name="price" min="0" required>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="modal_product_image">Gambar Produk</label>
-                                <input type="file" class="form-control-file" id="modal_product_image"
-                                    name="product_image">
-                                <small class="form-text text-muted" id="current_image_info">Abaikan jika tidak ingin
-                                    mengganti gambar.</small>
+                            <div class="col-md-6 mb-3">
+                                <label for="add_stock" class="form-label">Stok</label>
+                                <input type="number" class="form-control" id="add_stock" name="stock" min="0" required>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="modal_description">Deskripsi</label>
-                            <textarea class="form-control" id="modal_description" name="description"
-                                rows="3"></textarea>
+                        <div class="mb-3">
+                            <label for="add_description" class="form-label">Deskripsi</label>
+                            <textarea class="form-control" id="add_description" name="description" rows="3"></textarea>
                         </div>
-                        <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="modal_is_active" name="is_active"
-                                value="1">
-                            <label class="form-check-label" for="modal_is_active">Produk Aktif</label>
+                        <div class="mb-3">
+                            <label for="add_image" class="form-label">Gambar Produk</label>
+                            <input type="file" class="form-control" id="add_image" name="image" accept="image/*">
+                            <small class="form-text text-muted">Akan disimpan di `uploads/product/`</small>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary" id="modalSubmitButton">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-pink">Simpan Produk</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel"
+
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="feedbackModalLabel">Pemberitahuan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="editProductModalLabel">Edit Produk: <span
+                            id="edit_product_name_title"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div id="feedback-content" class="alert" role="alert"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
-                </div>
+                <form id="editProductForm" method="POST" action="manajemen-produk.php" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="product_id" id="edit_product_id">
+
+                        <div class="mb-3">
+                            <label for="edit_name" class="form-label">Nama Produk</label>
+                            <input type="text" class="form-control" id="edit_name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_category_id" class="form-label">Kategori</label>
+                            <select class="form-select" id="edit_category_id" name="category_id" required>
+                                <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_price" class="form-label">Harga (Rp)</label>
+                                <input type="number" class="form-control" id="edit_price" name="price" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_stock" class="form-label">Stok</label>
+                                <input type="number" class="form-control" id="edit_stock" name="stock" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active"
+                                checked>
+                            <label class="form-check-label" for="edit_is_active">Produk Aktif/Tampil</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_image" class="form-label">Ganti Gambar Produk</label>
+                            <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
+                            <div id="current_image_preview" class="mt-2"></div>
+                            <small class="form-text text-muted">Kosongkan jika tidak ingin mengganti gambar.</small>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-pink">Simpan Perubahan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
+
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteProductModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form method="POST" action="manajemen-produk.php">
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="product_id" id="delete_product_id">
+                        <p class="text-danger">Anda yakin ingin menghapus produk <b id="delete_product_name"></b>?
+                            Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Ya, Hapus Permanen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-    // Fungsi JS Modal Tambah/Edit
-    function openProductModal(mode, button) {
-        const modalTitle = $('#productModalLabel');
-        const form = $('#productForm');
-        const submitButton = $('#modalSubmitButton');
-        const currentImageInfo = $('#current_image_info');
+    // ====================================================
+    // Logic Dark/Light Mode (FIXED)
+    // ====================================================
+    const body = document.getElementById('body-admin');
+    // Asumsi 'mode-toggle' adalah ID button/link di sidebar.php yang mengontrol mode
+    const modeToggle = document.getElementById('mode-toggle');
 
-        // 1. Reset Form
-        form[0].reset();
-        $('#modal_id').val('');
-        $('#modal_is_active').prop('checked', true);
-        currentImageInfo.text('Pilih file baru untuk diupload.').removeClass('text-warning');
+    function applyMode(isInitialLoad = true) {
+        let savedMode = localStorage.getItem('theme') || 'light';
 
-        if (mode === 'add') {
-            // Konfigurasi Tambah
-            modalTitle.text('➕ Tambah Produk Baru');
-            $('#modal_action').val('add');
-            submitButton.text('Simpan Produk');
-            currentImageInfo.hide();
-            $('#modal_product_image').prop('required', true);
+        // Jika bukan initial load (dipicu oleh klik), kita harus toggle mode
+        if (!isInitialLoad && modeToggle) {
+            // Tentukan mode baru
+            savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
+            localStorage.setItem('theme', savedMode);
+        }
 
-        } else if (mode === 'edit' && button) {
-            // Konfigurasi Edit
-            modalTitle.text('✏️ Edit Produk');
-            $('#modal_action').val('edit');
-            submitButton.text('Perbarui Produk');
-            currentImageInfo.show();
-            $('#modal_product_image').prop('required', false);
+        // Terapkan class ke body
+        if (savedMode === 'dark') {
+            body.classList.add('dark-mode');
+        } else {
+            body.classList.remove('dark-mode');
+        }
 
-            const productData = $(button).data('product');
-
-            // 2. Isi Form dengan Data Produk
-            $('#modal_id').val(productData.id);
-            $('#modal_name').val(productData.name);
-            $('#modal_category_id').val(productData.category_id);
-            $('#modal_sku').val(productData.sku);
-            $('#modal_price').val(parseFloat(productData.price));
-            $('#modal_stock').val(productData.stock);
-            $('#modal_description').val(productData.description);
-
-            // Set Status Aktif
-            $('#modal_is_active').prop('checked', productData.is_active == 1);
-
-            // Tampilkan info gambar lama
-            if (productData.image_url) {
-                currentImageInfo.html('Gambar saat ini: <strong>' + productData.image_url +
-                    '</strong>. Pilih file baru jika ingin mengganti.').addClass('text-warning');
+        // Terapkan styling ke modal (agar sesuai dengan mode)
+        document.querySelectorAll('.modal-content').forEach(el => {
+            if (savedMode === 'dark') {
+                el.classList.add('dark-mode');
             } else {
-                currentImageInfo.text('Produk ini belum memiliki gambar.').addClass('text-warning');
+                el.classList.remove('dark-mode');
+            }
+        });
+
+        // Optional: Update button text/icon (Asumsi ada di sidebar)
+        if (modeToggle) {
+            if (savedMode === 'dark') {
+                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                modeToggle.classList.remove('text-pink-primary');
+            } else {
+                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                modeToggle.classList.add('text-pink-primary');
             }
         }
-
-        $('#productModal').modal('show');
     }
 
-    // FUNGSI UNTUK MENAMPILKAN MODAL FEEDBACK SETELAH REDIRECT
-    $(document).ready(function() {
-        // Mengambil pesan feedback dari variabel PHP yang berasal dari Session
-        const feedbackMessage = "<?= addslashes($feedback_message) ?>";
-        const feedbackType = "<?= addslashes($feedback_type) ?>";
+    // 1. Panggil saat load pertama
+    document.addEventListener('DOMContentLoaded', () => {
+        applyMode(true);
+    });
 
-        if (feedbackMessage) {
-            // Konfigurasi tampilan alert
-            $('#feedback-content').removeClass().addClass('alert alert-' + feedbackType);
-            $('#feedback-content').html(feedbackMessage);
+    // 2. Pasang event listener untuk toggle
+    if (modeToggle) {
+        modeToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            applyMode(false); // Panggil dengan flag false agar logic toggle dijalankan
+        });
+    }
 
-            // Tampilkan Modal Feedback
-            $('#feedbackModal').modal('show');
+
+    // ====================================================
+    // Logic Modals (Edit dan Delete)
+    // ====================================================
+
+    // 1. Logic untuk MODAL EDIT
+    const editProductModal = document.getElementById('editProductModal');
+    editProductModal.addEventListener('show.bs.modal', function(event) {
+        // Tombol yang memicu modal
+        const button = event.relatedTarget;
+
+        // Ambil data dari data-* attributes
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const categoryId = button.getAttribute('data-category-id');
+        const price = button.getAttribute('data-price');
+        const stock = button.getAttribute('data-stock');
+        const isActive = button.getAttribute('data-is-active');
+        const imageUrl = button.getAttribute('data-image-url');
+
+        // Isi elemen modal
+        const modalTitle = editProductModal.querySelector('#editProductModalLabel span');
+
+        // Isi form fields
+        editProductModal.querySelector('#edit_product_id').value = id;
+        editProductModal.querySelector('#edit_name').value = name;
+        editProductModal.querySelector('#edit_price').value = price;
+        editProductModal.querySelector('#edit_stock').value = stock;
+        editProductModal.querySelector('#edit_category_id').value = categoryId;
+        modalTitle.textContent = name;
+
+        // Handle checkbox is_active
+        const checkboxActive = editProductModal.querySelector('#edit_is_active');
+        checkboxActive.checked = isActive === '1';
+
+        // Handle image preview
+        const previewContainer = editProductModal.querySelector('#current_image_preview');
+        previewContainer.innerHTML = '';
+        if (imageUrl) {
+            // Asumsi jalur gambar sama dengan di PHP
+            previewContainer.innerHTML = `
+                    <p class="mb-1 small text-muted">Gambar Saat Ini:</p>
+                    <img src="../uploads/product/${imageUrl}" alt="${name}" class="product-image-thumb" style="width: 80px; height: 80px;">
+                `;
         }
+    });
+
+
+    // 2. Logic untuk MODAL HAPUS
+    const deleteProductModal = document.getElementById('deleteProductModal');
+    deleteProductModal.addEventListener('show.bs.modal', function(event) {
+        // Tombol yang memicu modal
+        const button = event.relatedTarget;
+
+        // Ambil data dari data-* attributes
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+
+        // Isi elemen modal
+        const modalIdField = deleteProductModal.querySelector('#delete_product_id');
+        const modalNameText = deleteProductModal.querySelector('#delete_product_name');
+
+        modalIdField.value = id;
+        modalNameText.textContent = name;
     });
     </script>
 </body>
