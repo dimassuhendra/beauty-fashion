@@ -1,0 +1,70 @@
+:root {
+            /* Branding Colors */
+            --pink-color: #ff69b4;
+            --pink-hover: #ff99cc;
+            --bs-active-bg: var(--pink-color);
+            --text-pink-primary: var(--pink-color);
+
+            /* Sidebar Gradient (Pink Base) */
+            --bs-gradient-start: #ff69b4;
+            --bs-gradient-end: #ff99cc;
+
+            /* Global Light Mode Variables */
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #ffffff;
+            --text-color: #212529;
+            --sidebar-width: 250px;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --bs-gradient-start: #e91e63;
+            --bs-gradient-end: #ff69b4;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+
+        /* Card & Chart Styling */
+        .card {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Branding Pink on Button */
+        .btn-pink {
+            background-color: var(--pink-color);
+            border-color: var(--pink-color);
+            color: white;
+        }
+
+        .btn-pink:hover {
+            background-color: var(--pink-hover);
+            border-color: var(--pink-hover);
+            color: white;
+        }
+
+        /* Chart Height Control (Twice the card height - est. 400px) */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            padding: 20px;
+        }
