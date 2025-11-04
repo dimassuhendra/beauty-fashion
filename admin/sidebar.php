@@ -138,8 +138,8 @@ $active_page = basename($_SERVER['PHP_SELF']);
         <li class="<?php echo ($active_page == 'manajemen-pelanggan.php' ? 'active' : ''); ?>">
             <a href="manajemen-pelanggan.php"><i class="fas fa-users me-2"></i> Manajemen Pelanggan</a>
         </li>
-        <li class="<?php echo ($active_page == 'laporan-penjualan.php' ? 'active' : ''); ?>">
-            <a href="laporan-penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
+        <li class="<?php echo ($active_page == 'manajemen-penjualan.php' ? 'active' : ''); ?>">
+            <a href="manajemen-penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
         </li>
         <li class="<?php echo ($active_page == 'kelola-promo.php' ? 'active' : ''); ?>">
             <a href="kelola-promo.php"><i class="fas fa-tags me-2"></i> Kelola Promo</a>

@@ -271,3 +271,72 @@ body.dark-mode .bg-pink-light {
 }
 
 /* END: STYLE MANAJEMEN PELANGGAN */
+
+/* START: STYLE LAPORAN PENJUALAN */
+
+/* --- Filter Card --- */
+.filter-card .form-control {
+    border-color: #ced4da;
+}
+body.dark-mode .filter-card .form-control {
+    background-color: #333;
+    border-color: #555;
+    color: var(--text-color);
+}
+
+/* --- Summary Cards --- */
+.report-summary-card {
+    transition: all 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-bg);
+}
+.report-summary-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+body.dark-mode .report-summary-card {
+    border-color: #333;
+}
+.text-pink-primary {
+    color: var(--pink-color) !important;
+}
+
+/* --- Report Table --- */
+.sales-report-table thead th {
+    background-color: var(--primary-bg);
+    border-bottom: 2px solid var(--pink-color);
+}
+body.dark-mode .sales-report-table thead th {
+    background-color: #222;
+}
+
+/* Row Total */
+.report-total-row {
+    background-color: var(--primary-bg) !important;
+    border-top: 3px solid var(--pink-color) !important;
+    font-size: 1.1em;
+}
+body.dark-mode .report-total-row {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+}
+/* Memperbaiki warna teks di baris total */
+body.dark-mode .report-total-row .text-pink-primary {
+    color: var(--pink-color) !important;
+}
+body.dark-mode .report-total-row .text-success {
+    color: #81c784 !important; /* Warna hijau yang lebih terang untuk dark mode */
+}
+
+/* Tombol Pink */
+.btn-pink {
+    background-color: var(--pink-color);
+    border-color: var(--pink-color);
+    color: white;
+}
+.btn-pink:hover {
+    background-color: var(--pink-hover);
+    border-color: var(--pink-hover);
+    color: white;
+}
+
+/* END: STYLE LAPORAN PENJUALAN */
