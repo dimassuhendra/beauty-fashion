@@ -1,206 +1,338 @@
 <?php
 session_start();
+
+// --- PANGGIL FILE KONEKSI DATABASE ---
+// Asumsi: File ini akan membuat variabel koneksi, misalnya $conn
 include '../db_connect.php'; 
 include 'proses/get_index.php'; 
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beauty Fashion - Tampil Cantik & Modis</title>
+    <title>Dashboard Customer - Beauty Fashion</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+    /* ==================================================================== */
+    /* <<< BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
+    /* ==================================================================== */
+
+    /* --- GLOBAL & UTILITY (Sticky Footer) --- */
+    html {
+        height: 100%;
+    }
+
+    body {
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Poppins', sans-serif;
+        background-color: #fce4ec;
+        /* Pink sangat muda sebagai latar belakang halaman */
+    }
+
+    main {
+        flex: 1 0 auto;
+    }
+
+    /* --- NAVIGASI PINK --- */
+    .navbar-pink {
+        background-color: #ff69b4;
+        /* Deep Pink */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-pink .nav-link,
+    .navbar-pink .navbar-brand {
+        color: #fff0f5 !important;
+        font-weight: 500;
+    }
+
+    .navbar-pink .nav-link:hover {
+        color: #fff !important;
+        opacity: 0.9;
+    }
+
+    .navbar-pink .btn-logout {
+        background-color: #f06292;
+        /* Pink yang lebih lembut untuk tombol */
+        border: 1px solid #f06292;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .navbar-pink .btn-logout:hover {
+        background-color: #d8438f;
+        /* Pink lebih gelap saat hover */
+        border-color: #d8438f;
+    }
+
+    /* --- DASHBOARD CARDS (PINK NUANCE) --- */
+    .card-pink {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        color: white;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card-pink:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-1 {
+        background: linear-gradient(135deg, #ff69b4, #ff94c8);
+    }
+
+    /* Pink to lighter pink */
+    .card-2 {
+        background: linear-gradient(135deg, #f06292, #f8bbd0);
+    }
+
+    /* Medium pink to soft pink */
+    .card-3 {
+        background: linear-gradient(135deg, #e91e63, #ff80ab);
+    }
+
+    /* Hot pink to light pink */
+    .card-4 {
+        background: linear-gradient(135deg, #c2185b, #e985b0);
+    }
+
+    /* Dark pink to medium pink */
+
+    .card-pink .card-icon {
+        font-size: 2.5rem;
+        opacity: 0.6;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-pink .card-title {
+        font-size: 1rem;
+        font-weight: 300;
+    }
+
+    .card-pink .card-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    /* --- FOOTER (Sticky Footer Pink) --- */
+    .footer-hero {
+        background-color: #ff69b4;
+        color: #fff;
+        padding-top: 5rem !important;
+        padding-bottom: 3rem !important;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .footer-hero h4 {
+        color: #fff0f5;
+        letter-spacing: 1px;
+        font-size: 1.75rem;
+        margin-bottom: 2rem !important;
+    }
+
+    .footer-hero .lead {
+        font-weight: 700;
+        color: #ffe4e1;
+        opacity: 0.95;
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-hero p.fw-light {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        opacity: 0.9;
+    }
+
+    .footer-hero .border-top {
+        border-color: rgba(255, 255, 255, 0.5) !important;
+        padding-top: 1.5rem !important;
+        margin-top: 2rem !important;
+    }
+
+    /* Hiasan Bulat-Bulat (Pseudo-elements) */
+    .footer-hero::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        left: -40px;
+        width: 120px;
+        height: 120px;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        z-index: 0;
+        filter: blur(5px);
+    }
+
+    .footer-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        right: -60px;
+        width: 180px;
+        height: 180px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        z-index: 0;
+        filter: blur(8px);
+        transform: rotate(30deg);
+    }
+
+    .footer-hero>.container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ==================================================================== */
+    /* <<< AKHIR BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
+    /* ==================================================================== */
+    </style>
 </head>
 
 <body>
-    <header class="mb-5">
-        <?php include 'navbar.php' ?>
 
-        <div class="p-5 text-center hero" style="margin-top: 56px;">
-            <div class="container py-5">
-                <?php if ($is_logged_in): ?>
-                <h1 class="display-4 fw-bold text-pink-primary mb-3">Selamat Datang Kembali,
-                    <?php echo explode(' ', $user_name)[0]; ?>!</h1>
-                <h5 class="lead mb-4 text-dark">
-                    Kami telah menyiapkan penawaran terbaru khusus untuk Anda. **Yuk, lihat koleksi baru yang baru
-                    masuk!**
-                </h5>
-                <a href="#produk-tersedia" class="btn btn-pink btn-lg mt-3 shadow-lg">Lanjutkan Belanja ✨</a>
-                <?php else: ?>
-                <h1 class="display-4 fw-bold text-pink-primary mb-3">Tampil Memukau Setiap Hari</h1>
-                <h5 class="lead mb-4 text-dark">
-                    Beauty Fashion adalah destinasi utama Anda untuk koleksi pakaian wanita terkini. **Temukan gaya
-                    Anda, pancarkan percaya diri Anda.**
-                </h5>
-                <a href="#produk-tersedia" class="btn btn-pink btn-lg mt-3 shadow-lg">Lihat Koleksi Kami ✨</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </header>
-
-    ---
-
-    <section id="special-offer" class="bg-white">
+    <nav class="navbar navbar-expand-lg navbar-pink sticky-top">
         <div class="container">
-            <h2 class="text-center mb-5 text-pink-primary fw-bold">Penawaran Spesial untuk Anda</h2>
-            <div id="offerCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <?php 
-                    $coupon_chunks = array_chunk($coupons, 3);
-                    $first = true;
-                    if (!empty($coupon_chunks)):
-                    foreach ($coupon_chunks as $chunk): 
-                    ?>
-                    <div class="carousel-item <?php echo $first ? 'active' : ''; ?>">
-                        <div class="row row-cols-1 row-cols-md-3 g-4">
-                            <?php foreach ($chunk as $coupon): ?>
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="https://via.placeholder.com/400x300/ff99cc/ffffff?text=KODE%20<?php echo urlencode($coupon['coupon_code']); ?>"
-                                        class="card-img-top" alt="Kupon">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary"><?php echo $coupon['coupon_code']; ?>
-                                        </h5>
-                                        <p class="card-text">
-                                            Dapatkan Diskon
-                                            **<?php echo number_format($coupon['discount_value'], 0); echo ($coupon['discount_type'] == 'percent' ? '%' : ' IDR'); ?>**.
-                                            Min. belanja <?php echo format_rupiah($coupon['minimum_purchase']); ?>.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php 
-                    $first = false;
-                    endforeach; 
-                    else:
-                    ?>
-                    <div class="carousel-item active">
-                        <div class="text-center p-5">Saat ini belum ada penawaran spesial yang aktif.</div>
-                    </div>
-                    <?php endif; ?>
+            <a class="navbar-brand fw-bold" href="index.php">BeautyFashion Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.php"><i
+                                class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="orders.php"><i class="fas fa-box-open"></i> Pesanan Anda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.php"><i class="fas fa-user-circle"></i> Profil</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-logout me-2" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i>
+                        Keluar</button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel"
-                    data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel"
-                    data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
             </div>
         </div>
-    </section>
+    </nav>
 
-    ---
-
-    <section id="populer-terkini" class="hero">
+    <main class="py-5">
         <div class="container">
-            <h2 class="text-center mb-5 text-pink-primary fw-bold">Populer Terkini 🔥</h2>
-            <div id="popularCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <?php 
-                    $popular_chunks = array_chunk($popular_products, 3);
-                    $first_pop = true;
-                    if (!empty($popular_chunks)):
-                    foreach ($popular_chunks as $chunk): 
-                    ?>
-                    <div class="carousel-item <?php echo $first_pop ? 'active' : ''; ?>">
-                        <div class="row row-cols-1 row-cols-md-3 g-4">
-                            <?php foreach ($chunk as $product): ?>
-                            <div class="col">
-                                <div class="card h-100 shadow-sm">
-                                    <img src="<?php echo htmlspecialchars($product['image_url'] ?? "https://via.placeholder.com/400x500/ff69b4/ffffff?text=" . urlencode($product['name'])); ?>"
-                                        class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                    <div class="card-body">
-                                        <p class="text-pink-secondary fw-bold small mb-1">
-                                            <?php echo htmlspecialchars($product['category_name']); ?></p>
-                                        <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
-                                        <p class="card-text text-muted fw-bold">
-                                            <?php echo format_rupiah($product['price']); ?></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php 
-                    $first_pop = false;
-                    endforeach; 
-                    else:
-                    ?>
-                    <div class="carousel-item active">
-                        <div class="text-center p-5">Tidak ada produk populer saat ini.</div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#popularCarousel"
-                    data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#popularCarousel"
-                    data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
-        </div>
-    </section>
+            <h2 class="mb-4 text-center" style="color: #ff69b4; font-weight: 700;">Selamat Datang Kembali,
+                <?= htmlspecialchars($customerData['full_name']); ?>!</h2>
+            <p class="text-center text-muted mb-5">Semua ringkasan aktivitas akun Anda ada di sini.</p>
 
-    <section id="produk-tersedia" class="bg-white">
-        <div class="container">
-            <h2 class="text-center mb-5 text-pink-primary fw-bold">Koleksi Produk Tersedia</h2>
-
-            <div class="row row-cols-2 row-cols-md-5 g-4">
-                <?php if (!empty($collection_products)): ?>
-                <?php foreach ($collection_products as $product): ?>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="<?php echo htmlspecialchars($product['image_url'] ?? "https://via.placeholder.com/300x400/ffe0f0/333333?text=" . urlencode($product['name'])); ?>"
-                            class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                        <div class="card-body text-center">
-                            <h6 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h6>
-                            <p class="card-text fw-bold text-pink-primary">
-                                <?php echo format_rupiah($product['price']); ?></p>
+            <div class="row g-4 mb-5">
+                <?php $i = 1; foreach ($stats as $stat): ?>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card card-pink card-<?= $i++; ?> h-100 p-3 text-center">
+                        <div class="card-body">
+                            <i class="fas <?= $stat['icon']; ?> card-icon"></i>
+                            <p class="card-title mt-2"><?= $stat['title']; ?></p>
+                            <h5 class="card-text"><?= $stat['value']; ?></h5>
                         </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
-                <?php else: ?>
-                <div class="col-12 text-center p-5">
-                    <p class="lead text-muted">Maaf, belum ada produk yang tersedia saat ini.</p>
-                </div>
-                <?php endif; ?>
             </div>
 
-            <div class="text-center mt-5">
-                <a href="all-product.php" class="btn btn-lg btn-outline-pink btn-pink">Lihat Semua Produk Lainnya
-                    (<?php echo $conn->query("SELECT COUNT(id) FROM products WHERE is_active = 1")->fetch_row()[0]; ?>+)</a>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card p-4 border-0 shadow-sm" style="border-radius: 15px;">
+                        <h4 style="color: #ff69b4;">Aktivitas Pesanan Terkini</h4>
+                        <ul class="list-group list-group-flush">
+                            <?php if (!empty($recentOrders)): ?>
+                            <?php foreach ($recentOrders as $order): ?>
+                            <?php
+                                        // Menentukan warna badge berdasarkan status pesanan
+                                        $badgeClass = '';
+                                        switch ($order['order_status']) {
+                                            case 'Completed': $badgeClass = 'bg-success'; break;
+                                            case 'Shipped': $badgeClass = 'bg-primary'; break;
+                                            case 'Processing': $badgeClass = 'bg-info text-dark'; break;
+                                            case 'Pending Payment': $badgeClass = 'bg-warning text-dark'; break;
+                                            case 'Cancelled': $badgeClass = 'bg-danger'; break;
+                                            default: $badgeClass = 'bg-secondary';
+                                        }
+                                    ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Pesanan #<?= htmlspecialchars($order['order_code']); ?>
+                                (<?= date('d M Y', strtotime($order['order_date'])); ?>)
+                                <span
+                                    class="badge <?= $badgeClass; ?>"><?= htmlspecialchars($order['order_status']); ?></span>
+                            </li>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                            <li class="list-group-item text-center text-muted">Belum ada riwayat pesanan yang tercatat.
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                        <a href="orders.php" class="btn btn-sm mt-3"
+                            style="background-color: #f06292; color: white;">Lihat Semua Pesanan <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 border-0 text-center" style="background-color: #ffcdd2; border-radius: 15px;">
+                        <h5 class="fw-bold" style="color: #c2185b;">PROMO SPESIAL!</h5>
+                        <p class="text-muted">Dapatkan diskon 20% untuk semua produk kategori Skincare Pink.</p>
+                        <button class="btn btn-sm mt-2" style="background-color: #e91e63; color: white;">Lihat Produk
+                            Sekarang</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer id="contacts-us" class="footer-hero text-white pt-5 pb-3">
+        <div class="container">
+            <h4 class="text-center mb-4 fw-bold">Kontak Kami</h4>
+            <div class="row text-center">
+                <div class="col-md-4 mb-3">
+                    <p class="lead mb-1">Email</p>
+                    <p class="fw-light">beautyfashionlampung@gmail.com</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <p class="lead mb-1">Telepon</p>
+                    <p class="fw-light">+62 823-0601-7068</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <p class="lead mb-1">Alamat Office</p>
+                    <p class="fw-light">Purwodadi Dalam Tanjung Sari Lampung Selatan</p>
+                </div>
+            </div>
+            <div class="text-center mt-4 pt-3 border-top border-light border-opacity-25">
+                <p>&copy; 2025 Beauty Fashion. All Rights Reserved.</p>
             </div>
         </div>
-    </section>
+    </footer>
 
-    ---
 
-    <?php include '../footer.php'; 
-    // Menutup koneksi database di akhir skrip
-    $conn->close();
-    ?>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Simulasikan JavaScript untuk tombol logout
+    function handleLogout() {
+        if (confirm("Anda yakin ingin keluar dari sesi ini?")) {
+            // Di sini Anda akan mengarahkan user ke halaman logout:
+            window.location.href = '../logout.php';
+        }
+    }
     </script>
 </body>
 
