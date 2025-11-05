@@ -75,13 +75,16 @@ include 'proses/get_profile.php';
 
             <div class="col-lg-9">
                 <div class="tab-content profile-card" id="v-pills-tabContent">
+
                     <div class="tab-pane fade <?= $currentTab == 'profile' ? 'show active' : ''; ?>" id="profile-info"
                         role="tabpanel" aria-labelledby="profile-tab">
                         <h4 class="mb-4 text-pink"><i class="fas fa-id-card-alt me-2"></i>
                             Informasi Pribadi</h4>
+
                         <div class="card p-4 mb-4 border-0 shadow-sm">
                             <h5 class="card-title text-primary-pink fw-bold">Detail Akun
                                 Saat Ini</h5>
+
                             <hr>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -109,6 +112,7 @@ include 'proses/get_profile.php';
                                 data-bs-target="#editProfileForm" aria-expanded="false" aria-controls="editProfileForm">
                                 <i class="fas fa-edit me-2"></i> Ubah Informasi Pribadi
                             </button>
+
                         </div>
 
                         <div class="collapse" id="editProfileForm">
@@ -117,6 +121,7 @@ include 'proses/get_profile.php';
                                     Data</h5>
                                 <p class="text-muted">Isi kolom di bawah untuk
                                     memperbarui data Anda.</p>
+
                                 <hr>
                                 <form method="POST" action="profile.php">
                                     <input type="hidden" name="action" value="update_profile">
@@ -143,6 +148,7 @@ include 'proses/get_profile.php';
 
                             </div>
                         </div>
+
                     </div>
 
                     <div class="tab-pane fade <?= $currentTab == 'address' ? 'show active' : ''; ?>"

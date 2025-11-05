@@ -519,3 +519,170 @@ main {
            | END CSS UNTUK HALAMAN PROFIL (PROFILE.PHP)
            |--------------------------------------------------------------------------
         */
+    .order-header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--pink-primary);
+        border-bottom: 3px solid var(--pink-primary);
+        padding-bottom: 15px;
+        font-size: 2em;
+    }
+
+    .order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .order-card {
+        background-color: #fff;
+        border: 1px solid var(--pink-light);
+        border-left: 5px solid var(--pink-primary);
+        /* Garis pink penanda */
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        transition: transform 0.3s;
+    }
+
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px dashed var(--pink-light);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+
+    .order-code {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: var(--pink-primary);
+    }
+
+    .order-date {
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .order-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px 0;
+    }
+
+    .order-detail-label {
+        font-weight: 500;
+    }
+
+    .order-detail-value {
+        font-weight: 600;
+    }
+
+    .order-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: bold;
+        color: var(--text-light);
+        text-align: center;
+        min-width: 120px;
+    }
+
+    /* Pewarnaan Status - Disesuaikan dengan ENUM Database */
+    .status-PendingPayment {
+        background-color: #FFD700;
+        /* Gold */
+        color: var(--text-dark) !important;
+    }
+
+    .status-Processing {
+        background-color: #6495ED;
+        /* Cornflower Blue */
+    }
+
+    .status-Shipped {
+        background-color: var(--pink-primary);
+    }
+
+    .status-Completed {
+        background-color: #3CB371;
+        /* Medium Sea Green */
+    }
+
+    .status-Cancelled {
+        background-color: #DC143C;
+        /* Crimson */
+    }
+
+    .order-actions {
+        margin-top: 20px;
+        border-top: 1px solid var(--pink-light);
+        padding-top: 15px;
+        text-align: right;
+    }
+
+    .btn {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .btn-pink {
+        background-color: var(--pink-primary);
+        color: var(--text-light);
+    }
+
+    .btn-pink:hover {
+        background-color: #FF1493;
+        /* Deep Pink */
+    }
+
+    .btn-outline {
+        background-color: #fff;
+        color: var(--pink-primary);
+        border: 2px solid var(--pink-primary);
+    }
+
+    .btn-outline:hover {
+        background-color: var(--pink-light);
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: var(--text-dark);
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* Responsif Sederhana */
+    @media (max-width: 650px) {
+        /* ... (CSS responsif sebelumnya) ... */
+    }
+
+    /* Akhir CSS Halaman Pesanan Nuansa Pink */
