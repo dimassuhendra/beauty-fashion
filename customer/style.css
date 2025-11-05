@@ -1,180 +1,321 @@
-   /* ==================================================================== */
-    /* <<< BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
-    /* ==================================================================== */
+/* ==================================================================== */
+/* <<< BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
+/* ==================================================================== */
 
-    /* --- GLOBAL & UTILITY (Sticky Footer) --- */
-    html {
-        height: 100%;
-    }
 
-    body {
-        min-height: 100%;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        font-family: 'Poppins', sans-serif;
-        background-color: #fce4ec;
-        /* Pink sangat muda sebagai latar belakang halaman */
-    }
+/* |--------------------------------------------------------------------------
+| A. CSS ROOT, GLOBAL & UTILITY
+|--------------------------------------------------------------------------
+| Mencakup gaya dasar (body, font), Navbar, dan Footer (karena dipakai di semua halaman).
+*/
 
-    main {
-        flex: 1 0 auto;
-    }
+/* --- GLOBAL & UTILITY (Sticky Footer Setup) --- */
+html {
+    height: 100%;
+}
 
-    /* --- NAVIGASI PINK --- */
-    .navbar-pink {
-        background-color: #ff69b4;
-        /* Deep Pink */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Flexbox untuk mekanisme sticky footer */
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+    background-color: #fce4ec;
+    /* Pink sangat muda sebagai latar belakang halaman */
+}
 
-    .navbar-pink .nav-link,
-    .navbar-pink .navbar-brand {
-        color: #fff0f5 !important;
-        font-weight: 500;
-    }
+main {
+    /* Ini yang mendorong footer ke bawah */
+    flex: 1 0 auto;
+}
 
-    .navbar-pink .nav-link:hover {
-        color: #fff !important;
-        opacity: 0.9;
-    }
+/* --- REUSABLE COMPONENT: NAVIGASI PINK --- */
+.navbar-pink {
+    background-color: #ff69b4;
+    /* Deep Pink */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-    .navbar-pink .btn-logout {
-        background-color: #f06292;
-        /* Pink yang lebih lembut untuk tombol */
-        border: 1px solid #f06292;
-        color: white;
-        transition: all 0.3s;
-    }
+.navbar-pink .nav-link,
+.navbar-pink .navbar-brand {
+    color: #fff0f5 !important;
+    font-weight: 500;
+}
 
-    .navbar-pink .btn-logout:hover {
-        background-color: #d8438f;
-        /* Pink lebih gelap saat hover */
-        border-color: #d8438f;
-    }
+.navbar-pink .nav-link:hover {
+    color: #fff !important;
+    opacity: 0.9;
+}
 
-    /* --- DASHBOARD CARDS (PINK NUANCE) --- */
-    .card-pink {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        color: white;
-        transition: transform 0.3s ease-in-out;
-    }
+.navbar-pink .btn-logout {
+    background-color: #f06292;
+    /* Pink yang lebih lembut untuk tombol */
+    border: 1px solid #f06292;
+    color: white;
+    transition: all 0.3s;
+}
 
-    .card-pink:hover {
-        transform: translateY(-5px);
-    }
+.navbar-pink .btn-logout:hover {
+    background-color: #d8438f;
+    /* Pink lebih gelap saat hover */
+    border-color: #d8438f;
+}
 
-    .card-1 {
-        background: linear-gradient(135deg, #ff69b4, #ff94c8);
-    }
+/* --- REUSABLE COMPONENT: FOOTER (Sticky Footer Pink) --- */
+.footer-hero {
+    background-color: #ff69b4;
+    color: #fff;
+    padding-top: 5rem !important;
+    padding-bottom: 3rem !important;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
+}
 
-    /* Pink to lighter pink */
-    .card-2 {
-        background: linear-gradient(135deg, #f06292, #f8bbd0);
-    }
+.footer-hero h4 {
+    color: #fff0f5;
+    letter-spacing: 1px;
+    font-size: 1.75rem;
+    margin-bottom: 2rem !important;
+}
 
-    /* Medium pink to soft pink */
-    .card-3 {
-        background: linear-gradient(135deg, #e91e63, #ff80ab);
-    }
+.footer-hero .lead {
+    font-weight: 700;
+    color: #ffe4e1;
+    opacity: 0.95;
+    margin-bottom: 0.5rem;
+}
 
-    /* Hot pink to light pink */
-    .card-4 {
-        background: linear-gradient(135deg, #c2185b, #e985b0);
-    }
+.footer-hero p.fw-light {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    opacity: 0.9;
+}
 
-    /* Dark pink to medium pink */
+.footer-hero .border-top {
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    padding-top: 1.5rem !important;
+    margin-top: 2rem !important;
+}
 
-    .card-pink .card-icon {
-        font-size: 2.5rem;
-        opacity: 0.6;
-        margin-bottom: 0.5rem;
-    }
+/* Hiasan Bulat-Bulat (Pseudo-elements) */
+.footer-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    width: 120px;
+    height: 120px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    z-index: 0;
+    filter: blur(5px);
+}
 
-    .card-pink .card-title {
-        font-size: 1rem;
-        font-weight: 300;
-    }
+.footer-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+    filter: blur(8px);
+    transform: rotate(30deg);
+}
 
-    .card-pink .card-text {
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
+.footer-hero>.container {
+    position: relative;
+    z-index: 1;
+}
 
-    /* --- FOOTER (Sticky Footer Pink) --- */
-    .footer-hero {
-        background-color: #ff69b4;
-        color: #fff;
-        padding-top: 5rem !important;
-        padding-bottom: 3rem !important;
-        flex-shrink: 0;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
-    }
 
-    .footer-hero h4 {
-        color: #fff0f5;
-        letter-spacing: 1px;
-        font-size: 1.75rem;
-        margin-bottom: 2rem !important;
-    }
+/* |--------------------------------------------------------------------------
+| B. CSS INDEX.PHP (DASHBOARD)
+|--------------------------------------------------------------------------
+| Gaya khusus untuk kartu statistik di halaman dashboard.
+*/
 
-    .footer-hero .lead {
-        font-weight: 700;
-        color: #ffe4e1;
-        opacity: 0.95;
-        margin-bottom: 0.5rem;
-    }
+/* --- DASHBOARD CARDS (PINK NUANCE) --- */
+.card-pink {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    color: white;
+    transition: transform 0.3s ease-in-out;
+}
 
-    .footer-hero p.fw-light {
-        font-size: 0.9rem;
-        line-height: 1.4;
-        opacity: 0.9;
-    }
+.card-pink:hover {
+    transform: translateY(-5px);
+}
 
-    .footer-hero .border-top {
-        border-color: rgba(255, 255, 255, 0.5) !important;
-        padding-top: 1.5rem !important;
-        margin-top: 2rem !important;
-    }
+.card-1 {
+    background: linear-gradient(135deg, #ff69b4, #ff94c8);
+}
 
-    /* Hiasan Bulat-Bulat (Pseudo-elements) */
-    .footer-hero::before {
-        content: '';
-        position: absolute;
-        top: -40px;
-        left: -40px;
-        width: 120px;
-        height: 120px;
-        background-color: rgba(255, 255, 255, 0.15);
-        border-radius: 50%;
-        z-index: 0;
-        filter: blur(5px);
-    }
+.card-2 {
+    background: linear-gradient(135deg, #f06292, #f8bbd0);
+}
 
-    .footer-hero::after {
-        content: '';
-        position: absolute;
-        bottom: -60px;
-        right: -60px;
-        width: 180px;
-        height: 180px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        z-index: 0;
-        filter: blur(8px);
-        transform: rotate(30deg);
-    }
+.card-3 {
+    background: linear-gradient(135deg, #e91e63, #ff80ab);
+}
 
-    .footer-hero>.container {
-        position: relative;
-        z-index: 1;
-    }
+.card-4 {
+    background: linear-gradient(135deg, #c2185b, #e985b0);
+}
 
-    /* ==================================================================== */
-    /* <<< AKHIR BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
-    /* ==================================================================== */
+.card-pink .card-icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+    margin-bottom: 0.5rem;
+}
+
+.card-pink .card-title {
+    font-size: 1rem;
+    font-weight: 300;
+}
+
+.card-pink .card-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+
+/* |--------------------------------------------------------------------------
+| C. CSS PRODUCTS.PHP (KATALOG PRODUK)
+|--------------------------------------------------------------------------
+| Gaya khusus untuk filter dan kartu produk.
+*/
+
+/* --- FILTERS & FORM STYLING --- */
+.filter-card {
+    background-color: #fff0f5;
+    /* Lavender Blush */
+    border: 1px solid #ffcdd2;
+    /* Pink yang lebih lembut */
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.filter-card h5 {
+    color: #d8438f;
+    /* Pink gelap */
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.filter-card .form-control,
+.filter-card .form-select {
+    border-color: #f48fb1;
+    box-shadow: none;
+}
+
+.filter-card .btn-apply {
+    background-color: #e91e63;
+    /* Hot Pink */
+    border: none;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.filter-card .btn-apply:hover {
+    background-color: #c2185b;
+}
+
+.filter-card .form-check-input:checked {
+    background-color: #ff69b4;
+    /* Deep Pink */
+    border-color: #ff69b4;
+}
+
+
+/* --- PRODUCT CARD STYLING --- */
+.product-card {
+    border: 1px solid #ffcdd2;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.3s, transform 0.3s;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.product-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.product-card .card-category {
+    font-size: 0.75rem;
+    color: #d8438f;
+    /* Pink gelap */
+    font-weight: 500;
+}
+
+.product-card .card-price {
+    font-size: 1.25rem;
+    color: #e91e63;
+    /* Hot Pink */
+    font-weight: 700;
+}
+
+.product-card .btn-buy {
+    /* Ini adalah tombol "Tambah ke Keranjang" */
+    background-color: #ff69b4;
+    border: none;
+    width: 100%;
+    color: white; /* Tambahkan ini jika belum ada */
+    transition: background-color 0.3s;
+}
+
+.product-card .btn-buy:hover {
+    background-color: #d8438f;
+}
+
+/* Gaya baru: Tombol Detail Produk (Outline Pink) */
+.btn-outline-buy {
+    color: #ff69b4;
+    border-color: #ff69b4;
+    background-color: transparent;
+    transition: all 0.3s;
+}
+
+.btn-outline-buy:hover {
+    color: white;
+    background-color: #ff69b4;
+    border-color: #ff69b4;
+}
+
+/* Gaya baru: Tombol Belanja Langsung (Pink Lebih Gelap/Tegas) */
+.btn-quick-buy {
+    background-color: #e91e63; /* Hot Pink yang lebih tegas */
+    border: none;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.btn-quick-buy:hover {
+    background-color: #c2185b; /* Dark Pink saat hover */
+}
+
+.product-card .stock-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* ==================================================================== */
+/* <<< AKHIR BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
+/* ==================================================================== */
