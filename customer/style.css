@@ -49,6 +49,29 @@ main {
     opacity: 0.9;
 }
 
+/* Gaya untuk Tombol Keranjang */
+.btn-cart {
+    /* Menggunakan warna pink yang sama seperti nav-link: */
+    color: #fff0f5; 
+    border: none;
+    background: none;
+    font-weight: 500;
+    padding-right: 20px !important; /* Tambah ruang untuk badge */
+    transition: color 0.3s;
+}
+
+.btn-cart:hover {
+    color: #fff !important;
+}
+
+/* Gaya untuk Badge (Penghitung) */
+#cart-count {
+    font-size: 0.65rem;
+    padding: 0.35em 0.65em;
+    /* Ubah warna badge agar kontras dan sesuai dengan tema */
+    background-color: #e91e63 !important; /* Hot Pink */
+}
+
 .navbar-pink .btn-logout {
     background-color: #f06292;
     /* Pink yang lebih lembut untuk tombol */
