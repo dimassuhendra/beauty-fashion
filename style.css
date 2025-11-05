@@ -1,0 +1,206 @@
+    /* ==================================================== */
+    /* START: CSS GLOBAL/ROOT */
+    /* ==================================================== */
+
+    /* 1. Kustomisasi Tema Pink (ROOT VARIABLES) */
+    :root {
+        /* Warna Dasar untuk Light Mode */
+        --primary-pink: #ff69b4;
+        /* Hot Pink */
+        --light-bg: #f8f9fa;
+        /* Background umum */
+        --light-text: #212529;
+        /* Teks umum */
+    }
+
+    /* 2. Dark Mode Global Variables & Body Overrides */
+    [data-bs-theme="dark"] {
+        /* Warna untuk Dark Mode */
+        --bs-body-bg: #212529;
+        /* Background gelap */
+        --bs-body-color: #f8f9fa;
+        /* Teks terang */
+        --bs-card-bg: #343a40;
+        /* Card gelap */
+        --bs-card-color: #f8f9fa;
+    }
+
+    /* 3. Global Utility & Bootstrap Component Override (PINK THEME) */
+    .btn-primary,
+    .bg-primary,
+    .text-primary {
+        --bs-btn-bg: var(--primary-pink);
+        --bs-btn-border-color: var(--primary-pink);
+        --bs-btn-hover-bg: #e55a9b;
+        /* Pink sedikit lebih gelap */
+        --bs-btn-hover-border-color: #e55a9b;
+        --bs-btn-active-bg: #cc4f8a;
+        --bs-btn-active-border-color: #cc4f8a;
+        --bs-btn-color: #fff;
+    }
+
+    .text-pink {
+        color: var(--primary-pink) !important;
+    }
+
+    /* 4. Navigation Global Styles */
+    .navbar-custom {
+        background-color: var(--light-bg);
+    }
+
+    [data-bs-theme="dark"] .navbar-custom {
+        background-color: var(--bs-body-bg) !important;
+        border-bottom: 1px solid #495057;
+    }
+
+    .navbar-nav .nav-link {
+        color: var(--light-text);
+        font-weight: 500;
+    }
+
+    [data-bs-theme="dark"] .navbar-nav .nav-link {
+        color: #f8f9fa;
+    }
+
+    /* 5. Product Card BASE Style */
+    .product-card {
+        transition: transform 0.3s ease-in-out;
+        border-color: rgba(255, 105, 180, 0.3);
+        background-color: var(--bs-card-bg);
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+    }
+
+    /* ==================================================== */
+    /* END: CSS GLOBAL/ROOT */
+    /* ==================================================== */
+
+    /* --- Bagian 1: CSS Wajib untuk Sticky Footer --- */
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Menggunakan Flexbox untuk menumpuk elemen secara vertikal */
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font yang lebih elegan */
+}
+
+/* CATATAN PENTING:
+   Pastikan semua konten utama halaman Anda (yang ada di antara
+   <header> dan <footer>) dibungkus dalam satu elemen, misalnya: <main>
+*/
+main {
+    /* Ini yang membuat konten utama mengisi ruang sisa dan mendorong footer ke bawah */
+    flex: 1 0 auto;
+}
+
+
+/* ==================================================== */
+/* START: CSS Halaman Beranda (index.php) */
+/* ==================================================== */
+
+/* Hero section styling (Hanya ada di halaman Beranda/Index) */
+.hero-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, var(--primary-pink), #ffc0cb);
+    /* Pink Gradient */
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .hero-section {
+    background: linear-gradient(135deg, #1c1f23, var(--primary-pink));
+}
+
+/* ==================================================== */
+/* END: CSS Halaman Beranda (index.php) */
+/* ==================================================== */
+
+
+   /* ==================================================== */
+    /* START: CSS Halaman Produk Selengkapnya (products.php) */
+    /* ==================================================== */
+
+    /* Filter Sidebar - Sticky position dipertahankan */
+    .sidebar {
+        position: sticky;
+        top: 70px;
+        z-index: 100;
+    }
+
+    /* Filter Card Enhancements (Nuansa Pink) */
+    .filter-card {
+        border: 1px solid var(--primary-pink);
+        /* Border pink lebih kuat */
+        box-shadow: 0 0 10px rgba(255, 105, 180, 0.1);
+        /* Shadow ringan */
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .filter-card:hover {
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+        /* Shadow saat hover */
+    }
+
+    [data-bs-theme="dark"] .filter-card {
+        border-color: #495057;
+    }
+
+    .filter-card .form-control,
+    .filter-card .form-select {
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);
+        border-color: rgba(255, 105, 180, 0.3);
+    }
+
+    /* Product Card Detail Refinements */
+    .product-card-image {
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Menambahkan subtle gradient pada background image placeholder */
+        background: linear-gradient(to bottom right, var(--light-bg), #fff0f5);
+    }
+
+    [data-bs-theme="dark"] .product-card-image {
+        background: linear-gradient(to bottom right, #2a2e32, #1c1f23);
+    }
+
+    .product-price {
+        font-size: 1.2em;
+        color: #28a745;
+        /* Tetap hijau untuk harga, agar kontras */
+    }
+
+    /* Pagination (Nuansa Pink) */
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-pink);
+        border-color: var(--primary-pink);
+        color: white;
+        box-shadow: 0 2px 5px rgba(255, 105, 180, 0.5);
+        /* Efek tombol aktif */
+    }
+
+    .pagination .page-link {
+        color: var(--primary-pink);
+        background-color: var(--bs-card-bg);
+        border-color: rgba(255, 105, 180, 0.3);
+        transition: all 0.2s;
+    }
+
+    .pagination .page-link:hover {
+        background-color: rgba(255, 105, 180, 0.1);
+    }
+
+    /* ==================================================== */
+    /* END: CSS Halaman Produk Selengkapnya (products.php) */
+    /* ==================================================== */

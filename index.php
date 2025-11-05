@@ -1,282 +1,181 @@
+<?php
+@require_once 'db_connect.php'; 
+
+// Pengecekan koneksi (mengatasi error undefined variable $conn)
+if (!isset($conn) || @$conn->connect_error) {
+    // Tentukan pesan error yang akan ditampilkan di produk card
+    $error_message = "Gagal terhubung ke database: " . (@$conn ? $conn->connect_error : "Variabel koneksi (\$conn) tidak terdefinisi. Cek path include 'db_connect.php'.");
+    $is_connected = false;
+    $products = [];
+} else {
+    $is_connected = true;
+    $error_message = '';
+
+    // Query untuk mengambil 4 produk unggulan
+    $sql = "
+        SELECT id, name, price, stock
+        FROM products 
+        -- Ambil 4 produk terbaru atau produk dengan stok terbanyak
+        ORDER BY id DESC 
+        LIMIT 4
+    ";
+
+    $result = $conn->query($sql);
+    $products = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+    }
+    
+    // Tutup koneksi setelah selesai mengambil data
+    $conn->close();
+}
+
+// --------------------------------------------------------------------
+// 2. TENTUKAN TAMPILAN BERDASARKAN KONEKSI
+// --------------------------------------------------------------------
+
+$featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
+
+?>
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beauty Fashion - Tampil Cantik & Modis</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+    <title>Beauty-Fashion | Toko Pakaian Pria & Wanita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body data-bs-theme="light">
 
-    <header class="mb-5">
-        <?php include 'navbar.php' ?>
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" style="color: var(--primary-pink);" href="#">Beauty-Fashion</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="products.php?category=alat-sholat-pria&stock=available&min_price=&max_price=">Pakaian
+                            Pria</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="products.php?category=pakaian-wanita&stock=available&min_price=&max_price=">Pakaian
+                            Wanita</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="products.php?category=aksesori-muslim&stock=available&min_price=&max_price=">Aksesoris</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.php" class="btn btn-outline-primary me-2">Masuk / Daftar</a>
 
-        <div class="p-5 text-center hero" style="margin-top: 56px;">
-            <div class="container py-5">
-                <h1 class="display-4 fw-bold text-pink-primary mb-3">Tampil Memukau Setiap Hari</h1>
-                <h5 class="lead mb-4 text-dark">
-                    Beauty Fashion adalah destinasi utama Anda untuk koleksi pakaian wanita terkini. **Temukan gaya
-                    Anda, pancarkan percaya diri Anda.**
-                </h5>
-                <a href="#produk-tersedia" class="btn btn-pink btn-lg mt-3 shadow-lg">Lihat Koleksi Kami ✨</a>
+                    <button id="theme-toggle" class="btn btn-outline-secondary" title="Ganti Mode Gelap/Terang">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
             </div>
+        </div>
+    </nav>
+
+    <header class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-3">Gaya Terbaik Anda, Hanya di Beauty-Fashion</h1>
+            <p class="lead mb-4">Temukan koleksi pakaian pria dan wanita terbaru dengan desain yang stylish dan harga
+                terjangkau. Konten ini dapat dikontrol dari **Admin Dashboard**.</p>
+            <a href="#produk" class="btn btn-light btn-lg fw-bold" style="color: var(--primary-pink);">Lihat Koleksi
+                Sekarang</a>
         </div>
     </header>
 
-    <section id="special-offer" class="bg-white">
-        <div class="container">
-            <h2 class="text-center mb-5 text-pink-primary fw-bold">Penawaran Spesial untuk Anda</h2>
-            <div id="offerCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <div class="row row-cols-1 row-cols-md-3 g-4">
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="assets/img/1aaa.png" class="card-img-top" alt="Gratis Ongkir">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Gratis Ongkir</h5>
-                                        <p class="card-text">Belanja minimal Rp 150.000, dapatkan pengiriman gratis ke
-                                            seluruh pulau Jawa.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="assets/img/2bb.png" class="card-img-top" alt="Diskon 50%">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Diskon Tengah Tahun</h5>
-                                        <p class="card-text">Dapatkan potongan hingga 50% untuk semua Dress Musim Panas.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center">
-                                    <img src="assets/img/3cc.png" class="card-img-top" alt="Beli 1 Gratis 1">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Promo Beli 1 Gratis 1</h5>
-                                        <p class="card-text">Khusus untuk koleksi Aksesori dan Tas pilihan. Jangan
-                                            sampai kehabisan!</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="row row-cols-1 row-cols-md-3 g-4">
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center"><img src="assets/img/pic4.jpeg"
-                                        class="card-img-top" alt="Voucher Baru">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Voucher Member</h5>
-                                        <p class="card-text">Daftar sekarang dan dapatkan voucher belanja Rp 25.000.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center"><img src="assets/img/pic5.jpeg"
-                                        class="card-img-top" alt="Cashback">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Cashback 10%</h5>
-                                        <p class="card-text">Pembayaran via e-wallet tertentu, dapatkan cashback!</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-0 shadow-sm h-100 text-center"><img src="assets/img/pic6.png"
-                                        class="card-img-top" alt="Extra Sale">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-pink-primary">Extra Sale</h5>
-                                        <p class="card-text">Diskon tambahan 10% untuk pengguna kartu kredit Bank X.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel"
-                    data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel"
-                    data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
+    <main class="container py-5" id="produk">
+        <h2 class="text-center mb-5" style="color: var(--primary-pink);"><?php echo $featured_title; ?></h2>
+
+        <?php if (!$is_connected): ?>
+        <div class="alert alert-danger text-center" role="alert">
+            <i class="fas fa-database me-2"></i> **Kesalahan Koneksi Database:** <?php echo $error_message; ?>
+            <p class="mb-0 mt-2 small">Produk tidak dapat dimuat. Harap periksa file `db_connect.php` dan jalurnya.</p>
         </div>
-    </section>
-
-
-    <section id="populer-terkini" class="hero">
-        <div class="container">
-            <h2 class="text-center mb-5 text-pink-primary fw-bold">Populer Terkini 🔥</h2>
-            <div id="popularCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <div class="row row-cols-1 row-cols-md-3 g-4">
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"><img
-                                        src="https://via.placeholder.com/400x500/ff69b4/ffffff?text=BLOUSE+PINK"
-                                        class="card-img-top" alt="Blouse Pink">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Blouse Rajut Elegan</h5>
-                                        <p class="card-text text-muted">Rp 199.000</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"><img
-                                        src="https://via.placeholder.com/400x500/ff3399/ffffff?text=SKIRT+JEANS"
-                                        class="card-img-top" alt="Skirt Jeans">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Rok Jeans A-Line</h5>
-                                        <p class="card-text text-muted">Rp 245.000</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"><img
-                                        src="https://via.placeholder.com/400x500/ff99cc/ffffff?text=DRESS+FLORAL"
-                                        class="card-img-top" alt="Dress Floral">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Dress Floral Midi</h5>
-                                        <p class="card-text text-muted">Rp 350.000</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="row row-cols-1 row-cols-md-3 g-4">
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"><img
-                                        src="https://via.placeholder.com/400x500/f06292/ffffff?text=TAS+MINI"
-                                        class="card-img-top" alt="Tas Mini">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Tas Selempang Mini</h5>
-                                        <p class="card-text text-muted">Rp 120.000</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"><img
-                                        src="https://via.placeholder.com/400x500/ec407a/ffffff?text=HEELS+HITAM"
-                                        class="card-img-top" alt="Heels Hitam">
-                                    <div class="card-body">
-                                        <h5 class="card-title">High Heels Klasik</h5>
-                                        <p class="card-text text-muted">Rp 280.000</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"><img
-                                        src="https://via.placeholder.com/400x500/e91e63/ffffff?text=JAKET+DENIM"
-                                        class="card-img-top" alt="Jaket Denim">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Jaket Denim Oversize</h5>
-                                        <p class="card-text text-muted">Rp 410.000</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#popularCarousel"
-                    data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#popularCarousel"
-                    data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"
-                        style="filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(287deg) brightness(100%) contrast(100%);"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
+        <?php elseif (empty($products)): ?>
+        <div class="alert alert-info text-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i> **Informasi:** Belum ada produk unggulan yang ditemukan di database.
         </div>
-    </section>
-
-    ---
-
-    <section id="produk-tersedia" class="bg-white">
-        <div class="container">
-            <h2 class="text-center mb-5 text-pink-primary fw-bold">Koleksi Produk Tersedia</h2>
-
-            <div class="row row-cols-2 row-cols-md-5 g-4">
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://via.placeholder.com/300x400/ffe0f0/333333?text=PRODUK+1" class="card-img-top"
-                            alt="Produk 1">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Celana Kulot Nyaman</h6>
-                            <p class="card-text fw-bold text-pink-primary">Rp 175.000</p>
-                        </div>
+        <?php else: ?>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <?php foreach ($products as $product): ?>
+            <div class="col">
+                <div class="card h-100 product-card">
+                    <div class="card-img-top bg-light text-center p-5"
+                        style="height: 250px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-tshirt fa-3x text-muted"></i>
                     </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://via.placeholder.com/300x400/ffccf2/333333?text=PRODUK+2" class="card-img-top"
-                            alt="Produk 2">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Kemeja Linen Oversize</h6>
-                            <p class="card-text fw-bold text-pink-primary">Rp 210.000</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://via.placeholder.com/300x400/ffb3e6/333333?text=PRODUK+3" class="card-img-top"
-                            alt="Produk 3">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Cardigan Rajut</h6>
-                            <p class="card-text fw-bold text-pink-primary">Rp 185.000</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://via.placeholder.com/300x400/ff99da/333333?text=PRODUK+4" class="card-img-top"
-                            alt="Produk 4">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Sandals Jepit Gaya</h6>
-                            <p class="card-text fw-bold text-pink-primary">Rp 95.000</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://via.placeholder.com/300x400/ff80cc/333333?text=PRODUK+5" class="card-img-top"
-                            alt="Produk 5">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Inner Manset Premium</h6>
-                            <p class="card-text fw-bold text-pink-primary">Rp 75.000</p>
-                        </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
+                        <p class="card-text text-success fw-bold">Rp
+                            <?php echo number_format($product['price'], 0, ',', '.'); ?></p>
+                        <p class="card-text small text-muted">Stok:
+                            <?php echo number_format($product['stock'], 0); ?> (ID:
+                            <?php echo $product['id']; ?>)</p>
+                        <a href="product_detail.php?id=<?php echo $product['id']; ?>"
+                            class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
                     </div>
                 </div>
             </div>
-
-            <div class="text-center mt-5">
-                <a href="all_product.php" class="btn btn-lg btn-outline-pink btn-pink">Lihat Semua Produk Lainnya
-                    (150+)</a>
-            </div>
+            <?php endforeach; ?>
         </div>
-    </section>
+        <?php endif; ?>
 
-    ---
+        <div class="text-center mt-5">
+            <a href="products.php" class="btn btn-outline-primary btn-lg">Lihat Semua Koleksi</a>
+            <p class="mt-3 small text-muted">Seluruh produk di atas diambil secara dinamis dari **Database** oleh sistem
+                *Backend* Anda.</p>
+        </div>
+    </main>
 
     <?php include 'footer.php' ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    /* START: JS Halaman Pengguna (Dark Mode) */
+    // Logika Dark/Light Mode
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    const icon = themeToggle.querySelector('i');
+    const STORAGE_KEY = 'theme-mode';
+
+    // Fungsi untuk menerapkan tema
+    function applyTheme(theme) {
+        body.setAttribute('data-bs-theme', theme);
+        localStorage.setItem(STORAGE_KEY, theme);
+        if (theme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    }
+
+    // Cek tema yang tersimpan (jika ada) atau gunakan preferensi sistem
+    const savedTheme = localStorage.getItem(STORAGE_KEY);
+    const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const initialTheme = savedTheme || preferredTheme;
+    applyTheme(initialTheme);
+
+
+    // Event listener untuk tombol toggle
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+    });
+    /* END: JS Halaman Pengguna (Dark Mode) */
     </script>
 </body>
 

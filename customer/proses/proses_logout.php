@@ -18,6 +18,6 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // Redirect ke halaman login atau index dengan pesan sukses
-header("Location: ../../login.php?status=success&message=" . urlencode("Anda telah berhasil keluar."));
+header("Location: ../../login.php");
 exit;
 ?>

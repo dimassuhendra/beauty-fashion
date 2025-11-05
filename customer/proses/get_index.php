@@ -1,59 +1,86 @@
 <?php 
-$is_logged_in = isset($_SESSION['user_id']);
-$user_name = $is_logged_in ? htmlspecialchars($_SESSION['user_name']) : ''; 
+// --- PENGAMANAN SESI ---
+// Ganti baris di bawah ini dengan kode Anda yang sebenarnya setelah login:
+$userId = $_SESSION['user_id'] ?? 1; // Menggunakan 1 sebagai simulasi user ID jika sesi belum diatur
 
-// --- 1. Ambil Data Kupon Aktif (untuk Penawaran Spesial) ---
-$coupons = [];
-// Menggunakan kolom 'valid_until' dari schema Anda
-$sql_coupons = "SELECT coupon_code, discount_type, discount_value, minimum_purchase 
-                FROM coupons 
-                WHERE is_active = 1 AND valid_until >= CURDATE()
-                ORDER BY discount_value DESC 
-                LIMIT 6";
-$result_coupons = $conn->query($sql_coupons);
-
-if ($result_coupons && $result_coupons->num_rows > 0) {
-    while ($row = $result_coupons->fetch_assoc()) {
-        $coupons[] = $row;
-    }
+if (empty($userId)) {
+    // Arahkan ke halaman login jika sesi tidak ditemukan
+    header("Location: ../login.php");
+    exit();
 }
 
-
-// --- 2. Ambil Data Produk Populer (Contoh: 6 Produk Terbaru) ---
-$popular_products = [];
-// Menggunakan JOIN antara products dan categories, diurutkan berdasarkan 'created_at' (terbaru)
-$sql_popular = "SELECT p.name, p.price, p.image_url, p.slug, c.name AS category_name
-                FROM products p
-                JOIN categories c ON p.category_id = c.id
-                WHERE p.is_active = 1 
-                ORDER BY p.created_at DESC 
-                LIMIT 6"; 
-$result_popular = $conn->query($sql_popular);
-
-if ($result_popular && $result_popular->num_rows > 0) {
-    while ($row = $result_popular->fetch_assoc()) {
-        $popular_products[] = $row;
-    }
+// Fungsi sederhana untuk format Rupiah
+function formatRupiah($angka) {
+    if ($angka === null) return 'Rp 0';
+    return 'Rp ' . number_format($angka, 0, ',', '.');
 }
 
-// --- 3. Ambil Data Koleksi Produk Tersedia (Contoh: 10 Produk Acak) ---
-$collection_products = [];
-$sql_collection = "SELECT name, price, image_url, slug 
-                   FROM products 
-                   WHERE is_active = 1 
-                   ORDER BY RAND() 
-                   LIMIT 10";
-$result_collection = $conn->query($sql_collection);
+// ----------------------------------------------------
+// 1. AMBIL DATA PROFIL CUSTOMER (dari tabel `users`)
+// ----------------------------------------------------
+$stmt = $conn->prepare("SELECT full_name, email FROM users WHERE id = ?");
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+$customerData = $result->fetch_assoc();
+$stmt->close();
 
-if ($result_collection && $result_collection->num_rows > 0) {
-    while ($row = $result_collection->fetch_assoc()) {
-        $collection_products[] = $row;
-    }
+if (!$customerData) {
+    // Jika ID tidak valid, paksa logout atau berikan pesan error
+    // Contoh: header("Location: ../logout.php"); exit();
+    $customerData = ['full_name' => 'Pengguna Tidak Ditemukan', 'email' => ''];
 }
 
-// Format harga
-function format_rupiah($price) {
-    return 'Rp ' . number_format($price, 0, ',', '.');
-}
+// ----------------------------------------------------
+// 2. AMBIL STATISTIK AKUN (dari tabel `orders`)
+// ----------------------------------------------------
+// Pengecualian status 'Cancelled'
+$statsQuery = "
+    SELECT 
+        COUNT(id) AS totalOrders,
+        SUM(final_amount) AS totalSpending,
+        MAX(order_date) AS lastOrderDate
+    FROM orders 
+    WHERE user_id = ? AND order_status != 'Cancelled'
+";
+$stmt = $conn->prepare($statsQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$statsResult = $stmt->get_result();
+$orderStats = $statsResult->fetch_assoc();
+$stmt->close();
 
+// ----------------------------------------------------
+// 3. AMBIL 3 PESANAN TERKINI (dari tabel `orders`)
+// ----------------------------------------------------
+$recentOrdersQuery = "
+    SELECT order_code, order_status, order_date
+    FROM orders 
+    WHERE user_id = ? 
+    ORDER BY order_date DESC 
+    LIMIT 3
+";
+$stmt = $conn->prepare($recentOrdersQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$recentOrders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// ----------------------------------------------------
+// 4. SUSUN DATA UNTUK TAMPILAN
+// ----------------------------------------------------
+$totalOrders = $orderStats['totalOrders'] ?? 0;
+$totalSpending = $orderStats['totalSpending'] ?? 0;
+$lastOrderDate = $orderStats['lastOrderDate'] ? date('d F Y', strtotime($orderStats['lastOrderDate'])) : 'Belum Ada Pesanan';
+$unreadNotifications = 0; // Sebaiknya ambil dari tabel notifikasi, sementara diset 0.
+
+$stats = [
+    ['icon' => 'fa-shopping-bag', 'title' => 'Total Pesanan', 'value' => $totalOrders . ' Transaksi'],
+    ['icon' => 'fa-wallet', 'title' => 'Total Pembelanjaan', 'value' => formatRupiah($totalSpending)],
+    ['icon' => 'fa-calendar-alt', 'title' => 'Pesanan Terakhir', 'value' => $lastOrderDate],
+    ['icon' => 'fa-bell', 'title' => 'Notifikasi Baru', 'value' => $unreadNotifications . ' Pesan'],
+];
+
+// Catatan: Jika $conn adalah objek global dari db_connect.php, biarkan koneksi terbuka
+// jika diperlukan oleh file lain, atau tutup di sini: $conn->close();
 ?>

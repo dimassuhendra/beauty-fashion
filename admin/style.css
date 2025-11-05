@@ -1,0 +1,423 @@
+:root {
+    /* Branding Colors */
+    --pink-color: #ff69b4;
+    --pink-hover: #ff99cc;
+    --bs-active-bg: var(--pink-color);
+    --text-pink-primary: var(--pink-color);
+
+    /* Sidebar Gradient (Pink Base) */
+    --bs-gradient-start: #ff69b4;
+    --bs-gradient-end: #ff99cc;
+
+    /* Global Light Mode Variables */
+    --primary-bg: #f8f9fa;
+    --secondary-bg: #ffffff;
+    --text-color: #212529;
+    --sidebar-width: 250px;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    --primary-bg: #121212;
+    --secondary-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --bs-gradient-start: #e91e63;
+    --bs-gradient-end: #ff69b4;
+}
+
+body {
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    min-height: 100vh;
+    transition: margin-left 0.3s;
+}
+
+/* Card & Chart Styling */
+.card {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 105, 180, 0.2);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Branding Pink on Button */
+.btn-pink {
+    background-color: var(--pink-color);
+    border-color: var(--pink-color);
+    color: white;
+}
+
+.btn-pink:hover {
+    background-color: var(--pink-hover);
+    border-color: var(--pink-hover);
+    color: white;
+}
+
+/* Chart Height Control (Twice the card height - est. 400px) */
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    padding: 20px;
+}
+
+/* START: STYLE MANAJEMEN PRODUK */
+.table > :not(caption) > * > * {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+
+/* Styling untuk Header Table yang bisa di-sort */
+.sortable-header {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sortable-header:hover {
+    color: var(--pink-color);
+}
+.sort-icon {
+    margin-left: 5px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+.active-sort .sort-icon {
+    opacity: 1;
+}
+
+.product-image-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Gaya untuk modal di dark mode */
+.modal-content {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+.modal-content.dark-mode {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+.modal-content.dark-mode .form-control,
+.modal-content.dark-mode .form-select,
+.modal-content.dark-mode .form-control:focus {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.modal-content.dark-mode .form-control::placeholder {
+    color: #aaa;
+}
+.modal-header, .modal-footer {
+        border-color: rgba(255, 255, 255, 0.1);
+}
+.modal-header .btn-close {
+    filter: invert(1); /* Agar tombol close terlihat di background gelap */
+}
+/* END: STYLE MANAJEMEN PRODUK */
+
+/* START: STYLE MANAJEMEN PESANAN */
+/* --- Order Summary Cards --- */
+.order-summary-card {
+    transition: all 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.order-summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.order-summary-card.active-status-card {
+    border-color: var(--pink-color);
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+}
+
+.order-summary-card .card-title {
+    color: var(--text-color);
+}
+/* Menyesuaikan warna icon pink untuk card total */
+.text-pink-primary {
+    color: var(--pink-color) !important;
+}
+.bg-pink-primary {
+     background-color: var(--pink-color) !important;
+}
+
+/* --- Tabel Styling --- */
+.sortable-header {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sortable-header:hover {
+    color: var(--pink-color);
+}
+.sort-icon {
+    margin-left: 5px;
+    opacity: 0.5;
+}
+.active-sort .sort-icon {
+    opacity: 1;
+}
+
+/* --- Badge Status --- */
+.order-status-badge {
+    min-width: 100px;
+    display: inline-block;
+    padding: 0.4em 0.8em;
+}
+
+/* --- Modal Detail Order Styling --- */
+/* Pastikan modal-content dan table di modal mengikuti dark mode */
+.modal-content.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #2a2a2a; /* Warna stripe di dark mode */
+}
+.modal-content.dark-mode .detail-divider {
+    border-top: 1px solid #333;
+}
+.order-detail-header {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.order-summary-box {
+    background-color: var(--primary-bg);
+    border-color: var(--pink-color) !important;
+}
+body.dark-mode .order-summary-box {
+    background-color: #222;
+}
+
+/* --- Tombol Pink --- */
+.btn-outline-pink {
+    color: var(--pink-color);
+    border-color: var(--pink-color);
+}
+.btn-outline-pink:hover {
+    background-color: var(--pink-color);
+    color: white;
+}
+/* END: STYLE MANAJEMEN PESANAN */
+
+/* START: STYLE MANAJEMEN PELANGGAN */
+/* --- Customer Summary Cards --- */
+.customer-summary-card {
+    transition: all 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.customer-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.1);
+}
+.customer-summary-card .card-title {
+    color: var(--text-color);
+}
+
+/* --- Tabel Styling --- */
+.sortable-header {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sortable-header:hover {
+    color: var(--pink-color);
+}
+.sort-icon {
+    margin-left: 5px;
+    opacity: 0.5;
+}
+.active-sort .sort-icon {
+    opacity: 1;
+}
+
+/* Badge untuk jumlah order */
+.bg-pink-light {
+    background-color: var(--pink-hover) !important;
+    color: #333 !important;
+}
+body.dark-mode .bg-pink-light {
+    background-color: #e91e63 !important;
+    color: white !important;
+}
+
+
+/* --- Modal Detail Customer Styling --- */
+.modal-content.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #2a2a2a; 
+}
+.modal-content.dark-mode .detail-divider {
+    border-top: 1px solid #333;
+}
+.modal-content.dark-mode .border.rounded {
+    border-color: #555 !important;
+}
+
+/* END: STYLE MANAJEMEN PELANGGAN */
+
+/* START: STYLE LAPORAN PENJUALAN */
+
+/* --- Filter Card --- */
+.filter-card .form-control {
+    border-color: #ced4da;
+}
+body.dark-mode .filter-card .form-control {
+    background-color: #333;
+    border-color: #555;
+    color: var(--text-color);
+}
+
+/* --- Summary Cards --- */
+.report-summary-card {
+    transition: all 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-bg);
+}
+.report-summary-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+body.dark-mode .report-summary-card {
+    border-color: #333;
+}
+.text-pink-primary {
+    color: var(--pink-color) !important;
+}
+
+/* --- Report Table --- */
+.sales-report-table thead th {
+    background-color: var(--primary-bg);
+    border-bottom: 2px solid var(--pink-color);
+}
+body.dark-mode .sales-report-table thead th {
+    background-color: #222;
+}
+
+/* Row Total */
+.report-total-row {
+    background-color: var(--primary-bg) !important;
+    border-top: 3px solid var(--pink-color) !important;
+    font-size: 1.1em;
+}
+body.dark-mode .report-total-row {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+}
+/* Memperbaiki warna teks di baris total */
+body.dark-mode .report-total-row .text-pink-primary {
+    color: var(--pink-color) !important;
+}
+body.dark-mode .report-total-row .text-success {
+    color: #81c784 !important; /* Warna hijau yang lebih terang untuk dark mode */
+}
+
+/* Tombol Pink */
+.btn-pink {
+    background-color: var(--pink-color);
+    border-color: var(--pink-color);
+    color: white;
+}
+.btn-pink:hover {
+    background-color: var(--pink-hover);
+    border-color: var(--pink-hover);
+    color: white;
+}
+
+/* END: STYLE LAPORAN PENJUALAN */
+
+/* START: STYLE KELOLA PROMO */
+/* --- General Pink Styles --- */
+.text-pink-primary {
+    color: var(--pink-color) !important;
+}
+.bg-pink-primary {
+    background-color: var(--pink-color) !important;
+}
+.btn-pink-outline {
+    color: var(--pink-color);
+    border-color: var(--pink-color);
+}
+.btn-pink-outline:hover {
+    background-color: var(--pink-color);
+    color: white;
+}
+.btn-pink {
+    background-color: var(--pink-color);
+    border-color: var(--pink-color);
+    color: white;
+}
+.btn-pink:hover {
+    background-color: var(--pink-hover);
+    border-color: var(--pink-hover);
+    color: white;
+}
+.border-pink-primary {
+    border-color: var(--pink-color) !important;
+}
+
+
+/* --- Summary Cards --- */
+.promo-summary-card {
+    transition: all 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-bg);
+}
+.promo-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.1);
+}
+body.dark-mode .promo-summary-card {
+    border-color: #333;
+}
+
+
+/* --- Promo Table --- */
+.promo-table th {
+    font-weight: 600;
+}
+
+.promo-code-text {
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    font-size: 1.05em;
+    padding: 0 5px;
+    border-radius: 3px;
+    display: inline-block;
+    color: var(--pink-hover);
+}
+body.dark-mode .promo-code-text {
+    color: var(--pink-color);
+    background-color: #333;
+}
+
+.status-badge-promo {
+    min-width: 80px;
+    display: inline-block;
+}
+
+/* --- Modal Style Overrides --- */
+.modal-content.dark-mode .form-control,
+.modal-content.dark-mode .form-select,
+.modal-content.dark-mode .input-group-text {
+    background-color: #333;
+    border-color: #555;
+    color: var(--text-color);
+}
+
+/* END: STYLE KELOLA PROMO */

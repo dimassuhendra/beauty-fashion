@@ -1,47 +1,116 @@
-<?php 
-$start_of_month = date('Y-m-01 00:00:00');
-$end_of_month   = date('Y-m-t 23:59:59');
+<?php
+// admin/proses/get_dashboard.php
 
-// Mendapatkan tanggal hari ini untuk metrik "Pelanggan Baru (Hari Ini)"
-$start_of_day = date('Y-m-d 00:00:00');
-$end_of_day   = date('Y-m-d 23:59:59');
+// Pastikan koneksi $conn sudah tersedia dari '../db_connect.php'
+if (!isset($conn) || $conn->connect_error) {
+    // Jika koneksi gagal, set $conn menjadi null untuk mencegah error
+    $conn = null;
+}
 
-// --- 2. Pengambilan Data Metrik Utama ---
+// --------------------------------------------------------------------
+// 1. FILTER TANGGAL
+// --------------------------------------------------------------------
+$filter_sql = "";
+// Tangkap parameter tanggal dari URL
+$start_date = isset($_GET['start_date']) && !empty($_GET['start_date']) ? $_GET['start_date'] : null;
+$end_date = isset($_GET['end_date']) && !empty($_GET['end_date']) ? $_GET['end_date'] : null;
 
-// A. Total Penjualan (Bulan Ini) - Menggunakan final_amount dari orders yang sudah completed/shipped
-$sql_sales = "SELECT SUM(final_amount) AS total_sales FROM orders WHERE (order_status = 'Completed' OR order_status = 'Shipped') AND order_date BETWEEN '$start_of_month' AND '$end_of_month'";
-$result_sales = $conn->query($sql_sales);
-$total_sales_this_month = $result_sales->fetch_assoc()['total_sales'] ?? 0;
+if ($start_date && $end_date) {
+    // FIX: Menggunakan kolom 'order_date' dari tabel orders
+    $filter_sql = " WHERE DATE(order_date) BETWEEN '$start_date' AND '$end_date' ";
+} else if ($start_date) {
+    $filter_sql = " WHERE DATE(order_date) >= '$start_date' ";
+} else if ($end_date) {
+    $filter_sql = " WHERE DATE(order_date) <= '$end_date' ";
+}
 
-// B. Pesanan Baru (Pending) - Menghitung jumlah pesanan dengan status 'Pending Payment'
-$sql_pending_orders = "SELECT COUNT(id) AS count_pending FROM orders WHERE order_status = 'Pending Payment'";
-$result_pending_orders = $conn->query($sql_pending_orders);
-$count_pending_orders = $result_pending_orders->fetch_assoc()['count_pending'] ?? 0;
 
-// C. Total Produk Terdaftar - Menghitung total produk aktif
-$sql_total_products = "SELECT COUNT(id) AS count_products FROM products WHERE is_active = 1";
-$result_total_products = $conn->query($sql_total_products);
-$count_total_products = $result_total_products->fetch_assoc()['count_products'] ?? 0;
+// --------------------------------------------------------------------
+// 2. FUNGSI UTAMA PENGAMBILAN DATA
+// --------------------------------------------------------------------
 
-// D. Pelanggan Baru (Hari Ini) - Menghitung jumlah user yang register hari ini
-$sql_new_users = "SELECT COUNT(id) AS count_new_users FROM users WHERE created_at BETWEEN '$start_of_day' AND '$end_of_day'";
-$result_new_users = $conn->query($sql_new_users);
-$count_new_users_today = $result_new_users->fetch_assoc()['count_new_users'] ?? 0;
+function fetchData($conn, $sql) {
+    if (!$conn) return 0;
+    
+    $result = $conn->query($sql);
+    if ($result) {
+        $row = $result->fetch_row();
+        return $row[0] ?? 0;
+    }
+    return 0;
+}
 
-// --- 3. Pengambilan Data Pesanan Terbaru ---
+function fetchArrayData($conn, $sql) {
+    if (!$conn) return [];
+    
+    $result = $conn->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
 
-// Mengambil 5 pesanan terbaru yang BELUM selesai atau dibatalkan, diurutkan dari yang terbaru
-$sql_recent_orders = "
+// --------------------------------------------------------------------
+// 3. PENGAMBILAN DATA UNTUK CARD
+// --------------------------------------------------------------------
+// Data non-order (tidak terpengaruh filter tanggal)
+$total_products = fetchData($conn, "SELECT COUNT(id) FROM products");
+$total_users = fetchData($conn, "SELECT COUNT(id) FROM users");
+$total_categories = fetchData($conn, "SELECT COUNT(id) FROM categories");
+
+// Data Order yang terfilter
+$total_orders = fetchData($conn, "SELECT COUNT(id) FROM orders" . $filter_sql);
+
+
+// Mengambil data dengan filter status. Jika $filter_sql ada, tambahkan klausa AND
+$pending_orders = fetchData($conn, "SELECT COUNT(id) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Pending Payment'");
+
+// Total Pendapatan
+$total_revenue_sql = "SELECT SUM(final_amount) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Completed'";
+$total_revenue_result = fetchData($conn, $total_revenue_sql);
+$total_revenue = "Rp" . number_format($total_revenue_result, 0, ',', '.');
+
+
+// --------------------------------------------------------------------
+// 4. DATA UNTUK DONUT CHART (Persentase Pesanan Selesai)
+// --------------------------------------------------------------------
+$completed_orders = fetchData($conn, "SELECT COUNT(id) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Completed'");
+
+// Persiapan data untuk Chart.js (completed, not completed)
+$json_order_completion_data = json_encode([
+    (int)$completed_orders, 
+    (int)$total_orders - (int)$completed_orders // Sisanya (Pesanan yang tidak Completed)
+]);
+
+
+// --------------------------------------------------------------------
+// 5. DATA UNTUK PIE CHART (Kategori Terlaris)
+// --------------------------------------------------------------------
+// Query untuk Pie Chart menggunakan tabel order_details (sesuai skema database)
+$sql_category_sales = "
     SELECT 
-        o.order_code, 
-        o.final_amount, 
-        o.order_status, 
-        o.order_date, 
-        u.full_name AS customer_name 
+        c.name AS category_name, 
+        SUM(od.quantity) AS total_sold 
     FROM orders o
-    JOIN users u ON o.user_id = u.id
-    WHERE o.order_status NOT IN ('Completed', 'Cancelled')
-    ORDER BY o.order_date DESC
-    LIMIT 5";
-$recent_orders = $conn->query($sql_recent_orders);
+    JOIN order_details od ON o.id = od.order_id -- FIX: Menggunakan order_details
+    JOIN products p ON od.product_id = p.id
+    JOIN categories c ON p.category_id = c.id
+    " . (empty($filter_sql) ? "" : $filter_sql) . "
+    GROUP BY c.name
+    ORDER BY total_sold DESC
+    LIMIT 5
+";
+
+$category_sales = fetchArrayData($conn, $sql_category_sales);
+
+$category_labels = array_column($category_sales, 'category_name');
+$category_data = array_column($category_sales, 'total_sold');
+
+// Konversi data PHP ke format JSON agar bisa dibaca oleh JavaScript (Chart.js)
+$json_category_labels = json_encode($category_labels);
+$json_category_data = json_encode(array_map('intval', $category_data));
+
 ?>
