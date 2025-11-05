@@ -166,37 +166,44 @@ if (!function_exists('formatRupiah')) {
     <script>
     // Fungsi untuk menambah ke keranjang
     function addToCart(productId) {
-        // Logika AJAX untuk menambah ke keranjang (kuantitas 1)
+        // Ambil elemen penghitung keranjang di navbar (ID: cart-count)
+        const cartCountElement = document.getElementById('cart-count');
 
-        // --- SIMULASI ---
-        alert(`Produk ID ${productId} berhasil ditambahkan ke keranjang. Jumlah keranjang bertambah!`);
-        // Di sini Anda akan memperbarui tampilan jumlah item keranjang di navbar melalui AJAX success callback.
+        // Kirim permintaan AJAX ke add_to_cart.php
+        fetch('proses/proses_cart.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                }) // Selalu tambahkan 1
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Tampilkan notifikasi sukses
+                    alert(data.message);
 
-        /*
-        fetch('add_to_cart.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ product_id: productId, quantity: 1 })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                alert('Produk berhasil ditambahkan! Jumlah item: ' + data.cart_count);
-                // Contoh: document.getElementById('cart-count').innerText = data.cart_count;
-            } else {
-                alert('Gagal menambahkan produk: ' + data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-        */
+                    // === PENTING: UPDATE JUMLAH KERANJANG DI NAVBAR ===
+                    if (cartCountElement) {
+                        cartCountElement.innerText = data.cart_count;
+                    }
+
+                } else {
+                    alert('Gagal menambahkan produk: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi saat menambah ke keranjang.');
+            });
     }
 
-    // Fungsi untuk belanja langsung
+    // Fungsi untuk belanja langsung (pertahankan fungsi lama)
     function quickBuy(productId) {
         if (confirm("Anda akan langsung diarahkan ke halaman Checkout dengan produk ini.")) {
-            // Logika: tambahkan produk ke keranjang/sesi, lalu redirect ke checkout
-
-            // --- SIMULASI ---
             // Arahkan langsung ke halaman checkout, sambil membawa ID produk
             window.location.href = `checkout.php?quick_buy_id=${productId}&qty=1`;
         }
