@@ -25,7 +25,7 @@ if (isset($conn)) {
 $cartCount = $cartCount ?? 0; // Menggunakan 0 sebagai default jika variabel belum didefinisikan
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-pink sticky-top">
+<nav class="navbar navbar-expand-lg navbar-pink fixed-top">
     <div class="container">
         <a class="navbar-brand fw-bold" href="index.php">BeautyFashion Dashboard</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"

@@ -125,11 +125,11 @@ if (!function_exists('formatRupiah')) {
                                     </div>
 
                                     <div class="d-grid gap-2">
-                                        <a href="product_detail.php?id=<?= $product['id']; ?>"
-                                            class="btn btn-outline-buy btn-sm">
+                                        <a href="#" class="btn btn-outline-buy btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#productDetailModal"
+                                            onclick="fetchProductDetail(<?= $product['id']; ?>); return false;">
                                             <i class="fas fa-eye"></i> Detail Produk
                                         </a>
-
                                         <?php if ($product['stock'] > 0): ?>
                                         <button class="btn btn-buy" onclick="addToCart(<?= $product['id']; ?>)">
                                             <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
@@ -161,53 +161,161 @@ if (!function_exists('formatRupiah')) {
 
     <?php include '../footer.php'; ?>
 
-
+    <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productDetailModalLabel">Detail Produk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-content-area">
+                    <div class="text-center p-5">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--pink-primary);"></i>
+                        <p class="mt-2">Memuat detail produk...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Fungsi untuk menambah ke keranjang
-    function addToCart(productId) {
-        // Ambil elemen penghitung keranjang di navbar (ID: cart-count)
-        const cartCountElement = document.getElementById('cart-count');
+        // Fungsi untuk menambah ke keranjang
+        function addToCart(productId, quantity = 1) {
+            // Ambil elemen penghitung keranjang di navbar (ID: cart-count)
+            const cartCountElement = document.getElementById('cart-count');
 
-        // Kirim permintaan AJAX ke add_to_cart.php
-        fetch('proses/proses_cart.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    quantity: 1
-                }) // Selalu tambahkan 1
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Tampilkan notifikasi sukses
-                    alert(data.message);
-
-                    // === PENTING: UPDATE JUMLAH KERANJANG DI NAVBAR ===
-                    if (cartCountElement) {
-                        cartCountElement.innerText = data.cart_count;
+            // Kirim permintaan AJAX ke proses_cart.php
+            fetch('proses/proses_cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        if (cartCountElement) {
+                            cartCountElement.innerText = data.cart_count;
+                        }
+                        // Jika berhasil dari modal, tutup modal
+                        const modalElement = document.getElementById('productDetailModal');
+                        if (modalElement) {
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            modal.hide();
+                        }
+                    } else {
+                        alert('Gagal menambahkan produk: ' + data.message);
                     }
-
-                } else {
-                    alert('Gagal menambahkan produk: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan koneksi saat menambah ke keranjang.');
-            });
-    }
-
-    // Fungsi untuk belanja langsung (pertahankan fungsi lama)
-    function quickBuy(productId) {
-        if (confirm("Anda akan langsung diarahkan ke halaman Checkout dengan produk ini.")) {
-            // Arahkan langsung ke halaman checkout, sambil membawa ID produk
-            window.location.href = `checkout.php?quick_buy_id=${productId}&qty=1`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan koneksi saat menambah ke keranjang.');
+                });
         }
-    }
+
+        // Fungsi untuk belanja langsung (pertahankan fungsi lama)
+        function quickBuy(productId, quantity = 1) {
+            if (confirm("Anda akan langsung diarahkan ke halaman Checkout dengan produk ini.")) {
+                window.location.href = `checkout.php?quick_buy_id=${productId}&qty=${quantity}`;
+            }
+        }
+        
+        // Fungsi untuk mengambil detail produk dan mengisi modal
+        function fetchProductDetail(productId) {
+            const modalBody = document.getElementById('modal-content-area');
+            const modalFooter = document.querySelector('#productDetailModal .modal-footer');
+            const modalTitle = document.getElementById('productDetailModalLabel');
+
+            // Reset konten dan tampilkan loading state
+            modalBody.innerHTML = `
+                <div class="text-center p-5">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: #ff69b4;"></i>
+                    <p class="mt-2 text-muted">Memuat detail produk...</p>
+                </div>`;
+            modalFooter.innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>`;
+            modalTitle.innerText = "Detail Produk";
+
+
+            // Kirim permintaan AJAX ke endpoint baru
+            fetch(`proses/get_product-detail.php?id=${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const product = data.product;
+
+                        // Tentukan stok
+                        const isAvailable = product.stock > 0;
+                        const stockText = isAvailable ? 
+                            `<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Stok Tersedia (${product.stock} unit)</span>` : 
+                            `<span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i> Stok Habis</span>`;
+
+                        // Isi Judul Modal
+                        modalTitle.innerText = product.name;
+
+                        // Isi Konten Modal (HTML Detail Produk)
+                        modalBody.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <img src="../uploads/product/${product.image_url || 'default.jpg'}" class="img-fluid rounded" alt="${product.name}">
+                                </div>
+                                <div class="col-md-7">
+                                    <h3 class="fw-bold" style="color: #ff69b4;">${product.name}</h3>
+                                    <p class="text-muted mb-3">${product.category_name}</p>
+                                    
+                                    <h4 class="text-success fw-bolder">${product.price_formatted}</h4>
+                                    <p class="mb-3">${stockText}</p>
+                                    
+                                    <h6 class="mt-4">Deskripsi Produk:</h6>
+                                    <p class="text-justify">${product.description || 'Tidak ada deskripsi yang tersedia.'}</p>
+
+                                    ${isAvailable ? `
+                                        <div class="d-flex align-items-center mb-4">
+                                            <label for="qtyInput" class="form-label me-3 mb-0">Jumlah:</label>
+                                            <input type="number" id="qtyInput" class="form-control w-25 text-center" value="1" min="1" max="${product.stock}" onchange="if(parseInt(this.value)<1)this.value=1; if(parseInt(this.value)>${product.stock})this.value=${product.stock};">
+                                        </div>
+                                    ` : ''}
+
+                                </div>
+                            </div>
+                        `;
+
+                        // Isi Footer Modal (Tombol Aksi)
+                        let footerButtons = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>`;
+
+                        if (isAvailable) {
+                            footerButtons += `
+                                <button class="btn btn-outline-buy" onclick="addToCart(${product.id}, document.getElementById('qtyInput').value)">
+                                    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                                </button>
+                                <button class="btn btn-buy" onclick="quickBuy(${product.id}, document.getElementById('qtyInput').value)">
+                                    <i class="fas fa-money-bill-wave"></i> Beli Sekarang
+                                </button>
+                            `;
+                        }
+                        
+                        modalFooter.innerHTML = footerButtons;
+
+                    } else {
+                        // Tampilkan pesan error jika produk tidak ditemukan
+                        modalTitle.innerText = "Error";
+                        modalBody.innerHTML = `<div class="alert alert-danger p-4">${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    modalTitle.innerText = "Error Koneksi";
+                    modalBody.innerHTML = `<div class="alert alert-danger p-4">Terjadi kesalahan saat mengambil data detail produk.</div>`;
+                });
+        }
     </script>
 </body>
 

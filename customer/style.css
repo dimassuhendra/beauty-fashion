@@ -1,39 +1,53 @@
 /* ==================================================================== */
-/* <<< BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
+/* <<< START CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
 /* ==================================================================== */
-
 
 /* |--------------------------------------------------------------------------
 | A. CSS ROOT, GLOBAL & UTILITY
 |--------------------------------------------------------------------------
-| Mencakup gaya dasar (body, font), Navbar, dan Footer (karena dipakai di semua halaman).
+| Variabel, gaya dasar HTML/Body, dan setup Sticky Footer.
 */
 
-/* --- GLOBAL & UTILITY (Sticky Footer Setup) --- */
+/* --- 1. CSS ROOT VARIABLES (Nuansa Pink) --- */
+:root {
+    --pink-primary: #ff69b4; /* Hot Pink/Deep Pink (Utama) */
+    --pink-light: #ffc0cb; /* Light Pink/Pink Muda */
+    --pink-dark: #cc5599; /* Darker Pink/Hover */
+    --text-light: #fff;
+    --text-dark: #333;
+}
+
+/* --- 2. GLOBAL & UTILITY (Sticky Footer Setup & Margin Reset) --- */
 html {
     height: 100%;
+    margin: 0; 
+    padding: 0; 
 }
 
 body {
     min-height: 100%;
-    margin: 0;
+    margin: 0; 
     padding: 0;
-    /* Flexbox untuk mekanisme sticky footer */
+    padding-top: 70px;
     display: flex;
     flex-direction: column;
     font-family: 'Poppins', sans-serif;
     background-color: #fce4ec;
-    /* Pink sangat muda sebagai latar belakang halaman */
 }
 
 main {
-    /* Ini yang mendorong footer ke bawah */
     flex: 1 0 auto;
 }
 
-/* --- REUSABLE COMPONENT: NAVIGASI PINK --- */
+/* |--------------------------------------------------------------------------
+| B. REUSABLE COMPONENTS: NAVBAR & FOOTER
+|--------------------------------------------------------------------------
+| Gaya untuk elemen navigasi yang dipakai di semua halaman.
+*/
+
+/* --- 1. NAVBAR PINK --- */
 .navbar-pink {
-    background-color: #ff69b4;
+    background-color: var(--pink-primary);
     /* Deep Pink */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -45,36 +59,34 @@ main {
 }
 
 .navbar-pink .nav-link:hover {
-    color: #fff !important;
+    color: var(--text-light) !important;
     opacity: 0.9;
 }
 
-/* Gaya untuk Tombol Keranjang */
+/* Tombol Keranjang */
 .btn-cart {
-    /* Menggunakan warna pink yang sama seperti nav-link: */
     color: #fff0f5; 
     border: none;
     background: none;
     font-weight: 500;
-    padding-right: 20px !important; /* Tambah ruang untuk badge */
+    padding-right: 20px !important;
     transition: color 0.3s;
 }
 
 .btn-cart:hover {
-    color: #fff !important;
+    color: var(--text-light) !important;
 }
 
-/* Gaya untuk Badge (Penghitung) */
+/* Badge Penghitung Keranjang */
 #cart-count {
     font-size: 0.65rem;
     padding: 0.35em 0.65em;
-    /* Ubah warna badge agar kontras dan sesuai dengan tema */
-    background-color: #e91e63 !important; /* Hot Pink */
+    background-color: #e91e63 !important; /* Hot Pink yang kontras */
 }
 
+/* Tombol Logout */
 .navbar-pink .btn-logout {
     background-color: #f06292;
-    /* Pink yang lebih lembut untuk tombol */
     border: 1px solid #f06292;
     color: white;
     transition: all 0.3s;
@@ -82,14 +94,13 @@ main {
 
 .navbar-pink .btn-logout:hover {
     background-color: #d8438f;
-    /* Pink lebih gelap saat hover */
     border-color: #d8438f;
 }
 
-/* --- REUSABLE COMPONENT: FOOTER (Sticky Footer Pink) --- */
+/* --- 2. FOOTER HERO (Sticky Footer Pink) --- */
 .footer-hero {
-    background-color: #ff69b4;
-    color: #fff;
+    background-color: var(--pink-primary);
+    color: var(--text-light);
     padding-top: 5rem !important;
     padding-bottom: 3rem !important;
     flex-shrink: 0;
@@ -152,16 +163,15 @@ main {
     transform: rotate(30deg);
 }
 
-.footer-hero>.container {
+.footer-hero > .container {
     position: relative;
     z-index: 1;
 }
 
-
 /* |--------------------------------------------------------------------------
-| B. CSS INDEX.PHP (DASHBOARD)
+| C. HALAMAN DASHBOARD (INDEX.PHP)
 |--------------------------------------------------------------------------
-| Gaya khusus untuk kartu statistik di halaman dashboard.
+| Gaya khusus untuk kartu statistik.
 */
 
 /* --- DASHBOARD CARDS (PINK NUANCE) --- */
@@ -209,9 +219,8 @@ main {
     font-weight: 700;
 }
 
-
 /* |--------------------------------------------------------------------------
-| C. CSS PRODUCTS.PHP (KATALOG PRODUK)
+| D. HALAMAN KATALOG PRODUK (PRODUCTS.PHP)
 |--------------------------------------------------------------------------
 | Gaya khusus untuk filter dan kartu produk.
 */
@@ -254,9 +263,9 @@ main {
 }
 
 .filter-card .form-check-input:checked {
-    background-color: #ff69b4;
+    background-color: var(--pink-primary);
     /* Deep Pink */
-    border-color: #ff69b4;
+    border-color: var(--pink-primary);
 }
 
 
@@ -295,12 +304,12 @@ main {
     font-weight: 700;
 }
 
+/* Tombol "Tambah ke Keranjang" */
 .product-card .btn-buy {
-    /* Ini adalah tombol "Tambah ke Keranjang" */
-    background-color: #ff69b4;
+    background-color: var(--pink-primary);
     border: none;
     width: 100%;
-    color: white; /* Tambahkan ini jika belum ada */
+    color: white;
     transition: background-color 0.3s;
 }
 
@@ -308,21 +317,21 @@ main {
     background-color: #d8438f;
 }
 
-/* Gaya baru: Tombol Detail Produk (Outline Pink) */
+/* Tombol Detail Produk (Outline Pink) */
 .btn-outline-buy {
-    color: #ff69b4;
-    border-color: #ff69b4;
+    color: var(--pink-primary);
+    border-color: var(--pink-primary);
     background-color: transparent;
     transition: all 0.3s;
 }
 
 .btn-outline-buy:hover {
     color: white;
-    background-color: #ff69b4;
-    border-color: #ff69b4;
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
 }
 
-/* Gaya baru: Tombol Belanja Langsung (Pink Lebih Gelap/Tegas) */
+/* Tombol Belanja Langsung (Pink Lebih Gelap/Tegas) */
 .btn-quick-buy {
     background-color: #e91e63; /* Hot Pink yang lebih tegas */
     border: none;
@@ -339,350 +348,405 @@ main {
     font-weight: 500;
 }
 
+
+/* |--------------------------------------------------------------------------
+| E. HALAMAN KERANJANG BELANJA (CART.PHP)
+|--------------------------------------------------------------------------
+*/
+.cart-header {
+    color: #e91e63;
+    /* Pink Tua */
+    font-weight: 700;
+}
+
+.cart-item-card {
+    border: 1px solid #f8bbd0;
+    /* Pink Muda */
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+.cart-item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.item-details h5 {
+    color: #e91e63;
+}
+
+.item-details p {
+    margin-bottom: 5px;
+}
+
+/* Tombol Hapus */
+.btn-remove {
+    color: #f44336;
+    /* Merah */
+    border: 1px solid #f44336;
+    background: none;
+    transition: all 0.3s;
+}
+
+.btn-remove:hover {
+    color: white;
+    background-color: #f44336;
+}
+
+/* Tombol Checkout */
+.btn-checkout {
+    background-color: var(--pink-primary);
+    /* Pink Utama */
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn-checkout:hover {
+    background-color: #d8438f;
+}
+
+.cart-summary {
+    background-color: #fff0f5;
+    /* Background Pink Sangat Muda */
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--pink-light);
+}
+
+.cart-summary h4 {
+    color: #e91e63;
+}
+
+.quantity-input {
+    width: 60px;
+    text-align: center;
+}
+
+
+/* |--------------------------------------------------------------------------
+| F. HALAMAN CHECKOUT (CHECKOUT.PHP)
+|--------------------------------------------------------------------------
+*/
+.text-pink-primary {
+    color: var(--pink-primary) !important;
+}
+
+.btn-pink-primary {
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
+    color: white;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-pink-primary:hover {
+    background-color: var(--pink-dark);
+    border-color: var(--pink-dark);
+    color: white;
+}
+
+.form-check-input:checked {
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
+}
+
+.checkout-summary-card {
+    border: 1px solid var(--pink-light);
+    border-radius: 0.75rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-item.total {
+    border-top: 1px dashed #ddd;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.form-floating > label {
+    color: #6c757d;
+}
+
+.product-image-sm {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Sticky Top Adjustment for Summary Card */
+@media (min-width: 992px) {
+    .sticky-top {
+        position: sticky;
+        top: 1rem; /* Jarak dari atas */
+    }
+}
+
+
+/* |--------------------------------------------------------------------------
+| G. HALAMAN PROFIL (PROFILE.PHP)
+|--------------------------------------------------------------------------
+*/
+
+/* --- HERO PATTERN & HEADERS --- */
+.profile-hero {
+    background-color: #ffcdd2;
+    /* Pink Muda */
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ff69b4' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zm1 5v1H5z'/%3E%3C/g%3E%3C/svg'%3E");
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    color: #c2185b;
+    margin-bottom: 2rem;
+    border-bottom: 5px solid var(--pink-primary);
+}
+
+.profile-hero h1 {
+    font-weight: 800;
+    color: #d8438f;
+}
+
+/* --- CARD & TABS --- */
+.profile-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background-color: white;
+    padding: 20px;
+}
+
+.nav-link.active.profile-tab {
+    background-color: var(--pink-primary) !important;
+    color: white !important;
+    border-color: var(--pink-primary) !important;
+}
+
+.nav-link.profile-tab {
+    color: var(--pink-primary);
+}
+
+.text-primary-pink {
+    color: var(--pink-primary) !important;
+}
+
+
+/* --- FORM & BUTTONS --- */
+.btn-update-profile,
+.btn-primary-pink {
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
+    transition: background-color 0.3s;
+}
+
+.btn-update-profile:hover,
+.btn-primary-pink:hover {
+    background-color: #d8438f;
+    border-color: #d8438f;
+}
+
+.btn-outline-pink {
+    color: var(--pink-primary);
+    border-color: var(--pink-primary);
+}
+
+.btn-outline-pink:hover {
+    background-color: var(--pink-primary);
+    color: white;
+}
+
+/* --- ADDRESS CARD --- */
+.address-card {
+    border: 1px solid #f8bbd0;
+    border-left: 5px solid #f06292;
+    transition: box-shadow 0.3s;
+    position: relative;
+}
+
+.address-card.active-address {
+    border-left: 5px solid #e91e63;
+    box-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+}
+
+.address-card .badge-active {
+    background-color: #e91e63 !important;
+}
+
+
+/* |--------------------------------------------------------------------------
+| H. HALAMAN PESANAN SAYA (ORDERS.PHP)
+|--------------------------------------------------------------------------
+*/
+.order-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--pink-primary);
+    border-bottom: 3px solid var(--pink-primary);
+    padding-bottom: 15px;
+    font-size: 2em;
+}
+
+.order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.order-card {
+    background-color: #fff;
+    border: 1px solid var(--pink-light);
+    border-left: 5px solid var(--pink-primary);
+    /* Garis pink penanda */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    transition: transform 0.3s;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--pink-light);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.order-code {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--pink-primary);
+}
+
+.order-date {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px 0;
+}
+
+.order-detail-label {
+    font-weight: 500;
+}
+
+.order-detail-value {
+    font-weight: 600;
+}
+
+.order-status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: var(--text-light);
+    text-align: center;
+    min-width: 120px;
+}
+
+/* Pewarnaan Status - Disesuaikan dengan ENUM Database (orders.order_status) */
+.status-PendingPayment {
+    background-color: #FFD700;
+    /* Gold */
+    color: var(--text-dark) !important;
+}
+
+.status-Processing {
+    background-color: #6495ED;
+    /* Cornflower Blue */
+}
+
+.status-Shipped {
+    background-color: var(--pink-primary);
+}
+
+.status-Completed {
+    background-color: #3CB371;
+    /* Medium Sea Green */
+}
+
+.status-Cancelled {
+    background-color: #DC143C;
+    /* Crimson */
+}
+
+.order-actions {
+    margin-top: 20px;
+    border-top: 1px solid var(--pink-light);
+    padding-top: 15px;
+    text-align: right;
+}
+
+/* Reusable Button Style (Untuk Order Action, diluar Bootstrap default) */
+.btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.btn-pink {
+    background-color: var(--pink-primary);
+    color: var(--text-light);
+}
+
+.btn-pink:hover {
+    background-color: #FF1493;
+    /* Deep Pink */
+}
+
+.btn-outline {
+    background-color: #fff;
+    color: var(--pink-primary);
+    border: 2px solid var(--pink-primary);
+}
+
+.btn-outline:hover {
+    background-color: var(--pink-light);
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsif Sederhana */
+/* @media (max-width: 650px) { ... } */
+
+
 /* ==================================================================== */
 /* <<< AKHIR BLOK CSS UNTUK DIPINDAHKAN KE FILE EKSTERNAL ANDA >>> */
 /* ==================================================================== */
-
- /* |--------------------------------------------------------------------------
-           | START CSS UNTUK HALAMAN KERANJANG BELANJA (CART.PHP)
-           |--------------------------------------------------------------------------
-           | Anda dapat menggabungkan bagian ini ke file style.css Anda.
-        */
-
-    .cart-header {
-        color: #e91e63;
-        /* Pink Tua */
-        font-weight: 700;
-    }
-
-    .cart-item-card {
-        border: 1px solid #f8bbd0;
-        /* Pink Muda */
-        margin-bottom: 15px;
-        border-radius: 10px;
-    }
-
-    .cart-item-image {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 5px;
-    }
-
-    .item-details h5 {
-        color: #e91e63;
-    }
-
-    .item-details p {
-        margin-bottom: 5px;
-    }
-
-    /* Tombol Hapus */
-    .btn-remove {
-        color: #f44336;
-        /* Merah */
-        border: 1px solid #f44336;
-        background: none;
-        transition: all 0.3s;
-    }
-
-    .btn-remove:hover {
-        color: white;
-        background-color: #f44336;
-    }
-
-    /* Tombol Checkout */
-    .btn-checkout {
-        background-color: #ff69b4;
-        /* Pink Utama */
-        color: white;
-        font-weight: bold;
-        transition: background-color 0.3s;
-    }
-
-    .btn-checkout:hover {
-        background-color: #d8438f;
-    }
-
-    .cart-summary {
-        background-color: #fff0f5;
-        /* Background Pink Sangat Muda */
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #ffc0cb;
-    }
-
-    .cart-summary h4 {
-        color: #e91e63;
-    }
-
-    .quantity-input {
-        width: 60px;
-        text-align: center;
-    }
-
-    /* |--------------------------------------------------------------------------
-           | END CSS UNTUK HALAMAN KERANJANG BELANJA (CART.PHP)
-           |--------------------------------------------------------------------------
-        */
-
-           /* |--------------------------------------------------------------------------
-           | START CSS UNTUK HALAMAN PROFIL (PROFILE.PHP)
-           |--------------------------------------------------------------------------
-           | Anda dapat menggabungkan bagian ini ke file style.css Anda.
-        */
-
-    /* --- HERO PATTERN & HEADERS --- */
-    .profile-hero {
-        background-color: #ffcdd2;
-        /* Pink Muda */
-        background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ff69b4' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zm1 5v1H5z'/%3E%3C/g%3E%3C/svg'%3E");
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-        color: #c2185b;
-        margin-bottom: 2rem;
-        border-bottom: 5px solid #ff69b4;
-    }
-
-    .profile-hero h1 {
-        font-weight: 800;
-        color: #d8438f;
-    }
-
-    /* --- CARD & TABS --- */
-    .profile-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        background-color: white;
-        padding: 20px;
-    }
-
-    .nav-link.active.profile-tab {
-        background-color: #ff69b4 !important;
-        color: white !important;
-        border-color: #ff69b4 !important;
-    }
-
-    .nav-link.profile-tab {
-        color: #ff69b4;
-    }
-
-    .text-primary-pink {
-        color: #ff69b4 !important;
-    }
-
-
-    /* --- FORM & BUTTONS --- */
-    .btn-update-profile,
-    .btn-primary-pink {
-        background-color: #ff69b4;
-        border-color: #ff69b4;
-        transition: background-color 0.3s;
-    }
-
-    .btn-update-profile:hover,
-    .btn-primary-pink:hover {
-        background-color: #d8438f;
-        border-color: #d8438f;
-    }
-
-    .btn-outline-pink {
-        color: #ff69b4;
-        border-color: #ff69b4;
-    }
-
-    .btn-outline-pink:hover {
-        background-color: #ff69b4;
-        color: white;
-    }
-
-    /* --- ADDRESS CARD --- */
-    .address-card {
-        border: 1px solid #f8bbd0;
-        border-left: 5px solid #f06292;
-        transition: box-shadow 0.3s;
-        position: relative;
-    }
-
-    .address-card.active-address {
-        border-left: 5px solid #e91e63;
-        box-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
-    }
-
-    .address-card .badge-active {
-        background-color: #e91e63 !important;
-    }
-
-
-    /* |--------------------------------------------------------------------------
-           | END CSS UNTUK HALAMAN PROFIL (PROFILE.PHP)
-           |--------------------------------------------------------------------------
-        */
-    .order-header {
-        text-align: center;
-        margin-bottom: 30px;
-        color: var(--pink-primary);
-        border-bottom: 3px solid var(--pink-primary);
-        padding-bottom: 15px;
-        font-size: 2em;
-    }
-
-    .order-list {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-
-    .order-card {
-        background-color: #fff;
-        border: 1px solid var(--pink-light);
-        border-left: 5px solid var(--pink-primary);
-        /* Garis pink penanda */
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        padding: 20px;
-        transition: transform 0.3s;
-    }
-
-    .order-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .order-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px dashed var(--pink-light);
-        padding-bottom: 10px;
-        margin-bottom: 15px;
-    }
-
-    .order-code {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: var(--pink-primary);
-    }
-
-    .order-date {
-        font-size: 0.9em;
-        color: #666;
-    }
-
-    .order-detail-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-        padding: 5px 0;
-    }
-
-    .order-detail-label {
-        font-weight: 500;
-    }
-
-    .order-detail-value {
-        font-weight: 600;
-    }
-
-    .order-status {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.85em;
-        font-weight: bold;
-        color: var(--text-light);
-        text-align: center;
-        min-width: 120px;
-    }
-
-    /* Pewarnaan Status - Disesuaikan dengan ENUM Database */
-    .status-PendingPayment {
-        background-color: #FFD700;
-        /* Gold */
-        color: var(--text-dark) !important;
-    }
-
-    .status-Processing {
-        background-color: #6495ED;
-        /* Cornflower Blue */
-    }
-
-    .status-Shipped {
-        background-color: var(--pink-primary);
-    }
-
-    .status-Completed {
-        background-color: #3CB371;
-        /* Medium Sea Green */
-    }
-
-    .status-Cancelled {
-        background-color: #DC143C;
-        /* Crimson */
-    }
-
-    .order-actions {
-        margin-top: 20px;
-        border-top: 1px solid var(--pink-light);
-        padding-top: 15px;
-        text-align: right;
-    }
-
-    .btn {
-        border: none;
-        padding: 10px 20px;
-        border-radius: 25px;
-        text-decoration: none;
-        font-size: 0.9em;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-left: 10px;
-        font-weight: bold;
-        display: inline-block;
-    }
-
-    .btn-pink {
-        background-color: var(--pink-primary);
-        color: var(--text-light);
-    }
-
-    .btn-pink:hover {
-        background-color: #FF1493;
-        /* Deep Pink */
-    }
-
-    .btn-outline {
-        background-color: #fff;
-        color: var(--pink-primary);
-        border: 2px solid var(--pink-primary);
-    }
-
-    .btn-outline:hover {
-        background-color: var(--pink-light);
-    }
-
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        font-weight: bold;
-        color: var(--text-dark);
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-    }
-
-    .alert-error {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-    }
-
-    /* Responsif Sederhana */
-    @media (max-width: 650px) {
-        /* ... (CSS responsif sebelumnya) ... */
-    }
-
-    /* Akhir CSS Halaman Pesanan Nuansa Pink */

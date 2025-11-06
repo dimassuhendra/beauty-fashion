@@ -61,7 +61,7 @@ include 'proses/get_cart.php';
                                     <input type="hidden" name="item_id" value="<?= $item['cart_item_id']; ?>">
                                     <input type="hidden" name="action" value="update_quantity">
 
-                                    <div class="input-group mb-2" style="width: 130px; margin-left: auto;">
+                                    <div class="input-group mb-2" style="width: 150px; margin-left: auto;">
                                         <input type="number" name="quantity" class="form-control quantity-input"
                                             value="<?= $item['quantity']; ?>" min="1" max="<?= $item['stock']; ?>"
                                             onchange="this.form.submit()">
