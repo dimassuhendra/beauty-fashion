@@ -23,8 +23,8 @@ include 'proses/proses_manajemen-pelanggan.php';
             <p class="lead">Data lengkap pelanggan, riwayat belanja, dan statistik akun.</p>
         </header>
 
-        <div class="row g-4 mb-4">
-            <div class="col-lg-3 col-md-6 col-12">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4 mb-4">
+            <div class="col">
                 <div class="card shadow-sm customer-summary-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -32,14 +32,15 @@ include 'proses/proses_manajemen-pelanggan.php';
                             <div>
                                 <p class="card-text small text-muted mb-0">Total Pelanggan</p>
                                 <h4 class="card-title mb-0">
-                                    <?php echo number_format($summary['total_users'], 0, ',', '.'); ?></h4>
+                                    <?php echo number_format($summary['total_users'], 0, ',', '.'); ?>
+                                </h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6 col-12">
+            <div class="col">
                 <div class="card shadow-sm customer-summary-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -47,14 +48,15 @@ include 'proses/proses_manajemen-pelanggan.php';
                             <div>
                                 <p class="card-text small text-muted mb-0">Pernah Belanja</p>
                                 <h4 class="card-title mb-0">
-                                    <?php echo number_format($summary['users_with_orders'], 0, ',', '.'); ?></h4>
+                                    <?php echo number_format($summary['users_with_orders'], 0, ',', '.'); ?>
+                                </h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6 col-12">
+            <div class="col">
                 <div class="card shadow-sm customer-summary-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -62,14 +64,31 @@ include 'proses/proses_manajemen-pelanggan.php';
                             <div>
                                 <p class="card-text small text-muted mb-0">Total Pesanan Dibuat</p>
                                 <h4 class="card-title mb-0">
-                                    <?php echo number_format($summary['total_orders_placed'], 0, ',', '.'); ?></h4>
+                                    <?php echo number_format($summary['total_orders_placed'], 0, ',', '.'); ?>
+                                </h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6 col-12">
+            <div class="col">
+                <div class="card shadow-sm customer-summary-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-shopping-cart fa-3x text-danger me-3"></i>
+                            <div>
+                                <p class="card-text small text-muted mb-0">Total Barang di Keranjang</p>
+                                <h4 class="card-title mb-0">
+                                    <?php echo number_format($summary['total_cart_items'] ?? 0, 0, ',', '.'); ?>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
                 <div class="card shadow-sm customer-summary-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -77,7 +96,8 @@ include 'proses/proses_manajemen-pelanggan.php';
                             <div>
                                 <p class="card-text small text-muted mb-0">Total Revenue (Completed)</p>
                                 <h4 class="card-title mb-0">
-                                    Rp<?php echo number_format($summary['total_revenue'], 0, ',', '.'); ?></h4>
+                                    Rp<?php echo number_format($summary['total_revenue'], 0, ',', '.'); ?>
+                                </h4>
                             </div>
                         </div>
                     </div>
@@ -106,8 +126,8 @@ include 'proses/proses_manajemen-pelanggan.php';
                             value="<?php echo htmlspecialchars($search); ?>">
                         <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
                         <?php if (!empty($search)): ?>
-                        <a href="manajemen-pelanggan.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
-                            title="Reset Pencarian"><i class="fas fa-times"></i></a>
+                            <a href="manajemen-pelanggan.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
+                                title="Reset Pencarian"><i class="fas fa-times"></i></a>
                         <?php endif; ?>
                     </div>
                 </form>
@@ -131,6 +151,14 @@ include 'proses/proses_manajemen-pelanggan.php';
                                     Nama & Kontak
                                     <i
                                         class="fas fa-sort sort-icon <?php echo $sort == 'name' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col" class="text-center">
+                                <a href="<?php echo get_sort_link('cart_item_count', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'cart_item_count' ? 'active-sort' : ''; ?>">
+                                    Keranjang
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'cart_item_count' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col" class="text-center">
@@ -162,41 +190,46 @@ include 'proses/proses_manajemen-pelanggan.php';
                     </thead>
                     <tbody>
                         <?php if (count($users) > 0): ?>
-                        <?php foreach ($users as $u): ?>
-                        <tr>
-                            <td><?php echo $u['id']; ?></td>
-                            <td>
-                                <span class="fw-bold"><?php echo htmlspecialchars($u['full_name']); ?></span>
-                                <small class="d-block text-muted"><i
-                                        class="fas fa-envelope me-1"></i><?php echo htmlspecialchars($u['email']); ?></small>
-                                <?php if (!empty($u['phone'])): ?>
-                                <small class="d-block text-muted"><i
-                                        class="fas fa-phone me-1"></i><?php echo htmlspecialchars($u['phone_number']); ?></small>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-pink-light fw-bold">
-                                    <?php echo number_format($u['order_count'], 0); ?>
-                                </span>
-                            </td>
-                            <td>
-                                <span
-                                    class="fw-bold text-success">Rp<?php echo number_format($u['total_spent'], 0, ',', '.'); ?></span>
-                            </td>
-                            <td><?php echo date('d M Y', strtotime($u['registration_date'])); ?></td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-info me-1 btn-detail-customer"
-                                    data-bs-toggle="modal" data-bs-target="#detailCustomerModal"
-                                    data-user-id="<?php echo $u['id']; ?>">
-                                    <i class="fas fa-user-circle me-1"></i> Detail
-                                </button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                            <?php foreach ($users as $u): ?>
+                                <tr>
+                                    <td><?php echo $u['id']; ?></td>
+                                    <td>
+                                        <span class="fw-bold"><?php echo htmlspecialchars($u['full_name']); ?></span>
+                                        <small class="d-block text-muted"><i
+                                                class="fas fa-envelope me-1"></i><?php echo htmlspecialchars($u['email']); ?></small>
+                                        <?php if (!empty($u['phone_number'])): // Perbaiki: phone diganti phone_number jika itu yang ada di proses ?>
+                                            <small class="d-block text-muted"><i
+                                                    class="fas fa-phone me-1"></i><?php echo htmlspecialchars($u['phone_number']); ?></small>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger fw-bold">
+                                            <?php echo number_format($u['cart_item_count'] ?? 0, 0); ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-pink-light fw-bold">
+                                            <?php echo number_format($u['order_count'], 0); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="fw-bold text-success">Rp<?php echo number_format($u['total_spent'], 0, ',', '.'); ?></span>
+                                    </td>
+                                    <td><?php echo date('d M Y', strtotime($u['registration_date'])); ?></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-info me-1 btn-detail-customer"
+                                            data-bs-toggle="modal" data-bs-target="#detailCustomerModal"
+                                            data-user-id="<?php echo $u['id']; ?>">
+                                            <i class="fas fa-user-circle me-1"></i> Detail
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php else: ?>
-                        <tr>
-                            <td colspan="6" class="text-center">Tidak ada data pelanggan ditemukan.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="7" class="text-center">Tidak ada data pelanggan ditemukan.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -209,33 +242,33 @@ include 'proses/proses_manajemen-pelanggan.php';
                 <nav>
                     <ul class="pagination pagination-sm mb-0">
                         <?php if ($total_pages > 1): ?>
-                        <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link"
-                                href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
+                            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
 
-                        <?php 
+                            <?php
                             // Tampilkan maksimal 5 link halaman di sekitar halaman saat ini
                             $start = max(1, $page - 2);
                             $end = min($total_pages, $page + 2);
 
-                            for ($i = $start; $i <= $end; $i++): 
+                            for ($i = $start; $i <= $end; $i++):
                                 $is_active = $i == $page ? 'active' : '';
                                 $page_link = "?page=$i&limit=$limit&s=$search&sort=$sort&order=$order";
-                            ?>
-                        <li class="page-item <?php echo $is_active; ?>">
-                            <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
-                        </li>
-                        <?php endfor; ?>
+                                ?>
+                                <li class="page-item <?php echo $is_active; ?>">
+                                    <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
 
-                        <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
-                            <a class="page-link"
-                                href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
+                            <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -275,91 +308,91 @@ include 'proses/proses_manajemen-pelanggan.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    // ====================================================
-    // Logic Dark/Light Mode (FIXED - Diambil dari file sebelumnya)
-    // ====================================================
-    const body = document.getElementById('body-admin');
-    const modeToggle = document.getElementById('mode-toggle');
+        // ====================================================
+        // Logic Dark/Light Mode (FIXED - Diambil dari file sebelumnya)
+        // ====================================================
+        const body = document.getElementById('body-admin');
+        const modeToggle = document.getElementById('mode-toggle');
 
-    function applyMode(isInitialLoad = true) {
-        let savedMode = localStorage.getItem('theme') || 'light';
+        function applyMode(isInitialLoad = true) {
+            let savedMode = localStorage.getItem('theme') || 'light';
 
-        if (!isInitialLoad && modeToggle) {
-            savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
-            localStorage.setItem('theme', savedMode);
-        }
-
-        if (savedMode === 'dark') {
-            body.classList.add('dark-mode');
-        } else {
-            body.classList.remove('dark-mode');
-        }
-
-        // Terapkan styling ke modal (agar sesuai dengan mode)
-        document.querySelectorAll('.modal-content').forEach(el => {
-            if (savedMode === 'dark') {
-                el.classList.add('dark-mode');
-            } else {
-                el.classList.remove('dark-mode');
+            if (!isInitialLoad && modeToggle) {
+                savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
+                localStorage.setItem('theme', savedMode);
             }
+
+            if (savedMode === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
+            // Terapkan styling ke modal (agar sesuai dengan mode)
+            document.querySelectorAll('.modal-content').forEach(el => {
+                if (savedMode === 'dark') {
+                    el.classList.add('dark-mode');
+                } else {
+                    el.classList.remove('dark-mode');
+                }
+            });
+
+            if (modeToggle) {
+                if (savedMode === 'dark') {
+                    modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                    modeToggle.classList.remove('text-pink-primary');
+                } else {
+                    modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                    modeToggle.classList.add('text-pink-primary');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyMode(true);
         });
 
         if (modeToggle) {
-            if (savedMode === 'dark') {
-                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-                modeToggle.classList.remove('text-pink-primary');
-            } else {
-                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-                modeToggle.classList.add('text-pink-primary');
-            }
+            modeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                applyMode(false);
+            });
         }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        applyMode(true);
-    });
-
-    if (modeToggle) {
-        modeToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            applyMode(false);
-        });
-    }
 
 
-    // ====================================================
-    // Logic Modal Detail Pelanggan (Menggunakan AJAX)
-    // ====================================================
+        // ====================================================
+        // Logic Modal Detail Pelanggan (Menggunakan AJAX)
+        // ====================================================
 
-    $('#detailCustomerModal').on('show.bs.modal', function(event) {
-        const button = $(event.relatedTarget);
-        const userId = button.data('user-id');
-        const modal = $(this);
+        $('#detailCustomerModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const userId = button.data('user-id');
+            const modal = $(this);
 
-        // Tampilkan loading, sembunyikan detail
-        modal.find('#modal_content_loading').show();
-        modal.find('#modal_content_detail').hide().empty();
-        modal.find('#customer_name_title').text('...'); // Placeholder
+            // Tampilkan loading, sembunyikan detail
+            modal.find('#modal_content_loading').show();
+            modal.find('#modal_content_detail').hide().empty();
+            modal.find('#customer_name_title').text('...'); // Placeholder
 
-        // Lakukan permintaan AJAX
-        $.ajax({
-            url: 'proses/get_manajemen-pelanggan.php', // File AJAX baru yang akan kita buat
-            method: 'GET',
-            data: {
-                id: userId
-            },
-            dataType: 'json',
-            success: function(response) {
-                modal.find('#modal_content_loading').hide();
+            // Lakukan permintaan AJAX
+            $.ajax({
+                url: 'proses/get_manajemen-pelanggan.php', // File AJAX baru yang akan kita buat
+                method: 'GET',
+                data: {
+                    id: userId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    modal.find('#modal_content_loading').hide();
 
-                if (response.success) {
-                    const user = response.data.user;
-                    const orders = response.data.orders;
+                    if (response.success) {
+                        const user = response.data.user;
+                        const orders = response.data.orders;
 
-                    modal.find('#customer_name_title').text(user.full_name);
+                        modal.find('#customer_name_title').text(user.full_name);
 
-                    // --- Susun HTML Detail Pelanggan ---
-                    let html = `
+                        // --- Susun HTML Detail Pelanggan ---
+                        let html = `
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <h6 class="text-pink-primary"><i class="fas fa-id-badge me-2"></i> Info Akun</h6>
@@ -373,6 +406,11 @@ include 'proses/proses_manajemen-pelanggan.php';
                                 </div>
                             </div>
                             
+                            <h6 class="text-pink-primary"><i class="fas fa-shopping-cart me-2"></i> Keranjang Aktif</h6>
+                            <div class="alert alert-warning p-2 small mb-4">
+                                Pelanggan ini saat ini memiliki <strong>${user.cart_item_count}</strong> barang di keranjang belanja.
+                            </div>
+                                                        
                             <hr class="my-3 detail-divider">
                             
                             <h6 class="text-pink-primary"><i class="fas fa-chart-line me-2"></i> Statistik Belanja</h6>
@@ -400,8 +438,8 @@ include 'proses/proses_manajemen-pelanggan.php';
                             <h6 class="text-pink-primary"><i class="fas fa-history me-2"></i> Riwayat 5 Pesanan Terakhir</h6>
                         `;
 
-                    if (orders.length > 0) {
-                        html += `
+                        if (orders.length > 0) {
+                            html += `
                                 <div class="table-responsive">
                                     <table class="table table-sm table-striped">
                                         <thead>
@@ -425,26 +463,26 @@ include 'proses/proses_manajemen-pelanggan.php';
                                     </table>
                                 </div>
                             `;
+                        } else {
+                            html +=
+                                `<p class="alert alert-info small">Pelanggan ini belum memiliki riwayat pesanan.</p>`;
+                        }
+
+                        modal.find('#modal_content_detail').html(html).show();
+
                     } else {
-                        html +=
-                            `<p class="alert alert-info small">Pelanggan ini belum memiliki riwayat pesanan.</p>`;
+                        modal.find('#modal_content_detail').html(
+                            `<p class="alert alert-danger">${response.message}</p>`).show();
                     }
-
-                    modal.find('#modal_content_detail').html(html).show();
-
-                } else {
+                },
+                error: function (xhr) {
+                    modal.find('#modal_content_loading').hide();
                     modal.find('#modal_content_detail').html(
-                        `<p class="alert alert-danger">${response.message}</p>`).show();
+                        '<p class="alert alert-danger">Terjadi kesalahan saat mengambil data dari server.</p>'
+                    ).show();
                 }
-            },
-            error: function(xhr) {
-                modal.find('#modal_content_loading').hide();
-                modal.find('#modal_content_detail').html(
-                    '<p class="alert alert-danger">Terjadi kesalahan saat mengambil data dari server.</p>'
-                ).show();
-            }
+            });
         });
-    });
     </script>
 </body>
 

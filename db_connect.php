@@ -4,7 +4,7 @@
 $servername = "localhost";
 $username = "root";
 $password = ""; // Cek ini!
-$dbname = "beauty";
+$dbname = "beauty-fashion";
 
 // Buat koneksi
 $conn = new mysqli($servername, $username, $password, $dbname);

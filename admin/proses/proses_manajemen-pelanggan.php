@@ -36,6 +36,12 @@ $sql_total_revenue = "SELECT SUM(final_amount) FROM orders WHERE order_status = 
 $result = $conn->query($sql_total_revenue);
 $summary['total_revenue'] = $result ? $result->fetch_row()[0] : 0;
 
+// 5. Total keranjang yang dimasukkan
+$total_cart_items_sql = "SELECT SUM(quantity) AS total_cart_items FROM cart_items";
+$total_cart_items_result = $conn->query($total_cart_items_sql);
+$total_cart_items = $total_cart_items_result->fetch_assoc()['total_cart_items'] ?? 0;
+$summary['total_cart_items'] = $total_cart_items;
+
 
 // --- Pengaturan Tabel ---
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -73,9 +79,12 @@ $sql = "
 SELECT
 u.id, u.full_name, u.email, u.phone_number, u.created_at as registration_date,
 COUNT(o.id) as order_count,
-SUM(CASE WHEN o.order_status = 'Completed' THEN o.final_amount ELSE 0 END) as total_spent
+SUM(CASE WHEN o.order_status = 'Completed' THEN o.final_amount ELSE 0 END) as total_spent,
+COALESCE(SUM(ci.quantity), 0) AS cart_item_count
 FROM users u
 LEFT JOIN orders o ON u.id = o.user_id
+LEFT JOIN 
+cart_items ci ON u.id = ci.user_id
 $search_query_where
 GROUP BY u.id
 ORDER BY $sort $order
