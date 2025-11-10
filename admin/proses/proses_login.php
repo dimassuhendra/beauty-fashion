@@ -5,7 +5,7 @@ session_start();
 // --- Pengaturan Koneksi Database ---
 // Ganti nilai-nilai berikut sesuai dengan konfigurasi database Anda
 $host = 'localhost'; // Ganti jika host database Anda berbeda
-$db = 'beauty';      // Nama database
+$db = 'beauty-fashion';      // Nama database
 $user = 'root';      // Username database
 $pass = '';          // Password database (kosongkan jika tidak ada)
 

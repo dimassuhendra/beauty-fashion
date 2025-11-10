@@ -447,6 +447,15 @@ main {
     color: white;
 }
 
+/* Mengatasi masalah radio button alignment yang sering terjadi */
+.form-check-input {
+    /* Memastikan ukuran konsisten */
+    min-width: 1.25em; 
+    min-height: 1.25em;
+    margin-top: 0.2em;
+    cursor: pointer; 
+}
+
 .form-check-input:checked {
     background-color: var(--pink-primary);
     border-color: var(--pink-primary);
@@ -455,7 +464,48 @@ main {
 .checkout-summary-card {
     border: 1px solid var(--pink-light);
     border-radius: 0.75rem;
+    background-color: white; /* Pastikan background putih */
 }
+
+/* *** MODIFIKASI KHUSUS UNTUK ALAMAT (DIPERKUAT) *** */
+.form-check.p-3.mb-2.border.rounded {
+    /* Gaya dasar card alamat */
+    border-color: #f06292 !important; 
+    transition: box-shadow 0.2s, border 0.2s;
+    background-color: #fffafc;
+    
+    /* KUNCI PERBAIKAN: Menggunakan flexbox untuk alignment yang lebih baik, menimpa default form-check */
+    display: flex; 
+    align-items: flex-start; /* Sejajarkan ke atas */
+    padding: 1rem !important; /* Kurangi padding dari p-3 (1rem) */
+}
+
+/* Mengatur posisi radio button secara spesifik di dalam container alamat */
+.form-check.p-3.mb-2.border.rounded > .form-check-input {
+    /* Menimpa properti posisi dan margin default form-check-input */
+    position: static; 
+    margin-left: 0;
+    margin-right: 15px; 
+    margin-top: 0.2rem; 
+    flex-shrink: 0;
+}
+
+/* Memastikan label mengambil sisa ruang dan teks sejajar dengan baik */
+.form-check.p-3.mb-2.border.rounded .form-check-label {
+    flex-grow: 1;
+    cursor: pointer;
+    padding-left: 0; /* Pastikan tidak ada padding kiri tambahan dari Bootstrap */
+}
+
+/* Style untuk radio button yang dipilih */
+.form-check.p-3.mb-2.border.rounded:has(input:checked) {
+    border-color: var(--pink-primary) !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25); /* Glow pink */
+    background-color: #fff5f9;
+}
+/* *** AKHIR MODIFIKASI ALAMAT *** */
+
 
 .summary-item {
     display: flex;
@@ -464,9 +514,9 @@ main {
 }
 
 .summary-item.total {
-    border-top: 1px dashed #ddd;
-    padding-top: 10px;
-    margin-top: 10px;
+    border-top: 2px solid var(--pink-light); /* Garis pemisah yang lebih jelas */
+    padding-top: 15px;
+    margin-top: 15px;
 }
 
 .form-floating > label {
@@ -478,13 +528,26 @@ main {
     height: 50px;
     object-fit: cover;
     border-radius: 8px;
+    border: 1px solid #eee; /* Tambahkan border tipis agar terlihat rapi */
+    flex-shrink: 0; /* Penting: jangan biarkan gambar mengecil */
+}
+
+/* Perbaikan item di Ringkasan Pesanan */
+.d-flex.mb-2.align-items-center {
+    /* Tambahkan sedikit ruang antar kolom di item pesanan */
+    gap: 10px; 
+}
+
+.text-truncate {
+    /* Meningkatkan batas lebar agar nama produk tidak terlalu terpotong */
+    max-width: 180px; 
 }
 
 /* Sticky Top Adjustment for Summary Card */
 @media (min-width: 992px) {
     .sticky-top {
         position: sticky;
-        top: 1rem; /* Jarak dari atas */
+        top: 85px; /* Sesuaikan dengan tinggi navbar (70px) + margin (15px) */
     }
 }
 
