@@ -23,13 +23,13 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $sql_order = "
         SELECT 
             o.*, 
-            u.name as user_name, u.email as user_email,
-            oa.address_line1 as shipping_address_line1,
+            u.full_name as user_name, u.email as user_email,
+            oa.full_address as shipping_address_line1,
             oa.city as shipping_address_city,
-            oa.postcode as shipping_address_postcode
+            oa.postal_code as shipping_address_postcode
         FROM orders o
         LEFT JOIN users u ON o.user_id = u.id
-        LEFT JOIN order_addresses oa ON o.id = oa.order_id
+        LEFT JOIN user_addresses oa ON o.id = oa.order_id
         WHERE o.id = $order_id
         LIMIT 1
     ";
@@ -49,11 +49,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         // Menggunakan tabel order_details sesuai skema database Anda
         $sql_items = "
             SELECT 
-                od.product_name, od.price, od.quantity, 
+                od.product_id, od.unit_price, od.quantity, 
                 p.image_url 
             FROM order_details od
             LEFT JOIN products p ON od.product_id = p.id
-            WHERE od.order_id = $order_id
+            WHERE od.id = $order_id
         ";
         $result_items = $conn->query($sql_items);
         $items = [];

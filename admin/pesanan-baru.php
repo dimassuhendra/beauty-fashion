@@ -193,10 +193,10 @@ $filter_status); ?>"
                                 </span>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-outline-info me-1 btn-detail-order" data-bs-toggle="modal"
+                                <!-- <button class="btn btn-sm btn-outline-info me-1 btn-detail-order" data-bs-toggle="modal"
                                     data-bs-target="#detailOrderModal" data-order-id="<?php echo $o['id']; ?>">
                                     <i class="fas fa-eye"></i>
-                                </button>
+                                </button> -->
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-outline-pink dropdown-toggle"
                                         data-bs-toggle="dropdown" aria-expanded="false" title="Ubah Status">
