@@ -1,6 +1,9 @@
 <?php
-include '../db_connect.php';
-include 'proses/proses_pesanan-baru.php';
+// FILE: pesanan-baru.php
+
+// PASTIKAN PATH INI BENAR (relative dari folder admin/)
+include '../db_connect.php'; 
+include 'proses/proses_pesanan-baru.php'; 
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -24,7 +27,7 @@ include 'proses/proses_pesanan-baru.php';
         </header>
 
         <?php if (!empty($message)): ?>
-        <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
+         <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
             <?php echo $message; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -39,8 +42,7 @@ include 'proses/proses_pesanan-baru.php';
                 <a href="<?php echo get_status_link($status, $limit, $search); ?>" class="text-decoration-none">
                     <div class="card shadow-sm order-summary-card <?php echo $is_active_filter; ?>">
                         <div class="card-body text-center">
-                            <i
-                                class="<?php echo $details['icon']; ?> fa-2x text-<?php echo $details['color']; ?> mb-2"></i>
+                            <i class="<?php echo $details['icon']; ?> fa-2x text-<?php echo $details['color']; ?> mb-2"></i>
                             <h5 class="card-title mb-0"><?php echo $count; ?></h5>
                             <p class="card-text small text-muted"><?php echo $status; ?></p>
                         </div>
@@ -108,44 +110,59 @@ include 'proses/proses_pesanan-baru.php';
                                 </a>
                             </th>
                             <th scope="col">
-                                <a href="<?php echo get_sort_link('order_code', $sort, $order, $limit, $search, $filter_status); ?>"
-                                    class="sortable-header <?php echo $sort == 'order_code' ? 'active-sort' : ''; ?>">
+                                <a href="<?php echo get_sort_link('order_code', $sort, $order, $limit, $search, 
+$filter_status); ?>"
+                                    class="sortable-header <?php echo $sort == 'order_code' ?
+'active-sort' : ''; ?>">
                                     Kode Pesanan
                                     <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_code' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_code' ?
+($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
-                                <a href="<?php echo get_sort_link('user_name', $sort, $order, $limit, $search, $filter_status); ?>"
-                                    class="sortable-header <?php echo $sort == 'user_name' ? 'active-sort' : ''; ?>">
+                               <a href="<?php echo get_sort_link('user_name', $sort, $order, $limit, $search, $filter_status);
+?>"
+                                    class="sortable-header <?php echo $sort == 'user_name' ?
+'active-sort' : ''; ?>">
                                     Pelanggan
                                     <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'user_name' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'user_name' ?
+($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
-                                <a href="<?php echo get_sort_link('final_amount', $sort, $order, $limit, $search, $filter_status); ?>"
-                                    class="sortable-header <?php echo $sort == 'final_amount' ? 'active-sort' : ''; ?>">
+                               <a href="<?php echo get_sort_link('final_amount', $sort, $order, $limit, $search, $filter_status);
+?>"
+                                    class="sortable-header <?php echo $sort == 'final_amount' ?
+'active-sort' : ''; ?>">
                                     Total
                                     <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'final_amount' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'final_amount' ?
+($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
-                                <a href="<?php echo get_sort_link('order_date', $sort, $order, $limit, $search, $filter_status); ?>"
-                                    class="sortable-header <?php echo $sort == 'order_date' ? 'active-sort' : ''; ?>">
+                               <a href="<?php echo get_sort_link('order_date', $sort, $order, $limit, $search, $filter_status);
+?>"
+                                    class="sortable-header <?php echo $sort == 'order_date' ?
+'active-sort' : ''; ?>">
                                     Tanggal
                                     <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_date' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_date' ?
+($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">Pembayaran</th>
                             <th scope="col">
-                                <a href="<?php echo get_sort_link('order_status', $sort, $order, $limit, $search, $filter_status); ?>"
-                                    class="sortable-header <?php echo $sort == 'order_status' ? 'active-sort' : ''; ?>">
+                                <a href="<?php echo get_sort_link('order_status', $sort, $order, $limit, $search, $filter_status);
+?>"
+                                    class="sortable-header <?php echo $sort == 'order_status' ?
+'active-sort' : ''; ?>">
                                     Status
                                     <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_status' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_status' ?
+($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col" class="text-center">Aksi</th>
@@ -169,8 +186,8 @@ include 'proses/proses_pesanan-baru.php';
                             </td>
                             <td>
                                 <?php 
-                                            $status_class = $statuses_to_monitor[$o['order_status']]['color'] ?? 'secondary';
-                                        ?>
+                                    $status_class = $statuses_to_monitor[$o['order_status']]['color'] ?? 'secondary';
+                                ?>
                                 <span class="badge bg-<?php echo $status_class; ?> order-status-badge">
                                     <?php echo $o['order_status']; ?>
                                 </span>
@@ -313,7 +330,7 @@ include 'proses/proses_pesanan-baru.php';
 
     <script>
     // ====================================================
-    // Logic Dark/Light Mode (FIXED)
+    // Logic Dark/Light Mode
     // ====================================================
     const body = document.getElementById('body-admin');
     const modeToggle = document.getElementById('mode-toggle');
@@ -355,7 +372,6 @@ include 'proses/proses_pesanan-baru.php';
     document.addEventListener('DOMContentLoaded', () => {
         applyMode(true);
     });
-
     if (modeToggle) {
         modeToggle.addEventListener('click', (e) => {
             e.preventDefault();
@@ -389,7 +405,6 @@ include 'proses/proses_pesanan-baru.php';
             dataType: 'json',
             success: function(response) {
                 modal.find('#modal_content_loading').hide();
-
                 if (response.success) {
                     const order = response.data.order;
                     const items = response.data.items;

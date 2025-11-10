@@ -84,11 +84,13 @@ include 'navbar.php';
                     <div class="card-body">
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_tf" value="Transfer Bank" checked required>
-                            <label class="form-check-label" for="payment_tf">Transfer Bank (BCA/Mandiri)</label>
+                            <label class="form-check-label" for="payment_tf">Transfer Bank BCA</label>
+                            <small class="d-block text-muted">BCA a.n. Beauty Fashion - 0661401191</small>
                         </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_ewallet" value="E-Wallet" required>
                             <label class="form-check-label" for="payment_ewallet">E-Wallet (Dana/Gopay/OVO)</label>
+                            <small class="d-block text-muted">0857-8080-9099</small>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_cod" value="COD" required>
