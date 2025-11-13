@@ -115,7 +115,7 @@ if (!isset($conn) || @$conn->connect_error) {
     // Query Utama untuk Produk
     // KOREKSI: Menggunakan 'p.stock_quantity' sesuai skema database
     $sql_products = "
-        SELECT p.id, p.name, p.price, p.stock, c.name as category_name
+        SELECT p.id, p.name, p.price, p.stock, p.image_url , c.name as category_name
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id
         $where_sql

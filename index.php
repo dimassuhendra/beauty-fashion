@@ -1,5 +1,5 @@
 <?php
-@require_once 'db_connect.php'; 
+@require_once 'db_connect.php';
 
 // Pengecekan koneksi (mengatasi error undefined variable $conn)
 if (!isset($conn) || @$conn->connect_error) {
@@ -13,7 +13,7 @@ if (!isset($conn) || @$conn->connect_error) {
 
     // Query untuk mengambil 4 produk unggulan
     $sql = "
-        SELECT id, name, price, stock
+        SELECT *
         FROM products 
         -- Ambil 4 produk terbaru atau produk dengan stok terbanyak
         ORDER BY id DESC 
@@ -27,7 +27,7 @@ if (!isset($conn) || @$conn->connect_error) {
             $products[] = $row;
         }
     }
-    
+
     // Tutup koneksi setelah selesai mengambil data
     $conn->close();
 }
@@ -98,37 +98,44 @@ $featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
         <h2 class="text-center mb-5" style="color: var(--primary-pink);"><?php echo $featured_title; ?></h2>
 
         <?php if (!$is_connected): ?>
-        <div class="alert alert-danger text-center" role="alert">
-            <i class="fas fa-database me-2"></i> **Kesalahan Koneksi Database:** <?php echo $error_message; ?>
-            <p class="mb-0 mt-2 small">Produk tidak dapat dimuat. Harap periksa file `db_connect.php` dan jalurnya.</p>
-        </div>
-        <?php elseif (empty($products)): ?>
-        <div class="alert alert-info text-center" role="alert">
-            <i class="fas fa-info-circle me-2"></i> **Informasi:** Belum ada produk unggulan yang ditemukan di database.
-        </div>
-        <?php else: ?>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            <?php foreach ($products as $product): ?>
-            <div class="col">
-                <div class="card h-100 product-card">
-                    <div class="card-img-top bg-light text-center p-5"
-                        style="height: 250px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-tshirt fa-3x text-muted"></i>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
-                        <p class="card-text text-success fw-bold">Rp
-                            <?php echo number_format($product['price'], 0, ',', '.'); ?></p>
-                        <p class="card-text small text-muted">Stok:
-                            <?php echo number_format($product['stock'], 0); ?> (ID:
-                            <?php echo $product['id']; ?>)</p>
-                        <a href="product_detail.php?id=<?php echo $product['id']; ?>"
-                            class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
-                    </div>
-                </div>
+            <div class="alert alert-danger text-center" role="alert">
+                <i class="fas fa-database me-2"></i> **Kesalahan Koneksi Database:** <?php echo $error_message; ?>
+                <p class="mb-0 mt-2 small">Produk tidak dapat dimuat. Harap periksa file `db_connect.php` dan jalurnya.</p>
             </div>
-            <?php endforeach; ?>
-        </div>
+        <?php elseif (empty($products)): ?>
+            <div class="alert alert-info text-center" role="alert">
+                <i class="fas fa-info-circle me-2"></i> **Informasi:** Belum ada produk unggulan yang ditemukan di database.
+            </div>
+        <?php else: ?>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <?php foreach ($products as $product): ?>
+                    <div class="col">
+                        <div class="card h-100 product-card">
+                            <div class="card-img-top bg-light text-center"
+                                style="height: 250px;">
+                                <?php if (!empty($product['image_url'])): ?>
+                                    <img src="uploads/product/<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>"
+                                        class="product-image-thumb">
+                                <?php else: ?>
+                                    <i class="fas fa-image me-2 text-muted"></i>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
+                                <p class="card-text text-success fw-bold">Rp
+                                    <?php echo number_format($product['price'], 0, ',', '.'); ?>
+                                </p>
+                                <p class="card-text small text-muted">Stok:
+                                    <?php echo number_format($product['stock'], 0); ?> (ID:
+                                    <?php echo $product['id']; ?>)
+                                </p>
+                                <a href="product_detail.php?id=<?php echo $product['id']; ?>"
+                                    class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
 
         <div class="text-center mt-5">
@@ -142,40 +149,40 @@ $featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    /* START: JS Halaman Pengguna (Dark Mode) */
-    // Logika Dark/Light Mode
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-    const icon = themeToggle.querySelector('i');
-    const STORAGE_KEY = 'theme-mode';
+        /* START: JS Halaman Pengguna (Dark Mode) */
+        // Logika Dark/Light Mode
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+        const STORAGE_KEY = 'theme-mode';
 
-    // Fungsi untuk menerapkan tema
-    function applyTheme(theme) {
-        body.setAttribute('data-bs-theme', theme);
-        localStorage.setItem(STORAGE_KEY, theme);
-        if (theme === 'dark') {
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
-        } else {
-            icon.classList.remove('fa-sun');
-            icon.classList.add('fa-moon');
+        // Fungsi untuk menerapkan tema
+        function applyTheme(theme) {
+            body.setAttribute('data-bs-theme', theme);
+            localStorage.setItem(STORAGE_KEY, theme);
+            if (theme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
         }
-    }
 
-    // Cek tema yang tersimpan (jika ada) atau gunakan preferensi sistem
-    const savedTheme = localStorage.getItem(STORAGE_KEY);
-    const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initialTheme = savedTheme || preferredTheme;
-    applyTheme(initialTheme);
+        // Cek tema yang tersimpan (jika ada) atau gunakan preferensi sistem
+        const savedTheme = localStorage.getItem(STORAGE_KEY);
+        const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const initialTheme = savedTheme || preferredTheme;
+        applyTheme(initialTheme);
 
 
-    // Event listener untuk tombol toggle
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = body.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        applyTheme(newTheme);
-    });
-    /* END: JS Halaman Pengguna (Dark Mode) */
+        // Event listener untuk tombol toggle
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+        });
+        /* END: JS Halaman Pengguna (Dark Mode) */
     </script>
 </body>
 

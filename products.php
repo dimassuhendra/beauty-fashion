@@ -169,8 +169,13 @@ include 'proses/proses_products.php';
                     <?php foreach ($products as $product): ?>
                     <div class="col">
                         <div class="card h-100 product-card shadow-sm">
-                            <div class="card-img-top text-center p-4 product-card-image">
-                                <i class="fas fa-tshirt fa-4x text-muted"></i>
+                            <div class="card-img-top">
+                                <?php if (!empty($product['image_url'])): ?>
+                                    <img src="uploads/product/<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>"
+                                        class="product-image-thumb">
+                                <?php else: ?>
+                                    <i class="fas fa-image me-2 text-muted"></i>
+                                <?php endif; ?>
                             </div>
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-1 text-muted small">

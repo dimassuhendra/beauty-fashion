@@ -79,53 +79,54 @@
     /* ==================================================== */
 
     /* --- Bagian 1: CSS Wajib untuk Sticky Footer --- */
-html {
-    height: 100%;
-}
+    html {
+        height: 100%;
+    }
 
-body {
-    min-height: 100%;
-    margin: 0;
-    padding: 0;
-    /* Menggunakan Flexbox untuk menumpuk elemen secara vertikal */
-    display: flex;
-    flex-direction: column;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font yang lebih elegan */
-}
+    body {
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        /* Menggunakan Flexbox untuk menumpuk elemen secara vertikal */
+        display: flex;
+        flex-direction: column;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Font yang lebih elegan */
+    }
 
-/* CATATAN PENTING:
+    /* CATATAN PENTING:
    Pastikan semua konten utama halaman Anda (yang ada di antara
    <header> dan <footer>) dibungkus dalam satu elemen, misalnya: <main>
 */
-main {
-    /* Ini yang membuat konten utama mengisi ruang sisa dan mendorong footer ke bawah */
-    flex: 1 0 auto;
-}
+    main {
+        /* Ini yang membuat konten utama mengisi ruang sisa dan mendorong footer ke bawah */
+        flex: 1 0 auto;
+    }
 
 
-/* ==================================================== */
-/* START: CSS Halaman Beranda (index.php) */
-/* ==================================================== */
+    /* ==================================================== */
+    /* START: CSS Halaman Beranda (index.php) */
+    /* ==================================================== */
 
-/* Hero section styling (Hanya ada di halaman Beranda/Index) */
-.hero-section {
-    padding: 100px 0;
-    background: linear-gradient(135deg, var(--primary-pink), #ffc0cb);
-    /* Pink Gradient */
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-}
+    /* Hero section styling (Hanya ada di halaman Beranda/Index) */
+    .hero-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, var(--primary-pink), #ffc0cb);
+        /* Pink Gradient */
+        color: #fff;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
 
-[data-bs-theme="dark"] .hero-section {
-    background: linear-gradient(135deg, #1c1f23, var(--primary-pink));
-}
+    [data-bs-theme="dark"] .hero-section {
+        background: linear-gradient(135deg, #1c1f23, var(--primary-pink));
+    }
 
-/* ==================================================== */
-/* END: CSS Halaman Beranda (index.php) */
-/* ==================================================== */
+    /* ==================================================== */
+    /* END: CSS Halaman Beranda (index.php) */
+    /* ==================================================== */
 
 
-   /* ==================================================== */
+    /* ==================================================== */
     /* START: CSS Halaman Produk Selengkapnya (products.php) */
     /* ==================================================== */
 
@@ -167,8 +168,21 @@ main {
         display: flex;
         align-items: center;
         justify-content: center;
-        /* Menambahkan subtle gradient pada background image placeholder */
         background: linear-gradient(to bottom right, var(--light-bg), #fff0f5);
+    }
+
+    .product-image-thumb {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .card-img-top {
+        height: 250px;
+        width: 100%;
+        overflow: hidden;
+        padding: 0;
     }
 
     [data-bs-theme="dark"] .product-card-image {
