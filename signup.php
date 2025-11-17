@@ -70,7 +70,7 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
                 <div class="mb-3">
                     <label for="passwordInput" class="form-label visually-hidden">Password</label>
                     <input type="password" class="form-control form-control-lg" id="passwordInput" name="password"
-                        placeholder="Buat Password" required>
+                        placeholder="Buat Kata Sandi" required>
                 </div>
                 <div class="mb-4">
                     <label for="confirmPasswordInput" class="form-label visually-hidden">Konfirmasi Password</label>

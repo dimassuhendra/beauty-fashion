@@ -19,7 +19,6 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
 ?>
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,7 +66,7 @@ if (isset($_GET['status']) && isset($_GET['message'])) {
                 <div class="mb-3">
                     <label for="passwordInput" class="form-label visually-hidden">Password</label>
                     <input type="password" class="form-control form-control-lg" id="passwordInput" name="password"
-                        placeholder="Password" required>
+                        placeholder="Kata Sandi" required>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
