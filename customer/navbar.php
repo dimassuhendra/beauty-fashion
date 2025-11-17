@@ -47,6 +47,9 @@ $cartCount = $cartCount ?? 0; // Menggunakan 0 sebagai default jika variabel bel
                 <li class="nav-item">
                     <a class="nav-link" href="profile.php"><i class="fas fa-user-circle"></i> Profil</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="complaint.php"><i class="fas fa-exclamation-triangle"></i> Ajukan Komplain</a>
+                </li>
             </ul>
 
             <div class="d-flex align-items-center">
