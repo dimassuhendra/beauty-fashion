@@ -126,7 +126,7 @@ $active_page = basename($_SERVER['PHP_SELF']);
     </div>
 
     <ul class="components">
-        <li class="<?php echo ($active_page == 'dashboard.php' || $active_page == 'dashboard.php' ? 'active' : ''); ?>">
+        <li class="<?php echo ($active_page == 'dashboard.php' ? 'active' : ''); ?>">
             <a href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard Utama</a>
         </li>
         <li class="<?php echo ($active_page == 'manajemen-produk.php' ? 'active' : ''); ?>">
@@ -135,16 +135,18 @@ $active_page = basename($_SERVER['PHP_SELF']);
         <li class="<?php echo ($active_page == 'pesanan-baru.php' ? 'active' : ''); ?>">
             <a href="pesanan-baru.php"><i class="fas fa-clipboard-list me-2"></i> Pesanan Baru</a>
         </li>
-        <li class="<?php echo ($active_page == 'manajemen-pelanggan.php' ? 'active' : ''); ?>">
+        
+                <li class="<?php echo ($active_page == 'manajemen-komplain.php' ? 'active' : ''); ?>">
+            <a href="manajemen-komplain.php"><i class="fas fa-exclamation-circle me-2"></i> Manajemen Komplain</a>
+        </li>
+                <li class="<?php echo ($active_page == 'manajemen-pelanggan.php' ? 'active' : ''); ?>">
             <a href="manajemen-pelanggan.php"><i class="fas fa-users me-2"></i> Manajemen Pelanggan</a>
         </li>
         <li class="<?php echo ($active_page == 'manajemen-penjualan.php' ? 'active' : ''); ?>">
             <a href="manajemen-penjualan.php"><i class="fas fa-chart-line me-2"></i> Laporan Penjualan</a>
         </li>
-        <!-- <li class="<?php echo ($active_page == 'manajemen-promo.php' ? 'active' : ''); ?>">
-            <a href="manajemen-promo.php"><i class="fas fa-tags me-2"></i> Kelola Promo</a>
-        </li> -->
     </ul>
+
 
     <div style="position: absolute; bottom: 20px; width: 100%; padding: 0 20px; z-index: 10;">
         <button id="mode-toggle" class="btn btn-sm btn-light d-block w-100 fw-bold mb-2">
