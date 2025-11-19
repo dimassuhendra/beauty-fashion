@@ -114,11 +114,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order_id'])) {
     // Redirect untuk menghindari form resubmission setelah POST
     // header('Location: pesanan_anda.php'); exit; 
 }
-
-
-// // Tutup koneksi utama jika belum ditutup
-// if (isset($conn) && $conn->ping()) {
-//     $conn->close();
-// }
-
-?>
