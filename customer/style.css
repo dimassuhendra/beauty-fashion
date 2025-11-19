@@ -448,23 +448,17 @@ main {
 }
 
 .card-bayar {
-    width: 100%;
-    height: 10%;
-    display: block;
+    max-height: 250px; 
+    width: auto;
 }
 
-/* Mengatasi masalah radio button alignment yang sering terjadi */
-.form-check-input {
-    /* Memastikan ukuran konsisten */
-    min-width: 1.25em; 
-    min-height: 1.25em;
-    margin-top: 0.2em;
-    cursor: pointer; 
+.qris-container {
+    text-align: center; 
+    max-width: 250px;
+    margin: 0 auto;
 }
 
-.form-check-input:checked {
-    background-color: var(--pink-primary);
-    border-color: var(--pink-primary);
+.form-check-input[data-bs-toggle="collapse"]:checked ~ .collapse {
 }
 
 .checkout-summary-card {

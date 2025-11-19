@@ -81,10 +81,94 @@ include 'navbar.php';
                     <div class="card-header bg-white">
                         <h5 class="card-title mb-0 text-pink-primary"><i class="fas fa-credit-card me-2"></i> Metode Pembayaran</h5>
                     </div>
+
                     <div class="card-body">
+                        <div class="mb-3 border rounded p-3">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="radio" 
+                                    name="payment_method" 
+                                    id="payment_qris" 
+                                    value="QRIS" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseQris" 
+                                    aria-expanded="true" 
+                                    aria-controls="collapseQris"
+                                    checked 
+                                    required
+                                >
+                                <label class="form-check-label fw-bold" for="payment_qris">
+                                    QRIS (Semua E-Wallet/Bank)
+                                </label>
+                            </div>
+
+                            <div class="collapse show mt-2" id="collapseQris" data-bs-parent="#paymentOptions">
+                                <p class="text-muted small">Scan kode di bawah menggunakan aplikasi pembayaran Anda:</p>
+                                <div class="qris-container">
+                                    <img src="../assets/img/qris.jpeg" class="img-fluid w-100 card-bayar" alt="Kode QRIS Pembayaran">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 border rounded p-3">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="radio" 
+                                    name="payment_method" 
+                                    id="payment_tf" 
+                                    value="Transfer Bank" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseTransfer" 
+                                    aria-expanded="false" 
+                                    aria-controls="collapseTransfer" 
+                                    required
+                                >
+                                <label class="form-check-label fw-bold" for="payment_tf">
+                                    Transfer Bank BCA
+                                </label>
+                            </div>
+                            
+                            <div class="collapse mt-2" id="collapseTransfer" data-bs-parent="#paymentOptions">
+                                <small class="d-block text-muted">
+                                    Rekening Tujuan: **BCA a.n. Beauty Fashion - 0661401191**
+                                </small>
+                                <button class="btn btn-sm btn-outline-secondary mt-1">Salin Nomor Rekening</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 border rounded p-3">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="radio" 
+                                    name="payment_method" 
+                                    id="payment_ewallet" 
+                                    value="E-Wallet" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseEwallet" 
+                                    aria-expanded="false" 
+                                    aria-controls="collapseEwallet" 
+                                    required
+                                >
+                                <label class="form-check-label fw-bold" for="payment_ewallet">
+                                    E-Wallet (Dana/Gopay/OVO)
+                                </label>
+                            </div>
+
+                            <div class="collapse mt-2" id="collapseEwallet" data-bs-parent="#paymentOptions">
+                                <small class="d-block text-muted">
+                                    Nomor E-Wallet: **0857-8080-9099**
+                                </small>
+                                <button class="btn btn-sm btn-outline-secondary mt-1">Salin Nomor</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="card-body">
                         <img src="../assets/img/qris.jpeg" class="card-bayar w-100">
 
-                        <!-- <div class="form-check mb-2">
+                        <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_tf" value="Transfer Bank" checked required>
                             <label class="form-check-label" for="payment_tf">Transfer Bank BCA</label>
                             <small class="d-block text-muted">BCA a.n. Beauty Fashion - 0661401191</small>
@@ -97,8 +181,8 @@ include 'navbar.php';
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_cod" value="COD" required>
                             <label class="form-check-label" for="payment_cod">Cash On Delivery (COD)</label>
-                        </div> -->
-                    </div>
+                        </div>
+                    </div> -->
                 </div>
             </div>
 
