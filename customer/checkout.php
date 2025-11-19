@@ -82,7 +82,9 @@ include 'navbar.php';
                         <h5 class="card-title mb-0 text-pink-primary"><i class="fas fa-credit-card me-2"></i> Metode Pembayaran</h5>
                     </div>
                     <div class="card-body">
-                        <div class="form-check mb-2">
+                        <img src="../assets/img/qris.jpeg" class="card-bayar w-100">
+
+                        <!-- <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_tf" value="Transfer Bank" checked required>
                             <label class="form-check-label" for="payment_tf">Transfer Bank BCA</label>
                             <small class="d-block text-muted">BCA a.n. Beauty Fashion - 0661401191</small>
@@ -95,7 +97,7 @@ include 'navbar.php';
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="payment_method" id="payment_cod" value="COD" required>
                             <label class="form-check-label" for="payment_cod">Cash On Delivery (COD)</label>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
