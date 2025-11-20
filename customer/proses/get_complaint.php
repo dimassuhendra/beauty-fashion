@@ -20,6 +20,41 @@ function fetchUserCompletedOrders($conn, $userId) {
 
 $orders = fetchUserCompletedOrders($conn, $userId);
 
+$complaints = [];
+
+// Query untuk mengambil riwayat komplain, ORDER CODE, dan TANGGAPAN ADMIN
+// ASUMSI: Kolom tanggapan admin bernama 'admin_response' di tabel 'complaints'
+$sql = "SELECT
+            c.id, c.subject, c.description, c.status, c.created_at, c.admin_response,
+            o.order_code
+        FROM
+            complaints c
+        LEFT JOIN
+            orders o ON c.order_id = o.id
+        WHERE
+            c.user_id = ?
+        ORDER BY
+            c.created_at DESC";
+
+if ($stmt = $conn->prepare($sql)) {
+    // Asumsi $userId sudah didefinisikan (misal: $userId = $_SESSION['user_id'] ?? 1;)
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        // Ganti order_code NULL dengan '-' jika tidak terkait pesanan
+        $row['order_code'] = $row['order_code'] ?? '-';
+        // Pastikan admin_response terinisialisasi
+        $row['admin_response'] = $row['admin_response'] ?? null;
+        $complaints[] = $row;
+    }
+    $stmt->close();
+} else {
+    // Log error jika query gagal disiapkan
+    error_log("SQL Prepare Error: " . $conn->error);
+    $error = "Gagal memuat riwayat komplain. Silakan coba lagi.";
+}
 
 // 2. Handler POST untuk Pengajuan Komplain
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && ($_POST['action'] ?? '') == 'submit_complaint') {
