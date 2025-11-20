@@ -114,6 +114,18 @@ if (!function_exists('formatRupiah')) {
                                         <?= htmlspecialchars($product['name']); ?></h5>
                                     <p class="card-price mb-2"><?= formatRupiah($product['price']); ?></p>
 
+                                    <div class="d-flex align-items-center mb-2">
+                                        <?php if (isset($product['average_rating']) && $product['average_rating'] > 0): ?>
+                                            <span class="text-warning small me-2">
+                                                <i class="fas fa-star"></i> <?= number_format($product['average_rating'], 1); ?>
+                                            </span>
+                                            <span class="text-muted small">
+                                                (<?= $product['total_reviews'] ?? 0; ?> ulasan)
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">Belum ada ulasan</span>
+                                        <?php endif; ?>
+                                    </div>
                                     <div class="d-flex justify-content-between align-items-center mt-auto mb-3">
                                         <?php if ($product['stock'] > 0): ?>
                                         <span class="stock-label text-success"><i class="fas fa-check-circle"></i> Stok:
@@ -175,7 +187,7 @@ if (!function_exists('formatRupiah')) {
                         <p class="mt-2">Memuat detail produk...</p>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" id="modal-footer-area">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
@@ -183,22 +195,43 @@ if (!function_exists('formatRupiah')) {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // --- 1. FUNGSI PEMBANTU UNTUK RATING (menggunakan Font Awesome) ---
+        function getStarRating(rating) {
+            // Membulatkan rating ke 0.5 terdekat
+            const roundedRating = Math.round(rating * 2) / 2;
+            let stars = '';
+
+            for (let i = 1; i <= 5; i++) {
+                if (i <= roundedRating) {
+                    // Bintang Penuh
+                    stars += '<i class="fas fa-star text-warning me-1"></i>';
+                } else if (i - 0.5 === roundedRating) {
+                    // Bintang Setengah (Font Awesome 5 menggunakan fas fa-star-half-alt)
+                    stars += '<i class="fas fa-star-half-alt text-warning me-1"></i>';
+                } else {
+                    // Bintang Kosong (Font Awesome 5 menggunakan far fa-star)
+                    stars += '<i class="far fa-star text-warning me-1"></i>';
+                }
+            }
+            return stars;
+        }
+
+
         // Fungsi untuk menambah ke keranjang
         function addToCart(productId, quantity = 1) {
-            // Ambil elemen penghitung keranjang di navbar (ID: cart-count)
+            // ... (Kode addToCart tetap sama)
             const cartCountElement = document.getElementById('cart-count');
 
-            // Kirim permintaan AJAX ke proses_cart.php
             fetch('proses/proses_cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        quantity: quantity
-                    })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
                 })
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -206,7 +239,6 @@ if (!function_exists('formatRupiah')) {
                         if (cartCountElement) {
                             cartCountElement.innerText = data.cart_count;
                         }
-                        // Jika berhasil dari modal, tutup modal
                         const modalElement = document.getElementById('productDetailModal');
                         if (modalElement) {
                             const modal = bootstrap.Modal.getInstance(modalElement);
@@ -228,11 +260,11 @@ if (!function_exists('formatRupiah')) {
                 window.location.href = `checkout.php?quick_buy_id=${productId}&qty=${quantity}`;
             }
         }
-        
-        // Fungsi untuk mengambil detail produk dan mengisi modal
+
+        // --- 2. FUNGSI UTAMA: Mengambil detail produk dan mengisi modal (Direfaktor) ---
         function fetchProductDetail(productId) {
             const modalBody = document.getElementById('modal-content-area');
-            const modalFooter = document.querySelector('#productDetailModal .modal-footer');
+            const modalFooter = document.getElementById('modal-footer-area');
             const modalTitle = document.getElementById('productDetailModalLabel');
 
             // Reset konten dan tampilkan loading state
@@ -245,33 +277,50 @@ if (!function_exists('formatRupiah')) {
             modalTitle.innerText = "Detail Produk";
 
 
-            // Kirim permintaan AJAX ke endpoint baru
+            // Kirim permintaan AJAX ke endpoint baru.
+            // ASUMSI: get_product-detail.php sekarang mengembalikan 'product' (dengan average_rating) dan 'reviews_list'.
             fetch(`proses/get_product-detail.php?id=${productId}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                    if (data.success && data.product) {
                         const product = data.product;
+                        const reviews_list = data.reviews_list || []; // Pastikan ada array ulasan
 
                         // Tentukan stok
                         const isAvailable = product.stock > 0;
-                        const stockText = isAvailable ? 
-                            `<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Stok Tersedia (${product.stock} unit)</span>` : 
+                        const stockText = isAvailable ?
+                            `<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Stok Tersedia (${product.stock} unit)</span>` :
                             `<span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i> Stok Habis</span>`;
+
+                        // Tentukan Rating Rata-rata
+                        const avgRating = parseFloat(product.average_rating) || 0;
+                        const totalReviews = parseInt(product.total_reviews) || 0;
 
                         // Isi Judul Modal
                         modalTitle.innerText = product.name;
 
-                        // Isi Konten Modal (HTML Detail Produk)
-                        modalBody.innerHTML = `
+                        // --- Konten Modal Detail Produk (TERMASUK RATING DAN KOMENTAR) ---
+                        const detailHtml = `
                             <div class="row">
                                 <div class="col-md-5">
                                     <img src="../uploads/product/${product.image_url || 'default.jpg'}" class="img-fluid rounded" alt="${product.name}">
                                 </div>
+
                                 <div class="col-md-7">
-                                    <h3 class="fw-bold" style="color: #ff69b4;">${product.name}</h3>
+                                    
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h3 class="fw-bold me-3" style="color: #ff69b4;">${product.name}</h3>
+                                        ${avgRating > 0 ? `
+                                            <span class="ms-auto" title="Rating Rata-rata">
+                                                ${getStarRating(avgRating)} 
+                                                <small class="text-muted">(${avgRating.toFixed(1)} / ${totalReviews} ulasan)</small>
+                                            </span>
+                                        ` : '<span class="ms-auto text-muted small">Belum ada ulasan</span>'}
+                                    </div>
+                                    
                                     <p class="text-muted mb-3">${product.category_name}</p>
                                     
-                                    <h4 class="text-success fw-bolder">${product.price_formatted}</h4>
+                                    <h4 class="text-success fw-bolder">${formatRupiah(product.price)}</h4>
                                     <p class="mb-3">${stockText}</p>
                                     
                                     <h6 class="mt-4">Deskripsi Produk:</h6>
@@ -280,13 +329,46 @@ if (!function_exists('formatRupiah')) {
                                     ${isAvailable ? `
                                         <div class="d-flex align-items-center mb-4">
                                             <label for="qtyInput" class="form-label me-3 mb-0">Jumlah:</label>
-                                            <input type="number" id="qtyInput" class="form-control w-25 text-center" value="1" min="1" max="${product.stock}" onchange="if(parseInt(this.value)<1)this.value=1; if(parseInt(this.value)>${product.stock})this.value=${product.stock};">
+                                            <input type="number" id="qtyInput" class="form-control w-25 text-center" 
+                                                   value="1" min="1" max="${product.stock}" 
+                                                   onchange="if(parseInt(this.value)<1)this.value=1; if(parseInt(this.value)>${product.stock})this.value=${product.stock};">
                                         </div>
                                     ` : ''}
 
+                                </div> </div> <hr class="my-4">
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5 class="fw-bold mb-3">Ulasan Pelanggan (${totalReviews})</h5>
+
+                                    ${reviews_list && reviews_list.length > 0 ? `
+                                        <div class="reviews-container">
+                                            ${reviews_list.map(review => `
+                                                <div class="card mb-3 shadow-sm border-light">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <h6 class="mb-1 fw-bold">${review.user_name || 'Pengguna Anonim'}</h6>
+                                                                <small class="text-muted">${new Date(review.review_date).toLocaleDateString()}</small>
+                                                            </div>
+                                                            <span class="text-warning small">${getStarRating(review.rating)}</span>
+                                                        </div>
+                                                        <p class="card-text mt-2">${review.comment_text || '-'}</p>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : `
+                                        <div class="alert alert-info text-center" role="alert">
+                                            Belum ada ulasan untuk produk ini.
+                                        </div>
+                                    `}
                                 </div>
                             </div>
                         `;
+                        // --- Akhir Konten Modal Detail Produk ---
+                        
+                        modalBody.innerHTML = detailHtml;
 
                         // Isi Footer Modal (Tombol Aksi)
                         let footerButtons = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>`;
@@ -307,7 +389,7 @@ if (!function_exists('formatRupiah')) {
                     } else {
                         // Tampilkan pesan error jika produk tidak ditemukan
                         modalTitle.innerText = "Error";
-                        modalBody.innerHTML = `<div class="alert alert-danger p-4">${data.message}</div>`;
+                        modalBody.innerHTML = `<div class="alert alert-danger p-4">${data.message || 'Produk tidak ditemukan.'}</div>`;
                     }
                 })
                 .catch(error => {
@@ -316,6 +398,16 @@ if (!function_exists('formatRupiah')) {
                     modalBody.innerHTML = `<div class="alert alert-danger p-4">Terjadi kesalahan saat mengambil data detail produk.</div>`;
                 });
         }
+        
+        // Fungsi format Rupiah versi JavaScript
+        function formatRupiah(angka) {
+            if (angka === null || angka === undefined) return 'Rp 0';
+            let reverse = angka.toString().split('').reverse().join(''),
+                ribuan = reverse.match(/\d{1,3}/g);
+            ribuan = ribuan.join('.').split('').reverse().join('');
+            return 'Rp ' + ribuan;
+        }
+
     </script>
 </body>
 

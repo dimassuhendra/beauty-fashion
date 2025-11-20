@@ -14,10 +14,21 @@ $productId = (int)$_GET['id'];
 
 // Query untuk mengambil SEMUA detail produk, termasuk kategori
 // Asumsi: products.category_id berelasi dengan categories.id
-$sql = "SELECT p.*, c.name AS category_name 
-        FROM products p 
-        JOIN categories c ON p.category_id = c.id 
-        WHERE p.id = ?";
+$sql = "SELECT 
+            p.*, 
+            c.name AS category_name, 
+            AVG(r.rating) AS average_rating,
+            COUNT(r.id) AS total_reviews
+        FROM 
+            products p 
+        JOIN 
+            categories c ON p.category_id = c.id 
+        LEFT JOIN 
+            reviews r ON p.id = r.product_id  -- Gunakan LEFT JOIN agar produk tanpa ulasan tetap muncul
+        WHERE 
+            p.id = ?
+        GROUP BY 
+            p.id";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
