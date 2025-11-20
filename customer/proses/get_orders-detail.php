@@ -2,9 +2,9 @@
 session_start();
 header('Content-Type: application/json');
 
-// Pastikan path ini benar relatif terhadap get_order_details.php
-include '../db_connect.php'; 
-include 'get_orders.php'; // Memuat format_rupiah dan get_status_data
+// di get_orders-detail.php
+require_once '../../db_connect.php'; 
+require_once 'get_orders.php'; // Ganti include menjadi require_once
 
 $response = [
     'success' => false,
@@ -43,6 +43,7 @@ $sql_header = "SELECT
     o.order_code, 
     o.order_date, 
     o.total_amount, 
+    o.final_amount,             -- <<< PERBAIKAN: Menambahkan kolom final_amount
     o.order_status, 
     o.payment_method, 
     ua.recipient_name,
@@ -76,7 +77,7 @@ $sql_details = "SELECT
     p.name AS product_name, 
     od.quantity, 
     od.unit_price, 
-    od.subtotal    
+    od.subtotal     
     FROM order_details od
     JOIN products p ON od.product_id = p.id 
     WHERE od.order_id = ?";
@@ -106,46 +107,61 @@ $full_address_display =
 ?>
 
 <div class="row">
-    <div class="col-md-6 mb-3">
-        <h5><i class="fas fa-info-circle me-1"></i> Informasi Dasar</h5>
-        <table class="table table-sm table-borderless">
-            <tr>
-                <td class="fw-bold">Kode Pesanan</td>
-                <td><?= htmlspecialchars($order['order_code']) ?></td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Tanggal Pesan</td>
-                <td><?= date('d F Y H:i', strtotime($order['order_date'])) ?></td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Metode Bayar</td>
-                <td><?= htmlspecialchars($order['payment_method']) ?></td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Status</td>
-                <td><span class="badge <?= $status_data['class'] ?>"><?= htmlspecialchars($status_data['display']) ?></span></td>
-            </tr>
-        </table>
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="card-title mb-0 text-pink"><i class="fas fa-info-circle me-2"></i> Informasi Dasar</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-muted">Kode Pesanan</span>
+                    <span><?= htmlspecialchars($order['order_code']) ?></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-muted">Tanggal Pesan</span>
+                    <span><?= date('d F Y H:i', strtotime($order['order_date'])) ?></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-muted">Metode Bayar</span>
+                    <span><?= htmlspecialchars($order['payment_method']) ?></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-muted">Status</span>
+                    <span>
+                        <span class="badge rounded-pill p-2 <?= $status_data['class'] ?> text-white fw-bold">
+                            <?= htmlspecialchars($status_data['display']) ?>
+                        </span>
+                    </span>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <div class="col-md-6 mb-3">
-        <h5><i class="fas fa-map-marker-alt me-1"></i> Alamat Pengiriman</h5>
-        <p class="mb-0">
-            **Penerima:** <?= htmlspecialchars($order['recipient_name']) ?> (<?= htmlspecialchars($order['phone_number']) ?>)
-        </p>
-        <p class="small text-muted">
-            <?= nl2br(htmlspecialchars($full_address_display)) ?>
-        </p>
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="card-title mb-0 text-pink"><i class="fas fa-map-marker-alt me-2"></i> Alamat Pengiriman</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-1">
+                    <span class="fw-bold text-dark"><?= htmlspecialchars($order['recipient_name']) ?></span> 
+                    (<span class="small text-muted"><?= htmlspecialchars($order['phone_number']) ?></span>)
+                </p>
+                <address class="small text-secondary mb-0 mt-2 p-2 border-start border-3 border-pink bg-light">
+                    <?= nl2br(htmlspecialchars($full_address_display)) ?>
+                </address>
+            </div>
+        </div>
     </div>
 </div>
 
-<hr>
+<hr class="my-4">
 
-<h5><i class="fas fa-box me-1"></i> Rincian Produk</h5>
+<h5><i class="fas fa-box-open me-2 text-pink"></i> Rincian Produk</h5>
 <div class="table-responsive">
-    <table class="table table-striped table-sm">
+    <table class="table table-striped table-hover align-middle">
         <thead>
-            <tr>
+            <tr class="table-light">
                 <th>Produk</th>
                 <th class="text-center">Kuantitas</th>
                 <th class="text-end">Harga Satuan</th>
@@ -157,15 +173,19 @@ $full_address_display =
             <tr>
                 <td><?= htmlspecialchars($item['product_name']) ?></td>
                 <td class="text-center"><?= htmlspecialchars($item['quantity']) ?></td>
-                <td class="text-end"><?= format_rupiah($item['unit_price']) ?></td>
-                <td class="text-end"><?= format_rupiah($item['subtotal']) ?></td>
+                <td class="text-end text-muted"><?= format_rupiah($item['unit_price']) ?></td>
+                <td class="text-end fw-bold"><?= format_rupiah($item['subtotal']) ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3" class="text-end fw-bold">Total Pembayaran</td>
-                <td class="text-end fw-bold text-danger"><?= format_rupiah($order['final_amount']) ?></td>
+                <td colspan="3" class="text-end fw-bold">Ongkos Kirim</td>
+                <td class="text-end fw-bold text-primary"><?= format_rupiah('20000') ?></td>
+            </tr>
+            <tr class="table-info">
+                <td colspan="3" class="text-end fw-bold">Total Pembayaran Akhir</td>
+                <td class="text-end fw-bold text-danger fs-5"><?= format_rupiah($order['final_amount']) ?></td>
             </tr>
         </tfoot>
     </table>

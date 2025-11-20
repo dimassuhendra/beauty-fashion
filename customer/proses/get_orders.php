@@ -90,13 +90,12 @@ $notification = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order_id'])) {
     $cancel_id = (int)$_POST['cancel_order_id'];
     
-    // Sambungkan kembali koneksi jika sudah ditutup
-    $conn_cancel = new mysqli($servername, $username, $password, $dbname);
-
+    // Hapus pembuatan koneksi baru. Cukup gunakan $conn yang sudah tersedia.
+    
     // Hanya izinkan pembatalan jika statusnya 'Pending Payment'
     $sql_cancel = "UPDATE orders SET order_status = 'Cancelled', updated_at = NOW() WHERE id = ? AND user_id = ? AND order_status IN ('Pending Payment')";
     
-    if ($stmt_cancel = $conn_cancel->prepare($sql_cancel)) {
+    if ($stmt_cancel = $conn->prepare($sql_cancel)) { // <<< GUNAKAN $conn
         $stmt_cancel->bind_param("ii", $cancel_id, $user_id);
         
         if ($stmt_cancel->execute()) {
@@ -106,11 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order_id'])) {
                 $notification = 'Gagal membatalkan pesanan. Status pesanan mungkin sudah berubah atau pesanan bukan milik Anda.';
             }
         } else {
-             $notification = 'Gagal membatalkan pesanan karena kesalahan sistem.';
+            $notification = 'Gagal membatalkan pesanan karena kesalahan sistem.';
         }
         $stmt_cancel->close();
     }
-    $conn_cancel->close();
-    // Redirect untuk menghindari form resubmission setelah POST
-    // header('Location: pesanan_anda.php'); exit; 
 }

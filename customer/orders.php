@@ -124,7 +124,7 @@ include 'proses/get_orders.php';
                 <div class="modal-body">
                     <p>Anda akan membatalkan pesanan:</p>
                     <h4 class="text-danger fw-bold" id="cancel-order-code"></h4>
-                    <p>Apakah Anda yakin? **Tindakan ini tidak dapat dibatalkan**.</p>
+                    <p>Apakah Anda yakin? Tindakan ini tidak dapat dibatalkan.</p>
                     <p class="small text-muted">Pembatalan hanya berlaku untuk pesanan dengan status 'Menunggu Pembayaran'.</p>
                     
                     <form id="cancelOrderForm" method="POST" action="orders.php" style="display: none;">
