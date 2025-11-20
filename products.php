@@ -1,7 +1,10 @@
 <?php
 session_start();
 @require_once 'db_connect.php'; 
-include 'proses/proses_products.php';
+include 'proses/proses_products.php'; 
+
+// Cek status login
+$is_logged_in = isset($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -13,6 +16,42 @@ include 'proses/proses_products.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* CSS untuk memperbaiki tampilan gambar produk */
+        .product-card .card-img-top {
+            height: 200px; /* Atur tinggi tetap untuk konsistensi kartu */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bs-body-bg); /* Mengikuti tema body */
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+
+        .product-image-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Penting: Memastikan gambar mengisi area container */
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image-thumb {
+            transform: scale(1.05);
+        }
+
+        /* Style tambahan untuk gambar di dalam modal */
+        #productDetailModal .modal-product-image {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 0.25rem;
+        }
+        
+        .text-pink {
+            color: #ff69b4 !important; /* Contoh warna pink untuk konsistensi tema */
+        }
+    </style>
 </head>
 
 <body data-bs-theme="light">
@@ -171,10 +210,10 @@ include 'proses/proses_products.php';
                         <div class="card h-100 product-card shadow-sm">
                             <div class="card-img-top">
                                 <?php if (!empty($product['image_url'])): ?>
-                                    <img src="uploads/product/<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>"
-                                        class="product-image-thumb">
+                                <img src="uploads/product/<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>"
+                                    class="product-image-thumb">
                                 <?php else: ?>
-                                    <i class="fas fa-image me-2 text-muted"></i>
+                                <i class="fas fa-image fa-3x text-muted"></i>
                                 <?php endif; ?>
                             </div>
                             <div class="card-body">
@@ -232,29 +271,36 @@ include 'proses/proses_products.php';
 
     <?php include 'footer.php' ?>
 
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title" id="loginModalLabel"><i class="fas fa-lock me-2"></i> Perlu Login</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productDetailModalLabel"><i class="fas fa-info-circle me-2"></i> Detail Produk</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Anda harus **Masuk (Login)** terlebih dahulu untuk melihat detail produk ini dan melakukan
-                    pembelian.
+                    <div id="modal-product-content">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Memuat detail produk...</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <a id="modalLoginButton" href="login.php" class="btn btn-primary">Lanjut ke Halaman Login</a>
-                </div>
+                <div class="modal-footer" id="modal-product-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
             </div>
         </div>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     /* START: JS Halaman Produk Selengkapnya */
+
     // ====================================================
     // 1. Logika Dark/Light Mode
     // ====================================================
@@ -287,31 +333,192 @@ include 'proses/proses_products.php';
     });
 
     // ====================================================
-    // 2. Logic Check Login dan Redirect (Button Detail)
+    // 2. Logic Tampilkan Modal Detail Produk (Menggunakan AJAX)
     // ====================================================
 
-    // Asumsi: Kita cek status login dari variabel sesi PHP.
-    const isUserLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    const isUserLoggedIn = <?php echo $is_logged_in ? 'true' : 'false'; ?>;
+    const currentUrl = encodeURIComponent(window.location.href);
 
     document.querySelectorAll('.btn-detail-produk').forEach(button => {
         button.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
-            const detailUrl = `product_detail.php?id=${productId}`;
-
-            if (isUserLoggedIn) {
-                // Jika sudah login, langsung ke halaman detail
-                window.location.href = detailUrl;
-            } else {
-                // Jika belum login, tampilkan modal konfirmasi
-                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
-
-                // Tombol di modal akan diarahkan ke halaman login
-                document.getElementById('modalLoginButton').href =
-                    `login.php?redirect_to=${encodeURIComponent(detailUrl)}`;
-            }
+            showProductDetailModal(productId);
         });
     });
+
+    /**
+     * Fungsi pembantu untuk menghasilkan ikon rating bintang
+     * @param {number} rating - Nilai rating (0.0 hingga 5.0)
+     * @returns {string} HTML string untuk ikon bintang
+     */
+    function generateStarRating(rating) {
+        const ratingValue = parseFloat(rating) || 0;
+        const fullStars = Math.floor(ratingValue);
+        const halfStar = ratingValue % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+        let starsHtml = '';
+
+        // Bintang Penuh
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += '<i class="fas fa-star text-warning"></i>';
+        }
+        // Bintang Setengah
+        if (halfStar) {
+            starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
+        }
+        // Bintang Kosong
+        for (let i = 0; i < emptyStars; i++) {
+            starsHtml += '<i class="far fa-star text-warning"></i>';
+        }
+        
+        return starsHtml;
+    }
+
+    function showProductDetailModal(productId) {
+        const modalElement = document.getElementById('productDetailModal');
+        const modal = new bootstrap.Modal(modalElement);
+        const contentArea = $('#modal-product-content');
+        const footerArea = $('#modal-product-footer');
+
+        // 1. Tampilkan loading state di modal
+        contentArea.html(`
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Memuat detail produk...</p>
+            </div>
+        `);
+        footerArea.html('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>');
+        modal.show();
+
+        // 2. Lakukan panggilan AJAX untuk mengambil data produk
+        $.ajax({
+            url: 'proses/get_product-detail.php', 
+            method: 'GET',
+            data: { id: productId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success && response.data) {
+                    const product = response.data;
+
+                    // Buat HTML rating rata-rata
+                    const ratingHtml = product.avg_rating > 0 
+                        ? `<div class="mb-3">
+                                ${generateStarRating(product.avg_rating)} 
+                                <span class="fw-bold me-2 ms-1">${product.avg_rating.toFixed(1)}</span>
+                                <span class="text-muted small">(${product.total_reviews} Ulasan)</span>
+                            </div>`
+                        : `<p class="text-muted small">Belum ada ulasan.</p>`;
+                    
+                    // --- GENERATE ULASAN BARU ---
+                    let reviewsHtml = '';
+                    if (product.reviews && product.reviews.length > 0) {
+                        reviewsHtml += '<h6><i class="fas fa-comments me-1"></i> Ulasan Terbaru:</h6>';
+                        // Tambahkan scrollbar jika ulasan banyak
+                        reviewsHtml += '<div class="list-group list-group-flush review-list" style="max-height: 180px; overflow-y: auto;">';
+                        
+                        product.reviews.forEach(review => {
+                            const reviewStars = generateStarRating(review.rating);
+                            const date = new Date(review.created_at);
+                            const formattedDate = date.toLocaleDateString('id-ID'); // Format tanggal Indonesia
+
+                            reviewsHtml += `
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 fw-bold text-pink">${review.reviewer_name || 'Pengguna Anonim'}</h6>
+                                        <small class="text-muted">${formattedDate}</small>
+                                    </div>
+                                    <div class="mb-1">${reviewStars}</div>
+                                    <p class="mb-1 small">${review.comment_text}</p>
+                                </div>
+                            `;
+                        });
+                        
+                        reviewsHtml += '</div>';
+                    } else {
+                        reviewsHtml = '<h6 class="mt-3"><i class="fas fa-comments me-1"></i> Ulasan Terbaru:</h6><p class="text-muted small">Jadilah yang pertama memberikan ulasan!</p>';
+                    }
+                    // --- END ULASAN BARU ---
+
+
+                    // Konten Modal (HTML yang disusun ulang)
+                    let htmlContent = `
+                        <div class="row mb-3">
+                            <div class="col-md-5">
+                                <img src="uploads/product/${product.image_url}" alt="${product.name}" class="modal-product-image mb-3 w-100 shadow-sm">
+                            </div>
+                            <div class="col-md-7">
+                                <h2 class="text-pink">${product.name}</h2>
+                                
+                                ${ratingHtml} 
+
+                                <h3 class="fw-bold mb-3">Rp ${new Intl.NumberFormat('id-ID').format(product.price)}</h3>
+                                
+                                <p class="text-muted small mb-1">SKU: ${product.sku || 'N/A'}</p>
+                                <p class="text-muted small mb-3">Kategori: ${product.category_name || 'N/A'}</p>
+                                
+                                <p>Stok Tersedia: 
+                                    <span class="fw-bold text-${product.stock > 0 ? 'success' : 'danger'}">
+                                        ${new Intl.NumberFormat('id-ID').format(product.stock)}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-align-left me-1"></i> Deskripsi Produk:</h6>
+                                <div class="modal-description" style="max-height: 180px; overflow-y: auto;">
+                                    <p class="mb-4 small">${product.description || 'Tidak ada deskripsi yang tersedia.'}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                ${reviewsHtml}
+                            </div>
+                        </div>
+                    `;
+                    contentArea.html(htmlContent);
+
+                    // Footer Modal (Tombol Aksi)
+                    let footerHtml = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+
+                    if (isUserLoggedIn) {
+                        // Tampilkan tombol Beli/Tambah Keranjang jika sudah login
+                        footerHtml += `
+                            <button class="btn btn-primary" data-product-id="${product.id}" onclick="addToCart(this.getAttribute('data-product-id'))">
+                                <i class="fas fa-cart-plus me-1"></i> Tambah ke Keranjang
+                            </button>
+                        `;
+                    } else {
+                        // Tampilkan tombol Login jika belum login
+                        footerHtml += `
+                            <a href="login.php?redirect_to=${currentUrl}" class="btn btn-warning">
+                                <i class="fas fa-lock me-1"></i> Masuk untuk Beli
+                            </a>
+                        `;
+                    }
+                    footerArea.html(footerHtml);
+
+                } else {
+                    contentArea.html('<div class="alert alert-danger text-center">Gagal memuat detail produk. ' + (response.message || 'Data tidak ditemukan.') + '</div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                contentArea.html('<div class="alert alert-danger text-center">Terjadi kesalahan saat menghubungi server. Pastikan file `fetch_product_detail.php` sudah tersedia dan berfungsi.</div>');
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+    // Fungsi placeholder untuk aksi Tambah ke Keranjang
+    function addToCart(productId) {
+        alert('Aksi: Tambah Produk ID ' + productId + ' ke Keranjang (Memerlukan implementasi AJAX/PHP)');
+        // Implementasi logik penambahan ke keranjang harus dilakukan di sini.
+    }
+
 
     // ====================================================
     // 3. Logic Form Submit Sederhana

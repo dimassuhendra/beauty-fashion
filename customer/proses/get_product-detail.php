@@ -1,5 +1,4 @@
 <?php
-// Pastikan Anda telah menyertakan db_connect.php yang berisi koneksi ($conn)
 include '../../db_connect.php'; 
 
 header('Content-Type: application/json');
@@ -13,7 +12,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $productId = (int)$_GET['id'];
 
 // Query untuk mengambil SEMUA detail produk, termasuk kategori
-// Asumsi: products.category_id berelasi dengan categories.id
 $sql = "SELECT 
             p.*, 
             c.name AS category_name, 
