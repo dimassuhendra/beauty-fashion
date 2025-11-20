@@ -98,7 +98,7 @@ include 'navbar.php';
                                     checked 
                                     required
                                 >
-                                <label class="form-check-label fw-bold" for="payment_qris">
+                                <label class="form-check-label fw-bold" for="payment_qris" style="cursor: pointer !important;">
                                     QRIS (Semua E-Wallet/Bank)
                                 </label>
                             </div>
@@ -125,14 +125,14 @@ include 'navbar.php';
                                     aria-controls="collapseTransfer" 
                                     required
                                 >
-                                <label class="form-check-label fw-bold" for="payment_tf">
+                                <label class="form-check-label fw-bold" for="payment_tf" style="cursor: pointer;">
                                     Transfer Bank BCA
                                 </label>
                             </div>
                             
                             <div class="collapse mt-2" id="collapseTransfer" data-bs-parent="#paymentOptions">
                                 <small class="d-block text-muted">
-                                    Rekening Tujuan: **BCA a.n. Beauty Fashion - 0661401191**
+                                    Rekening Tujuan: BCA a.n. Beauty Fashion - 0661401191
                                 </small>
                                 <button class="btn btn-sm btn-outline-secondary mt-1">Salin Nomor Rekening</button>
                             </div>
@@ -152,14 +152,14 @@ include 'navbar.php';
                                     aria-controls="collapseEwallet" 
                                     required
                                 >
-                                <label class="form-check-label fw-bold" for="payment_ewallet">
+                                <label class="form-check-label fw-bold" for="payment_ewallet" style="cursor: pointer;">
                                     E-Wallet (Dana/Gopay/OVO)
                                 </label>
                             </div>
 
                             <div class="collapse mt-2" id="collapseEwallet" data-bs-parent="#paymentOptions">
                                 <small class="d-block text-muted">
-                                    Nomor E-Wallet: **0857-8080-9099**
+                                    Nomor E-Wallet: 0857-8080-9099
                                 </small>
                                 <button class="btn btn-sm btn-outline-secondary mt-1">Salin Nomor</button>
                             </div>
