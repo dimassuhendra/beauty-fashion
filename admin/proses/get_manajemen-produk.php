@@ -160,4 +160,111 @@ $params = [
 ];
 return '?' . http_build_query(array_filter($params));
 }
+
+
+// ====================================================
+// Tambahkan Logika Tambah Kategori di sini
+// ====================================================
+
+/**
+ * Fungsi untuk mengonversi string menjadi slug (format URL)
+ * @param string $text
+ * @return string
+ */
+function slugify($text, string $divider = '-')
+{
+    // Hapus spasi di awal dan akhir
+    $text = trim($text);
+    // Ganti karakter non-alphanumeric menjadi spasi (kecuali -)
+    $text = preg_replace('~[^\pL\d]+~u', $divider, $text);
+    // Transliterasi karakter (misal: ü menjadi ue)
+    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    // Ubah ke huruf kecil
+    $text = strtolower($text);
+    // Hapus karakter yang tidak diinginkan
+    $text = preg_replace('~[^-\w]+~', '', $text);
+    // Hapus divider ganda
+    $text = preg_replace('~-+~', $divider, $text);
+
+    if (empty($text)) {
+        return 'n-a';
+    }
+
+    return $text;
+}
+
+$message = '';
+$message_type = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] == 'add_category') {
+        // Ambil data
+        $name = $_POST['name'] ?? '';
+        $slug = slugify($name);
+
+        if (!empty($name)) {
+            // Cek apakah kategori sudah ada
+            $check_sql = "SELECT id FROM categories WHERE name = ? OR slug = ?";
+            $check_stmt = $conn->prepare($check_sql);
+            $check_stmt->bind_param("ss", $name, $slug);
+            $check_stmt->execute();
+            $check_stmt->store_result();
+
+            if ($check_stmt->num_rows > 0) {
+                $message = "Gagal: Nama kategori atau slug sudah ada.";
+                $message_type = "danger";
+            } else {
+                // Insert kategori baru
+                $insert_sql = "INSERT INTO categories (name, slug) VALUES (?, ?)";
+                $insert_stmt = $conn->prepare($insert_sql);
+                
+                // Binding parameter "ss" (string, string)
+                if ($insert_stmt->bind_param("ss", $name, $slug) && $insert_stmt->execute()) {
+                    $message = "Kategori <b>" . htmlspecialchars($name) . "</b> berhasil ditambahkan!";
+                    $message_type = "success";
+                    
+                    // Redirect untuk menghilangkan data POST (PRG pattern)
+                    header("Location: manajemen-produk.php?message=" . urlencode($message) . "&message_type=" . $message_type);
+                    exit();
+                } else {
+                    $message = "Gagal menambahkan kategori: " . $conn->error;
+                    $message_type = "danger";
+                }
+            }
+            $check_stmt->close();
+        } else {
+            $message = "Gagal: Nama kategori tidak boleh kosong.";
+            $message_type = "danger";
+        }
+    }
+    
+    // NOTE: Logika 'add', 'edit', 'delete' produk (yang sudah ada) 
+    // harus ditambahkan di sini juga, tetapi saya hanya menampilkan 
+    // logika kategori baru.
+}
+
+// Ambil pesan dari URL setelah redirect (jika ada)
+if (isset($_GET['message']) && isset($_GET['message_type'])) {
+    $message = htmlspecialchars($_GET['message']);
+    $message_type = htmlspecialchars($_GET['message_type']);
+    
+    // Hapus dari URL agar tidak tampil lagi saat refresh
+    $url = strtok($_SERVER["REQUEST_URI"], '?');
+    // Anda bisa memilih untuk tidak menghapus GET params lain jika diperlukan, 
+    // tetapi untuk contoh ini, saya biarkan.
+}
+
+// Perlu dilakukan fetch ulang list kategori agar modal "Tambah Produk" 
+// memiliki kategori terbaru.
+// Saya asumsikan variabel $categories di-load di 'proses/get_manajemen-produk.php'
+// atau Anda akan menambahkan fetch kategorinya di sini jika belum ada.
+
+/* // Contoh fetch kategori (jika belum ada di file include)
+$sql_cat = "SELECT id, name FROM categories ORDER BY name ASC";
+$cat_result = $conn->query($sql_cat);
+$categories = [];
+while ($row = $cat_result->fetch_assoc()) {
+    $categories[] = $row;
+}
+*/
 ?>
