@@ -137,7 +137,7 @@ if (!function_exists('formatRupiah')) {
                                     </div>
 
                                     <div class="d-grid gap-2">
-                                        <a href="#" class="btn btn-outline-buy btn-sm" data-bs-toggle="modal"
+                                        <a href="#" class="btn btn-quick-buy btn-sm" data-bs-toggle="modal"
                                             data-bs-target="#productDetailModal"
                                             onclick="fetchProductDetail(<?= $product['id']; ?>); return false;">
                                             <i class="fas fa-eye"></i> Detail Produk
@@ -147,9 +147,9 @@ if (!function_exists('formatRupiah')) {
                                             <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
                                         </button>
 
-                                        <button class="btn btn-quick-buy" onclick="quickBuy(<?= $product['id']; ?>)">
+                                        <!-- <button class="btn btn-quick-buy" onclick="quickBuy(<?= $product['id']; ?>)">
                                             <i class="fas fa-money-bill-wave"></i> Belanja Langsung
-                                        </button>
+                                        </button> -->
                                         <?php else: ?>
                                         <button class="btn btn-secondary" disabled>Stok Habis</button>
                                         <?php endif; ?>
@@ -348,7 +348,7 @@ if (!function_exists('formatRupiah')) {
                                                     <div class="card-body">
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
-                                                                <h6 class="mb-1 fw-bold">${review.user_name || 'Pengguna Anonim'}</h6>
+                                                                <h6 class="mb-1 fw-bold">${review.full_name || 'Pengguna Anonim'}</h6>
                                                                 <small class="text-muted">${new Date(review.review_date).toLocaleDateString()}</small>
                                                             </div>
                                                             <span class="text-warning small">${getStarRating(review.rating)}</span>

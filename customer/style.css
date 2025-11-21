@@ -319,16 +319,20 @@ main {
 
 /* Tombol Detail Produk (Outline Pink) */
 .btn-outline-buy {
-    color: var(--pink-primary);
     border-color: var(--pink-primary);
-    background-color: transparent;
+    background-color: var(--pink-dark);
     transition: all 0.3s;
 }
 
 .btn-outline-buy:hover {
     color: white;
-    background-color: var(--pink-primary);
+    background-color: var(--text-dark);
     border-color: var(--pink-primary);
+}
+
+.modal-header , .modal-footer {
+    background-color: var(--pink-primary);
+    color: var(--text-light);
 }
 
 /* Tombol Belanja Langsung (Pink Lebih Gelap/Tegas) */
