@@ -495,7 +495,7 @@ $is_logged_in = isset($_SESSION['user_id']);
                     } else {
                         // Tampilkan tombol Login jika belum login
                         footerHtml += `
-                            <a href="login.php?redirect_to=${currentUrl}" class="btn btn-warning">
+                            <a href="login.php?redirect_to=${currentUrl}" class="btn btn-modal-sign">
                                 <i class="fas fa-lock me-1"></i> Masuk untuk Beli
                             </a>
                         `;
