@@ -260,6 +260,11 @@ body.dark-mode .bg-pink-light {
 
 
 /* --- Modal Detail Customer Styling --- */
+.modal-header {
+    background-color: var(--pink-color);
+    color: var(--primary-bg);
+}
+
 .modal-content.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
     background-color: #2a2a2a; 
 }
