@@ -70,7 +70,7 @@ include 'navbar.php';
                             <small class="text-muted"><a href="profile.php?tab=address" class="text-pink-primary text-decoration-none"><i class="fas fa-plus-circle me-1"></i> Tambah Alamat Baru</a></small>
                         <?php else: ?>
                             <div class="alert alert-info">
-                                <i class="fas fa-exclamation-circle me-2"></i> Anda belum memiliki alamat. <a href="tambah_alamat.php" class="alert-link text-pink-primary">Tambahkan sekarang.</a>
+                                <i class="fas fa-exclamation-circle me-2"></i> Anda belum memiliki alamat. <a href="profile.php?tab=address" class="alert-link text-pink-primary">Tambahkan sekarang.</a>
                                 <input type="hidden" name="address_id" value=""> 
                             </div>
                         <?php endif; ?>
