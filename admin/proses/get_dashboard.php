@@ -62,40 +62,65 @@ $total_users = fetchData($conn, "SELECT COUNT(id) FROM users");
 $total_categories = fetchData($conn, "SELECT COUNT(id) FROM categories");
 
 // Data Order yang terfilter
+// NOTE: total_orders sekarang hanya menghitung pesanan dalam rentang tanggal filter, 
+// TANPA mempertimbangkan status.
 $total_orders = fetchData($conn, "SELECT COUNT(id) FROM orders" . $filter_sql);
 
 
 // Mengambil data dengan filter status. Jika $filter_sql ada, tambahkan klausa AND
-$pending_orders = fetchData($conn, "SELECT COUNT(id) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Pending Payment'");
+$pending_orders = fetchData($conn, "SELECT COUNT(id) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Menunggu Pembayaran'");
 
-// Total Pendapatan
-$total_revenue_sql = "SELECT SUM(final_amount) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Completed'";
+// Total Pendapatan HANYA dari Completed Orders
+$total_revenue_sql = "SELECT SUM(final_amount) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Selesai'";
 $total_revenue_result = fetchData($conn, $total_revenue_sql);
 $total_revenue = "Rp" . number_format($total_revenue_result, 0, ',', '.');
 
 
 // --------------------------------------------------------------------
-// 4. DATA UNTUK DONUT CHART (Persentase Pesanan Selesai)
+// 4. DATA UNTUK DONUT CHART (SELURUH STATUS PESANAN BARU)
 // --------------------------------------------------------------------
-$completed_orders = fetchData($conn, "SELECT COUNT(id) FROM orders " . (empty($filter_sql) ? "WHERE" : $filter_sql . " AND") . " order_status = 'Completed'");
+$sql_order_status = "
+    SELECT 
+        order_status, 
+        COUNT(id) AS status_count 
+    FROM orders 
+    " . $filter_sql . "
+    GROUP BY order_status
+    -- Urutan Status (Selesai, Dikirim, Diproses, Menunggu Pembayaran, Dibatalkan)
+    ORDER BY FIELD(order_status, 'Selesai', 'Dikirim', 'Diproses', 'Menunggu Pembayaran', 'Dibatalkan')
+";
 
-// Persiapan data untuk Chart.js (completed, not completed)
-$json_order_completion_data = json_encode([
-    (int)$completed_orders, 
-    (int)$total_orders - (int)$completed_orders // Sisanya (Pesanan yang tidak Completed)
-]);
+$order_status_data_array = fetchArrayData($conn, $sql_order_status);
+
+$order_status_labels = array_column($order_status_data_array, 'order_status');
+$order_status_data = array_column($order_status_data_array, 'status_count');
+
+// Mengambil Completed count untuk Card/Center Text Donut
+$completed_orders = 0;
+foreach ($order_status_data_array as $item) {
+    if ($item['order_status'] == 'Selesai') {
+        $completed_orders = (int)$item['status_count'];
+        break;
+    }
+}
+
+
+// Konversi data PHP ke format JSON agar bisa dibaca oleh JavaScript (Chart.js)
+$json_order_status_labels = json_encode($order_status_labels);
+$json_order_status_data = json_encode(array_map('intval', $order_status_data));
 
 
 // --------------------------------------------------------------------
 // 5. DATA UNTUK PIE CHART (Kategori Terlaris)
 // --------------------------------------------------------------------
 // Query untuk Pie Chart menggunakan tabel order_details (sesuai skema database)
+// Catatan: Jika Anda ingin memfilter hanya Completed Orders, tambahkan " AND o.order_status = 'Completed'"
 $sql_category_sales = "
     SELECT 
         c.name AS category_name, 
         SUM(od.quantity) AS total_sold 
     FROM orders o
-    JOIN order_details od ON o.id = od.order_id -- FIX: Menggunakan order_details
+    JOIN order_details od ON o.id = od.order_id 
     JOIN products p ON od.product_id = p.id
     JOIN categories c ON p.category_id = c.id
     " . (empty($filter_sql) ? "" : $filter_sql) . "

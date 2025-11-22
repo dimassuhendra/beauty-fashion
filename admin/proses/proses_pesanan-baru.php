@@ -43,11 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Status yang akan di-monitor
 $statuses_to_monitor = [
-    'Pending Payment' => ['icon' => 'fas fa-clock', 'color' => 'warning'],
-    'Processing' => ['icon' => 'fas fa-cogs', 'color' => 'info'],
-    'Shipped' => ['icon' => 'fas fa-truck', 'color' => 'primary'],
-    'Completed' => ['icon' => 'fas fa-check-circle', 'color' => 'success'],
-    'Cancelled' => ['icon' => 'fas fa-times-circle', 'color' => 'danger']
+    'Menunggu Pembayaran' => ['icon' => 'fas fa-clock', 'color' => 'warning'],
+    'Diproses' => ['icon' => 'fas fa-cogs', 'color' => 'info'],
+    'Dikirim' => ['icon' => 'fas fa-truck', 'color' => 'primary'],
+    'Selesai' => ['icon' => 'fas fa-check-circle', 'color' => 'success'],
+    'Dibatalkan' => ['icon' => 'fas fa-times-circle', 'color' => 'danger']
 ];
 
 // Ambil jumlah pesanan per status

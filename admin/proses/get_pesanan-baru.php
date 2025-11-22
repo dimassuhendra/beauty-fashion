@@ -12,11 +12,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     
     // Status color mapping (diulang dari manajemen-pesanan.php)
     $statuses_to_monitor = [
-        'Pending Payment' => 'warning',
-        'Processing' => 'info',
-        'Shipped' => 'primary',
-        'Completed' => 'success',
-        'Cancelled' => 'danger'
+        'Menunggu Pembayaran' => 'warning',
+        'Diproses' => 'info',
+        'Dikirim' => 'primary',
+        'Selesai' => 'success',
+        'Dibatalkan' => 'danger'
     ];
 
     // --- 1. Ambil Detail Pesanan Utama ---

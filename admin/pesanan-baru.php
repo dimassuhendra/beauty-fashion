@@ -2,8 +2,8 @@
 // FILE: pesanan-baru.php
 
 // PASTIKAN PATH INI BENAR (relative dari folder admin/)
-include '../db_connect.php'; 
-include 'proses/proses_pesanan-baru.php'; 
+include '../db_connect.php';
+include 'proses/proses_pesanan-baru.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -27,28 +27,29 @@ include 'proses/proses_pesanan-baru.php';
         </header>
 
         <?php if (!empty($message)): ?>
-         <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
-            <?php echo $message; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
+                <?php echo $message; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         <?php endif; ?>
 
         <div class="row g-4 mb-4">
-            <?php foreach ($statuses_to_monitor as $status => $details): 
+            <?php foreach ($statuses_to_monitor as $status => $details):
                 $count = $status_counts[$status] ?? 0;
                 $is_active_filter = $filter_status === $status ? 'active-status-card' : '';
-            ?>
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?php echo get_status_link($status, $limit, $search); ?>" class="text-decoration-none">
-                    <div class="card shadow-sm order-summary-card <?php echo $is_active_filter; ?>">
-                        <div class="card-body text-center">
-                            <i class="<?php echo $details['icon']; ?> fa-2x text-<?php echo $details['color']; ?> mb-2"></i>
-                            <h5 class="card-title mb-0"><?php echo $count; ?></h5>
-                            <p class="card-text small text-muted"><?php echo $status; ?></p>
+                ?>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <a href="<?php echo get_status_link($status, $limit, $search); ?>" class="text-decoration-none">
+                        <div class="card shadow-sm order-summary-card <?php echo $is_active_filter; ?>">
+                            <div class="card-body text-center">
+                                <i
+                                    class="<?php echo $details['icon']; ?> fa-2x text-<?php echo $details['color']; ?> mb-2"></i>
+                                <h5 class="card-title mb-0"><?php echo $count; ?></h5>
+                                <p class="card-text small text-muted"><?php echo $status; ?></p>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
             <?php endforeach; ?>
             <div class="col-lg-2 col-md-4 col-6">
                 <a href="pesanan-baru.php?limit=<?php echo $limit; ?>" class="text-decoration-none">
@@ -68,7 +69,7 @@ include 'proses/proses_pesanan-baru.php';
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h5 class="mb-0 card-title-dark-mode">Daftar Pesanan
                     <?php if (!empty($filter_status)): ?>
-                    <span class="badge bg-pink-light">Status: <?php echo htmlspecialchars($filter_status); ?></span>
+                        <span class="badge bg-pink-light">Status: <?php echo htmlspecialchars($filter_status); ?></span>
                     <?php endif; ?>
                 </h5>
 
@@ -90,8 +91,8 @@ include 'proses/proses_pesanan-baru.php';
                             value="<?php echo htmlspecialchars($search); ?>">
                         <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
                         <?php if (!empty($search) || !empty($filter_status)): ?>
-                        <a href="pesanan-baru.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
-                            title="Reset Pencarian/Filter"><i class="fas fa-times"></i></a>
+                            <a href="pesanan-baru.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
+                                title="Reset Pencarian/Filter"><i class="fas fa-times"></i></a>
                         <?php endif; ?>
                     </div>
                 </form>
@@ -110,59 +111,55 @@ include 'proses/proses_pesanan-baru.php';
                                 </a>
                             </th>
                             <th scope="col">
-                                <a href="<?php echo get_sort_link('order_code', $sort, $order, $limit, $search, 
-$filter_status); ?>"
-                                    class="sortable-header <?php echo $sort == 'order_code' ?
-'active-sort' : ''; ?>">
+                                <a href="<?php echo get_sort_link(
+                                    'order_code',
+                                    $sort,
+                                    $order,
+                                    $limit,
+                                    $search,
+                                    $filter_status
+                                ); ?>" class="sortable-header <?php echo $sort == 'order_code' ?
+                                     'active-sort' : ''; ?>">
                                     Kode Pesanan
-                                    <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_code' ?
-($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                    <i class="fas fa-sort sort-icon <?php echo $sort == 'order_code' ?
+                                        ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
-                               <a href="<?php echo get_sort_link('user_name', $sort, $order, $limit, $search, $filter_status);
-?>"
-                                    class="sortable-header <?php echo $sort == 'user_name' ?
-'active-sort' : ''; ?>">
+                                <a href="<?php echo get_sort_link('user_name', $sort, $order, $limit, $search, $filter_status);
+                                ?>" class="sortable-header <?php echo $sort == 'user_name' ?
+                                    'active-sort' : ''; ?>">
                                     Pelanggan
-                                    <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'user_name' ?
-($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                    <i class="fas fa-sort sort-icon <?php echo $sort == 'user_name' ?
+                                        ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
-                               <a href="<?php echo get_sort_link('final_amount', $sort, $order, $limit, $search, $filter_status);
-?>"
-                                    class="sortable-header <?php echo $sort == 'final_amount' ?
-'active-sort' : ''; ?>">
+                                <a href="<?php echo get_sort_link('final_amount', $sort, $order, $limit, $search, $filter_status);
+                                ?>" class="sortable-header <?php echo $sort == 'final_amount' ?
+                                    'active-sort' : ''; ?>">
                                     Total
-                                    <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'final_amount' ?
-($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                    <i class="fas fa-sort sort-icon <?php echo $sort == 'final_amount' ?
+                                        ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
-                               <a href="<?php echo get_sort_link('order_date', $sort, $order, $limit, $search, $filter_status);
-?>"
-                                    class="sortable-header <?php echo $sort == 'order_date' ?
-'active-sort' : ''; ?>">
+                                <a href="<?php echo get_sort_link('order_date', $sort, $order, $limit, $search, $filter_status);
+                                ?>" class="sortable-header <?php echo $sort == 'order_date' ?
+                                    'active-sort' : ''; ?>">
                                     Tanggal
-                                    <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_date' ?
-($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                    <i class="fas fa-sort sort-icon <?php echo $sort == 'order_date' ?
+                                        ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">Pembayaran</th>
                             <th scope="col">
                                 <a href="<?php echo get_sort_link('order_status', $sort, $order, $limit, $search, $filter_status);
-?>"
-                                    class="sortable-header <?php echo $sort == 'order_status' ?
-'active-sort' : ''; ?>">
+                                ?>" class="sortable-header <?php echo $sort == 'order_status' ?
+                                    'active-sort' : ''; ?>">
                                     Status
-                                    <i
-                                        class="fas fa-sort sort-icon <?php echo $sort == 'order_status' ?
-($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                    <i class="fas fa-sort sort-icon <?php echo $sort == 'order_status' ?
+                                        ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col" class="text-center">Aksi</th>
@@ -170,61 +167,61 @@ $filter_status); ?>"
                     </thead>
                     <tbody>
                         <?php if (count($orders) > 0): ?>
-                        <?php foreach ($orders as $o): ?>
-                        <tr>
-                            <td><?php echo $o['id']; ?></td>
-                            <td><span class="fw-bold"><?php echo $o['order_code']; ?></span></td>
-                            <td>
-                                <?php echo htmlspecialchars($o['user_name']); ?>
-                                <small
-                                    class="d-block text-muted"><?php echo htmlspecialchars($o['user_email']); ?></small>
-                            </td>
-                            <td>Rp<?php echo number_format($o['final_amount'], 0, ',', '.'); ?></td>
-                            <td><?php echo date('d M Y', strtotime($o['order_date'])); ?></td>
-                            <td>
-                                <span class="badge bg-secondary"><?php echo $o['payment_method']; ?></span>
-                            </td>
-                            <td>
-                                <?php 
-                                    $status_class = $statuses_to_monitor[$o['order_status']]['color'] ?? 'secondary';
-                                ?>
-                                <span class="badge bg-<?php echo $status_class; ?> order-status-badge">
-                                    <?php echo $o['order_status']; ?>
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <!-- <button class="btn btn-sm btn-outline-info me-1 btn-detail-order" data-bs-toggle="modal"
+                            <?php foreach ($orders as $o): ?>
+                                <tr>
+                                    <td><?php echo $o['id']; ?></td>
+                                    <td><span class="fw-bold"><?php echo $o['order_code']; ?></span></td>
+                                    <td>
+                                        <?php echo htmlspecialchars($o['user_name']); ?>
+                                        <small
+                                            class="d-block text-muted"><?php echo htmlspecialchars($o['user_email']); ?></small>
+                                    </td>
+                                    <td>Rp<?php echo number_format($o['final_amount'], 0, ',', '.'); ?></td>
+                                    <td><?php echo date('d M Y', strtotime($o['order_date'])); ?></td>
+                                    <td>
+                                        <span class="badge bg-secondary"><?php echo $o['payment_method']; ?></span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $status_class = $statuses_to_monitor[$o['order_status']]['color'] ?? 'secondary';
+                                        ?>
+                                        <span class="badge bg-<?php echo $status_class; ?> order-status-badge">
+                                            <?php echo $o['order_status']; ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- <button class="btn btn-sm btn-outline-info me-1 btn-detail-order" data-bs-toggle="modal"
                                     data-bs-target="#detailOrderModal" data-order-id="<?php echo $o['id']; ?>">
                                     <i class="fas fa-eye"></i>
                                 </button> -->
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-pink dropdown-toggle"
-                                        data-bs-toggle="dropdown" aria-expanded="false" title="Ubah Status">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li class="dropdown-header">Ubah Status ke:</li>
-                                        <?php foreach ($statuses_to_monitor as $status => $details): ?>
-                                        <?php if ($status !== $o['order_status']): ?>
-                                        <li>
-                                            <a class="dropdown-item update-status-btn" href="#"
-                                                data-id="<?php echo $o['id']; ?>" data-status="<?php echo $status; ?>"
-                                                data-code="<?php echo $o['order_code']; ?>">
-                                                <span class="text-<?php echo $details['color']; ?>"><i
-                                                        class="<?php echo $details['icon']; ?> me-2"></i><?php echo $status; ?></span>
-                                            </a>
-                                        </li>
-                                        <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-pink dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false" title="Ubah Status">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li class="dropdown-header">Ubah Status ke:</li>
+                                                <?php foreach ($statuses_to_monitor as $status => $details): ?>
+                                                    <?php if ($status !== $o['order_status']): ?>
+                                                        <li>
+                                                            <a class="dropdown-item update-status-btn" href="#"
+                                                                data-id="<?php echo $o['id']; ?>" data-status="<?php echo $status; ?>"
+                                                                data-code="<?php echo $o['order_code']; ?>">
+                                                                <span class="text-<?php echo $details['color']; ?>"><i
+                                                                        class="<?php echo $details['icon']; ?> me-2"></i><?php echo $status; ?></span>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php else: ?>
-                        <tr>
-                            <td colspan="8" class="text-center">Tidak ada data pesanan yang ditemukan.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="8" class="text-center">Tidak ada data pesanan yang ditemukan.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -237,33 +234,33 @@ $filter_status); ?>"
                 <nav>
                     <ul class="pagination pagination-sm mb-0">
                         <?php if ($total_pages > 1): ?>
-                        <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link"
-                                href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&status=<?php echo $filter_status; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
+                            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&status=<?php echo $filter_status; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
 
-                        <?php 
+                            <?php
                             // Tampilkan maksimal 5 link halaman di sekitar halaman saat ini
                             $start = max(1, $page - 2);
                             $end = min($total_pages, $page + 2);
 
-                            for ($i = $start; $i <= $end; $i++): 
+                            for ($i = $start; $i <= $end; $i++):
                                 $is_active = $i == $page ? 'active' : '';
                                 $page_link = "?page=$i&limit=$limit&s=$search&status=$filter_status&sort=$sort&order=$order";
-                            ?>
-                        <li class="page-item <?php echo $is_active; ?>">
-                            <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
-                        </li>
-                        <?php endfor; ?>
+                                ?>
+                                <li class="page-item <?php echo $is_active; ?>">
+                                    <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
 
-                        <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
-                            <a class="page-link"
-                                href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&status=<?php echo $filter_status; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
+                            <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&status=<?php echo $filter_status; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -329,89 +326,89 @@ $filter_status); ?>"
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    // ====================================================
-    // Logic Dark/Light Mode
-    // ====================================================
-    const body = document.getElementById('body-admin');
-    const modeToggle = document.getElementById('mode-toggle');
+        // ====================================================
+        // Logic Dark/Light Mode
+        // ====================================================
+        const body = document.getElementById('body-admin');
+        const modeToggle = document.getElementById('mode-toggle');
 
-    function applyMode(isInitialLoad = true) {
-        let savedMode = localStorage.getItem('theme') || 'light';
+        function applyMode(isInitialLoad = true) {
+            let savedMode = localStorage.getItem('theme') || 'light';
 
-        if (!isInitialLoad && modeToggle) {
-            savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
-            localStorage.setItem('theme', savedMode);
-        }
-
-        if (savedMode === 'dark') {
-            body.classList.add('dark-mode');
-        } else {
-            body.classList.remove('dark-mode');
-        }
-
-        // Terapkan styling ke modal (agar sesuai dengan mode)
-        document.querySelectorAll('.modal-content').forEach(el => {
-            if (savedMode === 'dark') {
-                el.classList.add('dark-mode');
-            } else {
-                el.classList.remove('dark-mode');
+            if (!isInitialLoad && modeToggle) {
+                savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
+                localStorage.setItem('theme', savedMode);
             }
-        });
 
+            if (savedMode === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
+            // Terapkan styling ke modal (agar sesuai dengan mode)
+            document.querySelectorAll('.modal-content').forEach(el => {
+                if (savedMode === 'dark') {
+                    el.classList.add('dark-mode');
+                } else {
+                    el.classList.remove('dark-mode');
+                }
+            });
+
+            if (modeToggle) {
+                if (savedMode === 'dark') {
+                    modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                    modeToggle.classList.remove('text-pink-primary');
+                } else {
+                    modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                    modeToggle.classList.add('text-pink-primary');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyMode(true);
+        });
         if (modeToggle) {
-            if (savedMode === 'dark') {
-                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-                modeToggle.classList.remove('text-pink-primary');
-            } else {
-                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-                modeToggle.classList.add('text-pink-primary');
-            }
+            modeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                applyMode(false);
+            });
         }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        applyMode(true);
-    });
-    if (modeToggle) {
-        modeToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            applyMode(false);
-        });
-    }
 
 
-    // ====================================================
-    // Logic Modals (Detail dan Update Status)
-    // ====================================================
+        // ====================================================
+        // Logic Modals (Detail dan Update Status)
+        // ====================================================
 
-    // 1. Logic untuk MODAL DETAIL (Menggunakan AJAX)
-    $('#detailOrderModal').on('show.bs.modal', function(event) {
-        const button = $(event.relatedTarget);
-        const orderId = button.data('order-id');
-        const modal = $(this);
+        // 1. Logic untuk MODAL DETAIL (Menggunakan AJAX)
+        $('#detailOrderModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const orderId = button.data('order-id');
+            const modal = $(this);
 
-        // Tampilkan loading, sembunyikan detail
-        modal.find('#modal_content_loading').show();
-        modal.find('#modal_content_detail').hide().empty();
-        modal.find('#order_code_title').text('...'); // Placeholder
+            // Tampilkan loading, sembunyikan detail
+            modal.find('#modal_content_loading').show();
+            modal.find('#modal_content_detail').hide().empty();
+            modal.find('#order_code_title').text('...'); // Placeholder
 
-        // Lakukan permintaan AJAX
-        $.ajax({
-            url: 'proses/get_pesanan-baru.php', // Kita akan buat file ini
-            method: 'GET',
-            data: {
-                id: orderId
-            },
-            dataType: 'json',
-            success: function(response) {
-                modal.find('#modal_content_loading').hide();
-                if (response.success) {
-                    const order = response.data.order;
-                    const items = response.data.items;
+            // Lakukan permintaan AJAX
+            $.ajax({
+                url: 'proses/get_pesanan-baru.php', // Kita akan buat file ini
+                method: 'GET',
+                data: {
+                    id: orderId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    modal.find('#modal_content_loading').hide();
+                    if (response.success) {
+                        const order = response.data.order;
+                        const items = response.data.items;
 
-                    modal.find('#order_code_title').text(order.order_code);
+                        modal.find('#order_code_title').text(order.order_code);
 
-                    let html = `
+                        let html = `
                             <div class="row mb-4 order-detail-header">
                                 <div class="col-md-4">
                                     <p class="mb-1 small text-muted">Kode/ID Pesanan:</p>
@@ -477,39 +474,39 @@ $filter_status); ?>"
                                 </div>
                             </div>
                         `;
-                    modal.find('#modal_content_detail').html(html).show();
+                        modal.find('#modal_content_detail').html(html).show();
 
-                } else {
+                    } else {
+                        modal.find('#modal_content_detail').html(
+                            `<p class="alert alert-danger">${response.message}</p>`).show();
+                    }
+                },
+                error: function (xhr) {
+                    modal.find('#modal_content_loading').hide();
                     modal.find('#modal_content_detail').html(
-                        `<p class="alert alert-danger">${response.message}</p>`).show();
+                        '<p class="alert alert-danger">Terjadi kesalahan saat mengambil data dari server.</p>'
+                    ).show();
                 }
-            },
-            error: function(xhr) {
-                modal.find('#modal_content_loading').hide();
-                modal.find('#modal_content_detail').html(
-                    '<p class="alert alert-danger">Terjadi kesalahan saat mengambil data dari server.</p>'
-                ).show();
-            }
+            });
         });
-    });
 
-    // 2. Logic untuk MODAL UPDATE STATUS (Konfirmasi)
-    $('.update-status-btn').on('click', function(e) {
-        e.preventDefault();
-        const orderId = $(this).data('id');
-        const newStatus = $(this).data('status');
-        const orderCode = $(this).data('code');
+        // 2. Logic untuk MODAL UPDATE STATUS (Konfirmasi)
+        $('.update-status-btn').on('click', function (e) {
+            e.preventDefault();
+            const orderId = $(this).data('id');
+            const newStatus = $(this).data('status');
+            const orderCode = $(this).data('code');
 
-        // Isi modal konfirmasi
-        $('#status_order_id').val(orderId);
-        $('#status_new_status').val(newStatus);
-        $('#status_order_code').text(orderCode);
-        $('#status_new_status_text').text(newStatus).addClass('text-uppercase');
+            // Isi modal konfirmasi
+            $('#status_order_id').val(orderId);
+            $('#status_new_status').val(newStatus);
+            $('#status_order_code').text(orderCode);
+            $('#status_new_status_text').text(newStatus).addClass('text-uppercase');
 
-        // Tampilkan modal konfirmasi
-        const updateStatusModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
-        updateStatusModal.show();
-    });
+            // Tampilkan modal konfirmasi
+            const updateStatusModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            updateStatusModal.show();
+        });
     </script>
 </body>
 

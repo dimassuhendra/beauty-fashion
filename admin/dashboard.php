@@ -17,11 +17,10 @@ $current_end_date = $end_date ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Beauty Fashion</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body id="body-admin">
@@ -180,7 +179,7 @@ $current_end_date = $end_date ?? '';
             <div class="col-xl-6">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-pink-primary mb-4">Tingkat Penyelesaian Pesanan</h5>
+                        <h5 class="card-title text-center text-pink-primary mb-4">Distribusi Status Pesanan</h5>
                         <div class="chart-container">
                             <canvas id="orderDonutChart"></canvas>
                         </div>
@@ -190,15 +189,17 @@ $current_end_date = $end_date ?? '';
         </div>
 
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
     // Data PHP yang di-encode menjadi JSON (dari proses/get_dashboard.php)
     const categoryLabels = <?php echo $json_category_labels; ?>;
     const categoryData = <?php echo $json_category_data; ?>;
-    const orderCompletionData = <?php echo $json_order_completion_data; ?>;
+    const orderStatusLabels = <?php echo $json_order_status_labels; ?>; 
+    const orderStatusData = <?php echo $json_order_status_data; ?>;
     const totalOrders = <?php echo (int)$total_orders; ?>;
+    const completedOrders = <?php echo (int)$completed_orders; ?>; // Untuk center text
 
     // Warna Pink untuk Branding
     const PINK_PRIMARY = '#ff69b4';
@@ -289,65 +290,73 @@ $current_end_date = $end_date ?? '';
             }
         });
 
-        // --- Donut Chart: Tingkat Penyelesaian Pesanan ---
+        // --- 2. Donut Chart: Seluruh Status Pesanan (REFAKTOR) ---
         const ctxDonut = document.getElementById('orderDonutChart').getContext('2d');
-        const dataLabels = ['Selesai (Completed)', 'Belum Selesai'];
-
-        // Tambahkan label persentase di tengah Donut Chart
+        
+        // Palet warna yang dipetakan ke setiap status untuk konsistensi
+        const STATUS_COLORS = [
+            '#28a745', // Completed (Hijau)
+            '#007bff', // Shipped (Biru)
+            '#ffc107', // Processing (Kuning/Warning)
+            '#6c757d', // Pending Payment (Abu-abu)
+            '#dc3545'  // Cancelled (Merah/Danger)
+        ];
+        
+        // Plugin untuk menampilkan rasio Completed di tengah Donut
         const donutCenterText = {
-            id: 'donutCenterText',
-            beforeDatasetsDraw(chart, args, pluginOptions) {
-                const {
-                    ctx,
-                    data
-                } = chart;
-                ctx.save();
-                const x = chart.getDatasetMeta(0).data[0].x;
-                const y = chart.getDatasetMeta(0).data[0].y;
+             id: 'donutCenterText',
+             beforeDatasetsDraw(chart, args, pluginOptions) {
+                 const { ctx, data } = chart;
+                 ctx.save();
+                 const x = chart.getDatasetMeta(0).data[0].x;
+                 const y = chart.getDatasetMeta(0).data[0].y;
+                 
+                 // Hitung persentase Completed
+                 const percentage = totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) + '%' : '0%';
 
-                const completedValue = data.datasets[0].data[0];
-                const total = completedValue + data.datasets[0].data[1];
-                const percentage = total > 0 ? ((completedValue / total) * 100).toFixed(1) + '%' : '0%';
+                 ctx.textAlign = 'center';
+                 ctx.textBaseline = 'middle';
+                 ctx.font = 'bolder 24px sans-serif';
+                 ctx.fillStyle = textColor;
+                 ctx.fillText(percentage, x, y - 10); 
 
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = 'bolder 24px sans-serif';
-                ctx.fillStyle = textColor;
-                ctx.fillText(percentage, x, y);
-
-                ctx.font = '12px sans-serif';
-                ctx.fillStyle = chart.options.plugins.legend.labels.color;
-                ctx.fillText('Completed', x, y + 20);
-                ctx.restore();
-            }
+                 ctx.font = '12px sans-serif';
+                 ctx.fillStyle = chart.options.plugins.legend.labels.color;
+                 ctx.fillText('Completion Ratio', x, y + 15); 
+                 ctx.restore();
+             }
         };
+
 
         window.orderChart = new Chart(ctxDonut, {
             type: 'doughnut',
             data: {
-                labels: dataLabels,
+                // Menggunakan orderStatusLabels yang baru
+                labels: orderStatusLabels, 
                 datasets: [{
-                    data: orderCompletionData,
-                    backgroundColor: [
-                        '#28a745', // Green (Success for Completed)
-                        '#dc3545' // Red (Danger for Not Completed)
-                    ],
+                    // Menggunakan orderStatusData yang baru (array dari semua status count)
+                    data: orderStatusData, 
+                    // Menggunakan array warna
+                    backgroundColor: STATUS_COLORS, 
                     hoverOffset: 15
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '75%', // Ukuran lubang Donut Chart
+                cutout: '75%',
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        position: 'top',
                         labels: {
-                            color: textColor
+                            color: textColor,
+                            padding: 20
                         }
                     },
                     title: {
-                        display: false
+                        display: false,
+                        // text: 'Distribusi Status Pesanan',
+                        // color: textColor
                     }
                 }
             },
