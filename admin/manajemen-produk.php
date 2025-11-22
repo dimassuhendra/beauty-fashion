@@ -24,19 +24,21 @@ include 'proses/get_manajemen-produk.php';
         </header>
 
         <?php if (!empty($message)): ?>
-        <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
-            <?php echo $message; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
+                <?php echo $message; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         <?php endif; ?>
 
         <div class="card shadow-sm p-4">
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <div>
-                    <button class="btn btn-pink me-2 mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <button class="btn btn-pink me-2 mb-2 mb-md-0" data-bs-toggle="modal"
+                        data-bs-target="#addProductModal">
                         <i class="fas fa-plus me-1"></i> Tambah Produk
                     </button>
-                    <button class="btn btn-outline-pink mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <button class="btn btn-outline-pink mb-2 mb-md-0" data-bs-toggle="modal"
+                        data-bs-target="#addCategoryModal">
                         <i class="fas fa-tags me-1"></i> Tambah Kategori
                     </button>
                 </div>
@@ -57,8 +59,8 @@ include 'proses/get_manajemen-produk.php';
                             value="<?php echo htmlspecialchars($search); ?>">
                         <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
                         <?php if (!empty($search)): ?>
-                        <a href="manajemen-produk.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
-                            title="Reset Pencarian"><i class="fas fa-times"></i></a>
+                            <a href="manajemen-produk.php?limit=<?php echo $limit; ?>" class="btn btn-outline-danger"
+                                title="Reset Pencarian"><i class="fas fa-times"></i></a>
                         <?php endif; ?>
                     </div>
                 </form>
@@ -129,56 +131,56 @@ include 'proses/get_manajemen-produk.php';
                     </thead>
                     <tbody>
                         <?php if (count($products) > 0): ?>
-                        <?php foreach ($products as $p): ?>
-                        <tr>
-                            <td><?php echo $p['id']; ?></td>
-                            <td><?php echo $p['sku']; ?></td>
-                            <td>
-                                <?php if (!empty($p['image_url'])): ?>
-                                <img src="../uploads/product/<?php echo $p['image_url']; ?>"
-                                    alt="<?php echo $p['name']; ?>" class="product-image-thumb me-2">
-                                <?php else: ?>
-                                <i class="fas fa-image me-2 text-muted"></i>
-                                <?php endif; ?>
-                                <?php echo $p['name']; ?>
-                            </td>
-                            <td><?php echo $p['category_name']; ?></td>
-                            <td>Rp<?php echo number_format($p['price'], 0, ',', '.'); ?></td>
-                            <td>
-                                <span
-                                    class="badge bg-<?php echo $p['stock'] > 20 ? 'success' : ($p['stock'] > 0 ? 'warning' : 'danger'); ?>">
-                                    <?php echo $p['stock']; ?>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-<?php echo $p['is_active'] ? 'success' : 'secondary'; ?>">
-                                    <?php echo $p['is_active'] ? 'Aktif' : 'Non-aktif'; ?>
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-warning me-1 btn-edit-product"
-                                    data-bs-toggle="modal" data-bs-target="#editProductModal"
-                                    data-id="<?php echo $p['id']; ?>"
-                                    data-name="<?php echo htmlspecialchars($p['name']); ?>"
-                                    data-sku="<?php echo $p['sku']; ?>"
-                                    data-category-id="<?php echo $p['category_id']; ?>"
-                                    data-price="<?php echo $p['price']; ?>" data-stock="<?php echo $p['stock']; ?>"
-                                    data-is-active="<?php echo $p['is_active']; ?>"
-                                    data-image-url="<?php echo $p['image_url']; ?>">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger btn-delete-product" data-bs-toggle="modal"
-                                    data-bs-target="#deleteProductModal" data-id="<?php echo $p['id']; ?>"
-                                    data-name="<?php echo htmlspecialchars($p['name']); ?>">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                            <?php foreach ($products as $p): ?>
+                                <tr>
+                                    <td><?php echo $p['id']; ?></td>
+                                    <td><?php echo $p['sku']; ?></td>
+                                    <td>
+                                        <?php if (!empty($p['image_url'])): ?>
+                                            <img src="../uploads/product/<?php echo $p['image_url']; ?>"
+                                                alt="<?php echo $p['name']; ?>" class="product-image-thumb me-2">
+                                        <?php else: ?>
+                                            <i class="fas fa-image me-2 text-muted"></i>
+                                        <?php endif; ?>
+                                        <?php echo $p['name']; ?>
+                                    </td>
+                                    <td><?php echo $p['category_name']; ?></td>
+                                    <td>Rp<?php echo number_format($p['price'], 0, ',', '.'); ?></td>
+                                    <td>
+                                        <span
+                                            class="badge bg-<?php echo $p['stock'] > 20 ? 'success' : ($p['stock'] > 10 ? 'warning' : 'danger'); ?>">
+                                            <?php echo $p['stock']; ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<?php echo $p['is_active'] ? 'success' : 'secondary'; ?>">
+                                            <?php echo $p['is_active'] ? 'Aktif' : 'Non-aktif'; ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-warning me-1 btn-edit-product"
+                                            data-bs-toggle="modal" data-bs-target="#editProductModal"
+                                            data-id="<?php echo $p['id']; ?>"
+                                            data-name="<?php echo htmlspecialchars($p['name']); ?>"
+                                            data-sku="<?php echo $p['sku']; ?>"
+                                            data-category-id="<?php echo $p['category_id']; ?>"
+                                            data-price="<?php echo $p['price']; ?>" data-stock="<?php echo $p['stock']; ?>"
+                                            data-is-active="<?php echo $p['is_active']; ?>"
+                                            data-image-url="<?php echo $p['image_url']; ?>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete-product" data-bs-toggle="modal"
+                                            data-bs-target="#deleteProductModal" data-id="<?php echo $p['id']; ?>"
+                                            data-name="<?php echo htmlspecialchars($p['name']); ?>">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php else: ?>
-                        <tr>
-                            <td colspan="8" class="text-center">Tidak ada data produk ditemukan.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="8" class="text-center">Tidak ada data produk ditemukan.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -191,33 +193,33 @@ include 'proses/get_manajemen-produk.php';
                 <nav>
                     <ul class="pagination pagination-sm mb-0">
                         <?php if ($total_pages > 1): ?>
-                        <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link"
-                                href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
+                            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
 
-                        <?php 
+                            <?php
                             // Tampilkan maksimal 5 link halaman di sekitar halaman saat ini
                             $start = max(1, $page - 2);
                             $end = min($total_pages, $page + 2);
 
-                            for ($i = $start; $i <= $end; $i++): 
+                            for ($i = $start; $i <= $end; $i++):
                                 $is_active = $i == $page ? 'active' : '';
                                 $page_link = "?page=$i&limit=$limit&s=$search&sort=$sort&order=$order";
-                            ?>
-                        <li class="page-item <?php echo $is_active; ?>">
-                            <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
-                        </li>
-                        <?php endfor; ?>
+                                ?>
+                                <li class="page-item <?php echo $is_active; ?>">
+                                    <a class="page-link" href="<?php echo $page_link; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
 
-                        <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
-                            <a class="page-link"
-                                href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
+                            <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                                <a class="page-link"
+                                    href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>&s=<?php echo $search; ?>&sort=<?php echo $sort; ?>&order=<?php echo $order; ?>">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -251,7 +253,7 @@ include 'proses/get_manajemen-produk.php';
                             <select class="form-select" id="add_category_id" name="category_id" required>
                                 <option value="">Pilih Kategori</option>
                                 <?php foreach ($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
+                                    <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -307,7 +309,7 @@ include 'proses/get_manajemen-produk.php';
                             <label for="edit_category_id" class="form-label">Kategori</label>
                             <select class="form-select" id="edit_category_id" name="category_id" required>
                                 <?php foreach ($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
+                                    <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -371,7 +373,8 @@ include 'proses/get_manajemen-produk.php';
         </div>
     </div>
 
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -385,7 +388,8 @@ include 'proses/get_manajemen-produk.php';
                         <div class="mb-3">
                             <label for="add_category_name" class="form-label">Nama Kategori</label>
                             <input type="text" class="form-control" id="add_category_name" name="name" required>
-                            <small class="form-text text-muted">Contoh: Skincare, Make Up, Aksesori. Slug akan dibuat secara otomatis.</small>
+                            <small class="form-text text-muted">Contoh: Skincare, Make Up, Aksesori. Slug akan dibuat
+                                secara otomatis.</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -402,129 +406,129 @@ include 'proses/get_manajemen-produk.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    // ====================================================
-    // Logic Dark/Light Mode (FIXED)
-    // ====================================================
-    const body = document.getElementById('body-admin');
-    // Asumsi 'mode-toggle' adalah ID button/link di sidebar.php yang mengontrol mode
-    const modeToggle = document.getElementById('mode-toggle');
+        // ====================================================
+        // Logic Dark/Light Mode (FIXED)
+        // ====================================================
+        const body = document.getElementById('body-admin');
+        // Asumsi 'mode-toggle' adalah ID button/link di sidebar.php yang mengontrol mode
+        const modeToggle = document.getElementById('mode-toggle');
 
-    function applyMode(isInitialLoad = true) {
-        let savedMode = localStorage.getItem('theme') || 'light';
+        function applyMode(isInitialLoad = true) {
+            let savedMode = localStorage.getItem('theme') || 'light';
 
-        // Jika bukan initial load (dipicu oleh klik), kita harus toggle mode
-        if (!isInitialLoad && modeToggle) {
-            // Tentukan mode baru
-            savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
-            localStorage.setItem('theme', savedMode);
-        }
-
-        // Terapkan class ke body
-        if (savedMode === 'dark') {
-            body.classList.add('dark-mode');
-        } else {
-            body.classList.remove('dark-mode');
-        }
-
-        // Terapkan styling ke modal (agar sesuai dengan mode)
-        document.querySelectorAll('.modal-content').forEach(el => {
-            if (savedMode === 'dark') {
-                el.classList.add('dark-mode');
-            } else {
-                el.classList.remove('dark-mode');
+            // Jika bukan initial load (dipicu oleh klik), kita harus toggle mode
+            if (!isInitialLoad && modeToggle) {
+                // Tentukan mode baru
+                savedMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
+                localStorage.setItem('theme', savedMode);
             }
+
+            // Terapkan class ke body
+            if (savedMode === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
+            // Terapkan styling ke modal (agar sesuai dengan mode)
+            document.querySelectorAll('.modal-content').forEach(el => {
+                if (savedMode === 'dark') {
+                    el.classList.add('dark-mode');
+                } else {
+                    el.classList.remove('dark-mode');
+                }
+            });
+
+            // Optional: Update button text/icon (Asumsi ada di sidebar)
+            if (modeToggle) {
+                if (savedMode === 'dark') {
+                    modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                    modeToggle.classList.remove('text-pink-primary');
+                } else {
+                    modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                    modeToggle.classList.add('text-pink-primary');
+                }
+            }
+        }
+
+        // 1. Panggil saat load pertama
+        document.addEventListener('DOMContentLoaded', () => {
+            applyMode(true);
         });
 
-        // Optional: Update button text/icon (Asumsi ada di sidebar)
+        // 2. Pasang event listener untuk toggle
         if (modeToggle) {
-            if (savedMode === 'dark') {
-                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-                modeToggle.classList.remove('text-pink-primary');
-            } else {
-                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-                modeToggle.classList.add('text-pink-primary');
-            }
+            modeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                applyMode(false); // Panggil dengan flag false agar logic toggle dijalankan
+            });
         }
-    }
-
-    // 1. Panggil saat load pertama
-    document.addEventListener('DOMContentLoaded', () => {
-        applyMode(true);
-    });
-
-    // 2. Pasang event listener untuk toggle
-    if (modeToggle) {
-        modeToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            applyMode(false); // Panggil dengan flag false agar logic toggle dijalankan
-        });
-    }
 
 
-    // ====================================================
-    // Logic Modals (Edit dan Delete)
-    // ====================================================
+        // ====================================================
+        // Logic Modals (Edit dan Delete)
+        // ====================================================
 
-    // 1. Logic untuk MODAL EDIT
-    const editProductModal = document.getElementById('editProductModal');
-    editProductModal.addEventListener('show.bs.modal', function(event) {
-        // Tombol yang memicu modal
-        const button = event.relatedTarget;
+        // 1. Logic untuk MODAL EDIT
+        const editProductModal = document.getElementById('editProductModal');
+        editProductModal.addEventListener('show.bs.modal', function (event) {
+            // Tombol yang memicu modal
+            const button = event.relatedTarget;
 
-        // Ambil data dari data-* attributes
-        const id = button.getAttribute('data-id');
-        const name = button.getAttribute('data-name');
-        const categoryId = button.getAttribute('data-category-id');
-        const price = button.getAttribute('data-price');
-        const stock = button.getAttribute('data-stock');
-        const isActive = button.getAttribute('data-is-active');
-        const imageUrl = button.getAttribute('data-image-url');
+            // Ambil data dari data-* attributes
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const categoryId = button.getAttribute('data-category-id');
+            const price = button.getAttribute('data-price');
+            const stock = button.getAttribute('data-stock');
+            const isActive = button.getAttribute('data-is-active');
+            const imageUrl = button.getAttribute('data-image-url');
 
-        // Isi elemen modal
-        const modalTitle = editProductModal.querySelector('#editProductModalLabel span');
+            // Isi elemen modal
+            const modalTitle = editProductModal.querySelector('#editProductModalLabel span');
 
-        // Isi form fields
-        editProductModal.querySelector('#edit_product_id').value = id;
-        editProductModal.querySelector('#edit_name').value = name;
-        editProductModal.querySelector('#edit_price').value = price;
-        editProductModal.querySelector('#edit_stock').value = stock;
-        editProductModal.querySelector('#edit_category_id').value = categoryId;
-        modalTitle.textContent = name;
+            // Isi form fields
+            editProductModal.querySelector('#edit_product_id').value = id;
+            editProductModal.querySelector('#edit_name').value = name;
+            editProductModal.querySelector('#edit_price').value = price;
+            editProductModal.querySelector('#edit_stock').value = stock;
+            editProductModal.querySelector('#edit_category_id').value = categoryId;
+            modalTitle.textContent = name;
 
-        // Handle checkbox is_active
-        const checkboxActive = editProductModal.querySelector('#edit_is_active');
-        checkboxActive.checked = isActive === '1';
+            // Handle checkbox is_active
+            const checkboxActive = editProductModal.querySelector('#edit_is_active');
+            checkboxActive.checked = isActive === '1';
 
-        // Handle image preview
-        const previewContainer = editProductModal.querySelector('#current_image_preview');
-        previewContainer.innerHTML = '';
-        if (imageUrl) {
-            // Asumsi jalur gambar sama dengan di PHP
-            previewContainer.innerHTML = `
+            // Handle image preview
+            const previewContainer = editProductModal.querySelector('#current_image_preview');
+            previewContainer.innerHTML = '';
+            if (imageUrl) {
+                // Asumsi jalur gambar sama dengan di PHP
+                previewContainer.innerHTML = `
                     <p class="mb-1 small text-muted">Gambar Saat Ini:</p>
                     <img src="../uploads/product/${imageUrl}" alt="${name}" class="product-image-thumb" style="width: 80px; height: 80px;">
                 `;
-        }
-    });
+            }
+        });
 
 
-    // 2. Logic untuk MODAL HAPUS
-    const deleteProductModal = document.getElementById('deleteProductModal');
-    deleteProductModal.addEventListener('show.bs.modal', function(event) {
-        // Tombol yang memicu modal
-        const button = event.relatedTarget;
+        // 2. Logic untuk MODAL HAPUS
+        const deleteProductModal = document.getElementById('deleteProductModal');
+        deleteProductModal.addEventListener('show.bs.modal', function (event) {
+            // Tombol yang memicu modal
+            const button = event.relatedTarget;
 
-        // Ambil data dari data-* attributes
-        const id = button.getAttribute('data-id');
-        const name = button.getAttribute('data-name');
+            // Ambil data dari data-* attributes
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
 
-        // Isi elemen modal
-        const modalIdField = deleteProductModal.querySelector('#delete_product_id');
-        const modalNameText = deleteProductModal.querySelector('#delete_product_name');
+            // Isi elemen modal
+            const modalIdField = deleteProductModal.querySelector('#delete_product_id');
+            const modalNameText = deleteProductModal.querySelector('#delete_product_name');
 
-        modalIdField.value = id;
-        modalNameText.textContent = name;
-    });
+            modalIdField.value = id;
+            modalNameText.textContent = name;
+        });
     </script>
 </body>
 
