@@ -31,6 +31,22 @@ function slugify($text, string $divider = '-')
     return $text;
 }
 
+/**
+ * Fungsi bantu untuk menentukan warna badge stok berdasarkan batas
+ * Batas: <= 5 (Danger), <= 10 (Warning), Lainnya (Success)
+ * @param int $stock
+ * @return string (Nama kelas Bootstrap: danger, warning, success)
+ */
+function getStockBadgeClass($stock) {
+    if ($stock <= 5) {
+        return 'danger'; 
+    } elseif ($stock <= 10) {
+        return 'warning'; 
+    } else {
+        return 'success'; 
+    }
+}
+
 
 // --------------------------------------------------------------------
 // 2. TANGANI AKSI CRUD (Produk dan Kategori)
@@ -49,7 +65,7 @@ if (isset($_GET['message']) && isset($_GET['message_type'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
 
-    // --- TANGANI TAMBAH KATEGORI (Menggunakan prepared statement, bagus!) ---
+    // --- TANGANI TAMBAH KATEGORI ---
     if ($action == 'add_category') {
         $name = $_POST['name'] ?? '';
         $slug = slugify($name);
@@ -72,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $message = "Kategori <b>" . htmlspecialchars($name) . "</b> berhasil ditambahkan!";
                     $message_type = "success";
                     
-                    // Redirect untuk menghilangkan data POST
                     header("Location: manajemen-produk.php?message=" . urlencode($message) . "&message_type=" . $message_type);
                     exit();
                 } else {
@@ -113,7 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
-        // is_active diset default 1 saat tambah produk
         $sql = "INSERT INTO products (category_id, sku, name, slug, description, price, stock, image_url, is_active)
         VALUES ('$category_id', '$sku', '$name', '$slug', '$description', '$price', '$stock', " . ($image_url ? "'$image_url'" : 'NULL') . ", 1)";
 
@@ -126,13 +140,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
-    // --------------------------------------------------------------------
-    // --- TANGANI EDIT PRODUK (BAGIAN INI YANG DIPERBAIKI) ---
-    // --------------------------------------------------------------------
+    // --- TANGANI EDIT PRODUK ---
     elseif ($action === 'edit') {
         $id = (int)$_POST['product_id'];
         $name = $conn->real_escape_string($_POST['name']);
-        $category_id = (int)$_POST['category_id']; // Ambil Kategori ID
+        $category_id = (int)$_POST['category_id'];
         $price = (float)$_POST['price'];
         $stock = (int)$_POST['stock'];
         $is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -140,22 +152,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $image_url_update = null; 
         $target_dir = "../uploads/product/"; 
         
-        // 1. Ambil Data Produk Lama (khususnya SKU dan image_url lama)
-        // Perlu ambil SKU untuk penamaan file baru, dan image_url lama untuk dihapus
         $sku_query = $conn->query("SELECT sku, image_url FROM products WHERE id = $id");
         if ($sku_query && $sku_query->num_rows > 0) {
             $product_data = $sku_query->fetch_assoc();
             $old_image = $product_data['image_url'] ?? null;
-            $sku_product = $product_data['sku'] ?? 'unknown'; // Gunakan SKU untuk penamaan file
+            $sku_product = $product_data['sku'] ?? 'unknown'; 
         } else {
-            // Produk tidak ditemukan, hentikan proses update gambar
             $old_image = null;
             $sku_product = 'unknown';
         }
 
-
-        // 2. Cek dan Proses Upload Gambar Baru (Jika Ada)
-        // Cek jika file terkirim DAN tidak ada error (UPLOAD_ERR_OK = 0)
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             $file_extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
             $new_file_name = $sku_product . '-' . time() . '.' . $file_extension;
@@ -168,20 +174,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
                 $image_url_update = $new_file_name;
                 
-                // Hapus gambar lama (jika ada)
                 if (!empty($old_image) && file_exists($target_dir . $old_image)) {
                     unlink($target_dir . $old_image);
                 }
-            } else {
-                $message = "Gagal mengupload gambar baru.";
-                $message_type = "danger";
-                // Jika upload gagal, $image_url_update tetap null, dan query akan mengabaikannya.
             }
         }
         
-        // 3. Buat Query Update Dinamis
-        
-        // Bagian dasar query update (Update nama, kategori, harga, stok, dan status)
         $sql = "UPDATE products SET 
                     name='$name', 
                     category_id='$category_id', 
@@ -189,16 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     stock='$stock', 
                     is_active='$is_active'";
         
-        // Tambahkan update image_url HANYA JIKA ada gambar baru yang berhasil diunggah
         if ($image_url_update !== null) {
             $sql .= ", image_url='$image_url_update'";
         }
-        // Tambahkan update slug
         $sql .= ", slug='" . slugify($name) . "'"; 
 
         $sql .= " WHERE id='$id'";
 
-        // 4. Eksekusi Query
         if ($conn->query($sql)) {
             $message_gambar = $image_url_update !== null ? " (termasuk gambar baru)" : "";
             $message = "Produk <b>$name</b> berhasil diperbarui" . $message_gambar . ".";
@@ -208,13 +203,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $message_type = 'danger';
         }
     }
-    // --------------------------------------------------------------------
     
-    // --- TANGANI HAPUS PRODUK (Ditambahkan logika hapus gambar fisik) ---
+    // --- TANGANI HAPUS PRODUK ---
     elseif ($action === 'delete') {
         $id = (int)$_POST['product_id'];
         
-        // 1. Sebelum menghapus record dari DB, ambil nama file gambarnya untuk dihapus
         $image_query = $conn->query("SELECT image_url FROM products WHERE id = $id");
         $image_to_delete = null;
         if ($image_query) {
@@ -222,11 +215,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
              $image_to_delete = $image_data['image_url'] ?? null;
         }
         
-        // 2. Hapus record dari DB
         $sql = "DELETE FROM products WHERE id='$id'";
         if ($conn->query($sql)) {
             
-            // 3. Hapus file fisik gambar (jika ada)
             $target_dir = "../uploads/product/";
             if (!empty($image_to_delete) && file_exists($target_dir . $image_to_delete)) {
                 unlink($target_dir . $image_to_delete);
@@ -259,7 +250,8 @@ if (!empty($search)) {
 }
 
 // Sorting
-$sort_columns = ['id', 'sku', 'name', 'category_name', 'price', 'stock', 'is_active'];
+// Ditambahkan 'total_sold' ke kolom sort yang tersedia
+$sort_columns = ['id', 'sku', 'name', 'category_name', 'price', 'stock', 'is_active', 'average_rating', 'total_sold'];
 $sort = isset($_GET['sort']) && in_array($_GET['sort'], $sort_columns) ? $_GET['sort'] : 'id';
 $order = isset($_GET['order']) && in_array(strtoupper($_GET['order']), ['ASC', 'DESC']) ? strtoupper($_GET['order']) : 'DESC';
 
@@ -269,14 +261,19 @@ $total_result = $conn->query($count_sql);
 $total_rows = $total_result ? $total_result->fetch_row()[0] : 0;
 $total_pages = ceil($total_rows / $limit);
 
-// Query untuk mengambil data produk
+// Query untuk mengambil data produk (Termasuk Rating dan Total Terjual)
 $sql = "
 SELECT
 p.id, p.sku, p.name, p.price, p.stock, p.is_active, p.image_url,
-c.name as category_name, c.id as category_id
+c.name as category_name, c.id as category_id,
+COALESCE(AVG(r.rating), 0) as average_rating,
+COALESCE(SUM(oi.quantity), 0) as total_sold  -- FITUR BARU: Total Terjual
 FROM products p
 JOIN categories c ON p.category_id = c.id
+LEFT JOIN reviews r ON p.id = r.product_id -- Gabungkan dengan tabel reviews
+LEFT JOIN order_details oi ON p.id = oi.product_id -- FITUR BARU: Gabungkan dengan order_items
 $search_query
+GROUP BY p.id, p.sku, p.name, p.price, p.stock, p.is_active, p.image_url, c.name, c.id
 ORDER BY $sort $order
 LIMIT $limit OFFSET $offset
 ";
@@ -309,4 +306,6 @@ function get_sort_link($column, $current_sort, $current_order, $current_limit, $
     ];
     return '?' . http_build_query(array_filter($params));
 }
+// Tidak ada lagi logika pengambilan data untuk card analisis, sesuai permintaan.
+
 ?>

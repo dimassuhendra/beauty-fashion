@@ -78,6 +78,15 @@ include 'proses/get_manajemen-produk.php';
                                         class="fas fa-sort sort-icon <?php echo $sort == 'id' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
+
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('average_rating', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'average_rating' ? 'active-sort' : ''; ?>">
+                                    Rating
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'average_rating' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
                             <th scope="col">
                                 <a href="<?php echo get_sort_link('sku', $sort, $order, $limit, $search); ?>"
                                     class="sortable-header <?php echo $sort == 'sku' ? 'active-sort' : ''; ?>">
@@ -92,6 +101,14 @@ include 'proses/get_manajemen-produk.php';
                                     Nama Produk
                                     <i
                                         class="fas fa-sort sort-icon <?php echo $sort == 'name' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="<?php echo get_sort_link('total_sold', $sort, $order, $limit, $search); ?>"
+                                    class="sortable-header <?php echo $sort == 'total_sold' ? 'active-sort' : ''; ?>">
+                                    Terjual
+                                    <i
+                                        class="fas fa-sort sort-icon <?php echo $sort == 'total_sold' ? ($order == 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?>"></i>
                                 </a>
                             </th>
                             <th scope="col">
@@ -134,6 +151,12 @@ include 'proses/get_manajemen-produk.php';
                             <?php foreach ($products as $p): ?>
                                 <tr>
                                     <td><?php echo $p['id']; ?></td>
+                                    <td>
+                                        <span class="badge bg-info text-white">
+                                            <?php echo number_format($p['average_rating'], 2); ?>
+                                            <i class="fas fa-star fa-sm"></i>
+                                        </span>
+                                    </td>
                                     <td><?php echo $p['sku']; ?></td>
                                     <td>
                                         <?php if (!empty($p['image_url'])): ?>
@@ -144,6 +167,7 @@ include 'proses/get_manajemen-produk.php';
                                         <?php endif; ?>
                                         <?php echo $p['name']; ?>
                                     </td>
+                                    <td><?php echo number_format($p['total_sold']); ?></td>
                                     <td><?php echo $p['category_name']; ?></td>
                                     <td>Rp<?php echo number_format($p['price'], 0, ',', '.'); ?></td>
                                     <td>
@@ -187,7 +211,8 @@ include 'proses/get_manajemen-produk.php';
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-3">
-                <small class="text-muted">Menampilkan <?php echo count($products); ?> dari <?php echo $total_rows; ?>
+                <small class="text-muted">Menampilkan <?php echo count($products); ?> dari
+                    <?php echo $total_rows; ?>
                     total produk.</small>
 
                 <nav>
@@ -388,7 +413,8 @@ include 'proses/get_manajemen-produk.php';
                         <div class="mb-3">
                             <label for="add_category_name" class="form-label">Nama Kategori</label>
                             <input type="text" class="form-control" id="add_category_name" name="name" required>
-                            <small class="form-text text-muted">Contoh: Skincare, Make Up, Aksesori. Slug akan dibuat
+                            <small class="form-text text-muted">Contoh: Skincare, Make Up, Aksesori. Slug akan
+                                dibuat
                                 secara otomatis.</small>
                         </div>
                     </div>
