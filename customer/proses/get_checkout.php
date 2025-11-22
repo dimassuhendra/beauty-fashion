@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkout'])) {
         $total_amount_items_db = $total_subtotal; 
         $final_amount_db = $total_amount_items_db + $shipping_cost - $discount_amount;
         
-        $order_status = 'Pending Payment'; 
+        $order_status = 'Menunggu Pembayaran'; 
         $order_code = 'ORD-' . date('YmdHis') . rand(1000, 9999);
         
         $sql_insert_order = "INSERT INTO orders 

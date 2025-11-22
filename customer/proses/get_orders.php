@@ -15,23 +15,23 @@ function get_status_data($db_status) {
     ];
     
     switch ($db_status) {
-        case 'Pending Payment':
+        case 'Menunggu Pembayaran':
             $data['display'] = 'Menunggu Pembayaran';
             $data['class'] = 'status-PendingPayment';
             break;
-        case 'Processing':
+        case 'Diproses':
             $data['display'] = 'Sedang Diproses';
             $data['class'] = 'status-Processing';
             break;
-        case 'Shipped':
+        case 'Dikirim':
             $data['display'] = 'Dalam Pengiriman';
             $data['class'] = 'status-Shipped';
             break;
-        case 'Completed':
+        case 'Selesai':
             $data['display'] = 'Selesai';
             $data['class'] = 'status-Completed';
             break;
-        case 'Cancelled':
+        case 'Dibatalkan':
             $data['display'] = 'Dibatalkan';
             $data['class'] = 'status-Cancelled';
             break;
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order_id'])) {
     // Hapus pembuatan koneksi baru. Cukup gunakan $conn yang sudah tersedia.
     
     // Hanya izinkan pembatalan jika statusnya 'Pending Payment'
-    $sql_cancel = "UPDATE orders SET order_status = 'Cancelled', updated_at = NOW() WHERE id = ? AND user_id = ? AND order_status IN ('Pending Payment')";
+    $sql_cancel = "UPDATE orders SET order_status = 'Cancelled', updated_at = NOW() WHERE id = ? AND user_id = ? AND order_status IN ('Menunggu Pembayaran')";
     
     if ($stmt_cancel = $conn->prepare($sql_cancel)) { // <<< GUNAKAN $conn
         $stmt_cancel->bind_param("ii", $cancel_id, $user_id);
