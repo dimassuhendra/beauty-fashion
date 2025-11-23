@@ -1,12 +1,13 @@
 <?php
-// Pastikan koneksi database ($conn) sudah tersedia dari 'db_connect.php'
+// Pastikan koneksi database ($conn) sudah tersedia
 if (!isset($conn)) {
     die("Koneksi database tidak ditemukan.");
 }
 
-// 1. Query SQL untuk mengambil semua kategori dan menghitung jumlah produk di setiap kategori.
-// Kita menggunakan LEFT JOIN dengan tabel products untuk memastikan kategori yang belum memiliki produk (product_count = 0) tetap tampil.
-$sql = "
+// -----------------------------------------------------------
+// 1. QUERY UNTUK DATA TABEL & CHART 1 & 2 (Distribusi Produk)
+// -----------------------------------------------------------
+$sql_categories = "
 SELECT 
     c.id, 
     c.name, 
@@ -24,32 +25,68 @@ ORDER BY
     c.name ASC;
 ";
 
-// 2. Eksekusi Query
-$result = $conn->query($sql);
+$result_categories = $conn->query($sql_categories);
+$categories = []; // Untuk Tabel HTML
+$chart_labels = []; // Untuk Label Chart
+$chart_product_counts = []; // Untuk Data Chart
 
-// 3. Inisialisasi array untuk menampung data kategori
-$categories = [];
-
-if ($result) {
-    if ($result->num_rows > 0) {
-        // Ambil setiap baris hasil query
-        while ($row = $result->fetch_assoc()) {
-            // Konversi nilai 'product_count' menjadi integer
-            $row['product_count'] = (int) $row['product_count'];
-            
-            // Tambahkan data ke array $categories
-            $categories[] = $row;
-        }
+if ($result_categories) {
+    while ($row = $result_categories->fetch_assoc()) {
+        $row['product_count'] = (int) $row['product_count'];
+        $categories[] = $row;
+        
+        // Simpan data untuk Chart 1 & 2
+        $chart_labels[] = $row['name'];
+        $chart_product_counts[] = $row['product_count'];
     }
-} else {
-    // Penanganan error jika query gagal
-    // Dalam lingkungan produksi, sebaiknya log error ini daripada menampilkannya.
-    // Contoh: error_log("Error fetching categories: " . $conn->error);
-    echo "Error: " . $conn->error;
 }
 
-// Catatan: Variabel $categories kini sudah siap digunakan di file manajemen-kategori.php
-// yang melakukan include file ini.
-// Kita tidak perlu menutup koneksi di sini karena mungkin akan digunakan lagi di halaman utama.
+
+// -----------------------------------------------------------
+// 2. QUERY UNTUK CHART 3 (3 Kategori Stok Terendah)
+// -----------------------------------------------------------
+$sql_low_stock = "
+SELECT
+    c.name,
+    IFNULL(SUM(p.stock), 0) AS total_stock_available
+FROM
+    categories c
+LEFT JOIN
+    products p ON c.id = p.category_id
+GROUP BY
+    c.id, c.name
+ORDER BY
+    total_stock_available ASC
+LIMIT 3;
+";
+
+$result_low_stock = $conn->query($sql_low_stock);
+$chart_low_stock_labels = [];
+$chart_low_stock_counts = [];
+
+if ($result_low_stock) {
+    while ($row = $result_low_stock->fetch_assoc()) {
+        $chart_low_stock_labels[] = $row['name'];
+        $chart_low_stock_counts[] = (int) $row['total_stock_available'];
+    }
+}
+
+
+// -----------------------------------------------------------
+// 3. FORMAT DATA CHART KE JSON
+// -----------------------------------------------------------
+$chart_data = [
+    'product_distribution' => [
+        'labels' => $chart_labels,
+        'data' => $chart_product_counts
+    ],
+    'low_stock' => [
+        'labels' => $chart_low_stock_labels,
+        'data' => $chart_low_stock_counts
+    ]
+];
+
+// Variabel ini akan di-encode ke JSON di file manajemen-kategori.php
+$chart_data_json = json_encode($chart_data);
 
 ?>
