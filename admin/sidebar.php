@@ -168,8 +168,8 @@ $active_page = basename($_SERVER['PHP_SELF']);
         <li class="<?php echo ($active_page == 'manajemen-komplain.php' ? 'active' : ''); ?>">
             <a href="manajemen-komplain.php"><i class="fas fa-exclamation-circle me-2"></i> Manajemen Komplain</a>
         </li>
-        <li class="<?php echo ($active_page == 'manajemen-voucher.php' ? 'active' : ''); ?>">
-            <a href="manajemen-voucher.php"><i class="fas fa-gift me-2"></i> Manajemen Diskon</a>
+        <li class="<?php echo ($active_page == 'manajemen-diskon.php' ? 'active' : ''); ?>">
+            <a href="manajemen-diskon.php"><i class="fas fa-gift me-2"></i> Manajemen Diskon</a>
         </li>
         <li class="<?php echo ($active_page == 'manajemen-pelanggan.php' ? 'active' : ''); ?>">
             <a href="manajemen-pelanggan.php"><i class="fas fa-users me-2"></i> Manajemen Pelanggan</a>

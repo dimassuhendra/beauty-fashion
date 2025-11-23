@@ -201,16 +201,16 @@ $json_gauge_data = json_encode($gauge_data);
             <div class="col-xl-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-pink-primary mb-4">Top 5 Produk Terlaris (Unit)</h5>
+                        <h5 class="card-title text-center text-pink-primary mb-4">Rasio Pesanan Selesai/Total Pesanan</h5>
                         <div class="chart-container" style="height: 300px;">
-                            <canvas id="topProductBarChart"></canvas>
+                            <canvas id="conversionGaugeChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
+        <!-- <div class="row g-4">
             <div class="col-xl-6">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
@@ -227,12 +227,12 @@ $json_gauge_data = json_encode($gauge_data);
                     <div class="card-body">
                         <h5 class="card-title text-center text-pink-primary mb-4">Rasio Selesai/Total Pesanan</h5>
                         <div class="chart-container" style="height: 300px;">
-                            <canvas id="conversionGaugeChart"></canvas>
+                            <canvas id="topProductBarChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -476,76 +476,6 @@ $json_gauge_data = json_encode($gauge_data);
                 },
                 plugins: [donutCenterText]
             });
-
-            // --- 3. Bar Chart: Top 5 Produk Terlaris ---
-            const ctxProductBar = document.getElementById('topProductBarChart').getContext('2d');
-            window.productChart = new Chart(ctxProductBar, {
-                type: 'bar',
-                data: {
-                    labels: topProductLabels,
-                    datasets: [{
-                        label: 'Jumlah Terjual (Unit)',
-                        data: topProductData,
-                        backgroundColor: CHART_COLORS[2], // Light Pink
-                        borderColor: PINK_PRIMARY,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'y', // Horizontal Bar Chart
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return context.parsed.x + ' Unit';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Unit Terjual', color: textColor },
-                            ticks: { color: textColor }
-                        },
-                        y: {
-                            ticks: { color: textColor }
-                        }
-                    }
-                }
-            });
-
-
-            // --- 4. Pie Chart: Kategori Terlaris ---
-            const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
-            window.categoryChart = new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels: categoryLabels,
-                    datasets: [{
-                        data: categoryData,
-                        backgroundColor: CHART_COLORS,
-                        hoverOffset: 15
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right', // Pindah ke kanan agar lebih hemat tempat
-                            labels: {
-                                color: textColor
-                            }
-                        },
-                        title: { display: false }
-                    }
-                }
-            });
-
 
             // --- 5. Gauge Chart: Rasio Selesai / Total Pesanan (Simulasi Doughnut) ---
             const ctxGauge = document.getElementById('conversionGaugeChart').getContext('2d');
