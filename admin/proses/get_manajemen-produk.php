@@ -64,46 +64,9 @@ if (isset($_GET['message']) && isset($_GET['message_type'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
-
-    // --- TANGANI TAMBAH KATEGORI ---
-    if ($action == 'add_category') {
-        $name = $_POST['name'] ?? '';
-        $slug = slugify($name);
-
-        if (!empty($name)) {
-            $check_sql = "SELECT id FROM categories WHERE name = ? OR slug = ?";
-            $check_stmt = $conn->prepare($check_sql);
-            $check_stmt->bind_param("ss", $name, $slug);
-            $check_stmt->execute();
-            $check_stmt->store_result();
-
-            if ($check_stmt->num_rows > 0) {
-                $message = "Gagal: Nama kategori atau slug sudah ada.";
-                $message_type = "danger";
-            } else {
-                $insert_sql = "INSERT INTO categories (name, slug) VALUES (?, ?)";
-                $insert_stmt = $conn->prepare($insert_sql);
-                
-                if ($insert_stmt->bind_param("ss", $name, $slug) && $insert_stmt->execute()) {
-                    $message = "Kategori <b>" . htmlspecialchars($name) . "</b> berhasil ditambahkan!";
-                    $message_type = "success";
-                    
-                    header("Location: manajemen-produk.php?message=" . urlencode($message) . "&message_type=" . $message_type);
-                    exit();
-                } else {
-                    $message = "Gagal menambahkan kategori: " . $conn->error;
-                    $message_type = "danger";
-                }
-            }
-            $check_stmt->close();
-        } else {
-            $message = "Gagal: Nama kategori tidak boleh kosong.";
-            $message_type = "danger";
-        }
-    }
     
     // --- TANGANI TAMBAH PRODUK ---
-    elseif ($action === 'add') {
+    if ($action === 'add') {
         $category_id = (int)$_POST['category_id'];
         $sku = $conn->real_escape_string($_POST['sku']);
         $name = $conn->real_escape_string($_POST['name']);

@@ -37,10 +37,6 @@ include 'proses/get_manajemen-produk.php';
                         data-bs-target="#addProductModal">
                         <i class="fas fa-plus me-1"></i> Tambah Produk
                     </button>
-                    <button class="btn btn-outline-pink mb-2 mb-md-0" data-bs-toggle="modal"
-                        data-bs-target="#addCategoryModal">
-                        <i class="fas fa-tags me-1"></i> Tambah Kategori
-                    </button>
                 </div>
 
                 <form method="GET" class="d-flex flex-wrap align-items-center gap-3">
@@ -397,36 +393,6 @@ include 'proses/get_manajemen-produk.php';
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCategoryModalLabel">Tambah Kategori Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="POST" action="manajemen-produk.php">
-                    <div class="modal-body">
-                        <input type="hidden" name="action" value="add_category">
-
-                        <div class="mb-3">
-                            <label for="add_category_name" class="form-label">Nama Kategori</label>
-                            <input type="text" class="form-control" id="add_category_name" name="name" required>
-                            <small class="form-text text-muted">Contoh: Skincare, Make Up, Aksesori. Slug akan
-                                dibuat
-                                secara otomatis.</small>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-pink">Simpan Kategori</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
