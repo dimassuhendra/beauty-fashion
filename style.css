@@ -87,11 +87,9 @@
         min-height: 100%;
         margin: 0;
         padding: 0;
-        /* Menggunakan Flexbox untuk menumpuk elemen secara vertikal */
         display: flex;
         flex-direction: column;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        /* Font yang lebih elegan */
     }
 
     /* CATATAN PENTING:

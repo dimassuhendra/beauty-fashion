@@ -114,7 +114,7 @@ $json_order_status_data = json_encode(array_map('intval', $order_status_data));
 // 5. DATA UNTUK PIE CHART (Kategori Terlaris)
 // --------------------------------------------------------------------
 // Query untuk Pie Chart menggunakan tabel order_details (sesuai skema database)
-// Catatan: Jika Anda ingin memfilter hanya Completed Orders, tambahkan " AND o.order_status = 'Completed'"
+// Catatan: Jika Anda ingin memfilter hanya Completed Orders, tambahkan " AND o.order_status = 'Selesai'"
 $sql_category_sales = "
     SELECT 
         c.name AS category_name, 
@@ -137,5 +137,81 @@ $category_data = array_column($category_sales, 'total_sold');
 // Konversi data PHP ke format JSON agar bisa dibaca oleh JavaScript (Chart.js)
 $json_category_labels = json_encode($category_labels);
 $json_category_data = json_encode(array_map('intval', $category_data));
+
+
+// --------------------------------------------------------------------
+// 6. BARU: DATA UNTUK LINE CHART (Tren Penjualan Bulanan)
+// --------------------------------------------------------------------
+
+// Jika filter tanggal tidak spesifik (tidak disetel), gunakan 6 bulan terakhir.
+// Jika filter disetel, gunakan grouping per bulan atau per hari tergantung rentang.
+// Di sini kita asumsikan untuk filter default akan menampilkan per bulan
+$sql_monthly_sales = "
+    SELECT
+        DATE_FORMAT(order_date, '%Y-%m') AS order_month,
+        SUM(final_amount) AS monthly_revenue
+    FROM orders
+    WHERE order_status = 'Selesai'
+    " . $filter_sql . "
+    GROUP BY order_month
+    ORDER BY order_month ASC
+";
+
+// Jika filter tanggal tidak disetel, limit ke 6 bulan terakhir
+if (empty($filter_sql)) {
+    // Ambil 6 bulan terakhir secara default
+    $sql_monthly_sales = "
+        SELECT
+            DATE_FORMAT(order_date, '%Y-%m') AS order_month,
+            SUM(final_amount) AS monthly_revenue
+        FROM orders
+        WHERE order_status = 'Selesai' AND order_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY order_month
+        ORDER BY order_month ASC
+    ";
+}
+
+
+$monthly_sales_data = fetchArrayData($conn, $sql_monthly_sales);
+
+// Format label bulan ke nama yang lebih mudah dibaca (e.g., '2025-01' -> 'Jan 25')
+$monthly_sales_labels = [];
+$monthly_sales_revenue = [];
+foreach ($monthly_sales_data as $row) {
+    // Mengubah format YYYY-MM menjadi Mmm YY
+    $timestamp = strtotime($row['order_month'] . '-01');
+    $formatted_label = date('M Y', $timestamp);
+    $monthly_sales_labels[] = $formatted_label;
+    $monthly_sales_revenue[] = $row['monthly_revenue'];
+}
+
+$json_monthly_sales_labels = json_encode($monthly_sales_labels);
+$json_monthly_sales_revenue = json_encode(array_map('intval', $monthly_sales_revenue));
+
+
+// --------------------------------------------------------------------
+// 7. BARU: DATA UNTUK BAR CHART (Top 5 Produk Terlaris)
+// --------------------------------------------------------------------
+$sql_top_products = "
+    SELECT
+        p.name AS product_name,
+        SUM(od.quantity) AS total_sold
+    FROM order_details od
+    JOIN orders o ON od.order_id = o.id
+    JOIN products p ON od.product_id = p.id
+    WHERE o.order_status = 'Selesai' -- Hanya hitung dari pesanan selesai
+    " . (empty($filter_sql) ? "" : $filter_sql . " AND o.order_status = 'Selesai'") . "
+    GROUP BY p.name
+    ORDER BY total_sold DESC
+    LIMIT 5
+";
+
+$top_products_data = fetchArrayData($conn, $sql_top_products);
+
+$top_product_labels = array_column($top_products_data, 'product_name');
+$top_product_data = array_column($top_products_data, 'total_sold');
+
+$json_top_product_labels = json_encode($top_product_labels);
+$json_top_product_data = json_encode(array_map('intval', $top_product_data));
 
 ?>
