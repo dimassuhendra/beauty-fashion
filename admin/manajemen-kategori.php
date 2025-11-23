@@ -55,7 +55,7 @@ $categories = $categories ?? [];
             <div class="col-xl-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-pink-primary mb-4">Tren Pendapatan Bulanan</h5>
+                        <h5 class="card-title text-center text-pink-primary mb-4">Persentase Distribusi Produk</h5>
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="pieChart"></canvas>
                         </div>
@@ -66,7 +66,7 @@ $categories = $categories ?? [];
             <div class="col-xl-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-pink-primary mb-4">Distribusi Status Pesanan</h5>
+                        <h5 class="card-title text-center text-pink-primary mb-4">Jumlah Produk per Kategori</h5>
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="barChartProduct"></canvas>
                         </div>
@@ -77,7 +77,7 @@ $categories = $categories ?? [];
             <div class="col-xl-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-pink-primary mb-4">Top 5 Produk Terlaris (Unit)</h5>
+                        <h5 class="card-title text-center text-pink-primary mb-4">Kategori dengan Stok Terendah</h5>
                         <div class="chart-container" style="height: 300px;">
                             <canvas id="barChartLowStock"></canvas>
                         </div>
@@ -97,10 +97,9 @@ $categories = $categories ?? [];
             <h5 class="mb-4 card-title-dark-mode">Daftar Kategori Produk</h5>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle table-striped table-bordered">
+                <table class="table table-hover align-middle">
                     <thead>
                         <tr class="text-center">
-                            <th scope="col" style="width: 5%;">ID</th>
                             <th scope="col" style="width: 25%;">Nama Kategori</th>
                             <th scope="col">Deskripsi</th>
                             <th scope="col" style="width: 15%;">Jumlah Produk</th>
@@ -111,7 +110,6 @@ $categories = $categories ?? [];
                         <?php if (count($categories) > 0): ?>
                             <?php foreach ($categories as $cat): ?>
                                 <tr>
-                                    <td class="text-center"><?php echo $cat['id']; ?></td>
                                     <td class="fw-bold">
                                         <?php echo htmlspecialchars($cat['name']); ?>
                                     </td>
