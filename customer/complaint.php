@@ -120,7 +120,7 @@ include 'proses/get_complaint.php';
                         <h4 class="mb-4 text-pink"><i class="fas fa-history me-2"></i> Riwayat Komplain</h4>
 
                         <?php if (empty($complaints)): ?>
-                        <div class="alert alert-info text-center">Anda belum pernah mengajukan komplain.</div>
+                        <div class="alert alert-info text-center">Anda belum pernah mengajukan komplainn.</div>
                         <?php else: ?>
                         <div class="accordion" id="complaintAccordion">
                             <?php foreach ($complaints as $complaint): 
