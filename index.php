@@ -28,8 +28,7 @@ if (!isset($conn) || @$conn->connect_error) {
         }
     }
 
-    // Tutup koneksi setelah selesai mengambil data
-    $conn->close();
+    // $conn->close();
 }
 
 // --------------------------------------------------------------------
