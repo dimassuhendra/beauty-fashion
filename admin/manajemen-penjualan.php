@@ -111,7 +111,7 @@ include 'proses/get_manajemen-penjualan.php';
             <h5 class="mb-4 card-title-dark-mode">Rincian Penjualan Harian</h5>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle table-striped table-bordered sales-report-table">
+                <table class="table table-hover align-middle">
                     <thead>
                         <tr class="text-center">
                             <th scope="col" style="width: 15%;">Tanggal</th>
