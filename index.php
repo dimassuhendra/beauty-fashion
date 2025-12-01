@@ -13,12 +13,12 @@ if (!isset($conn) || @$conn->connect_error) {
 
     // Query untuk mengambil 4 produk unggulan
     $sql = "
-        SELECT *
-        FROM products 
-        -- Ambil 4 produk terbaru atau produk dengan stok terbanyak
-        ORDER BY id DESC 
-        LIMIT 4
-    ";
+            SELECT *
+            FROM products 
+            -- Ambil 4 produk terbaru atau produk dengan stok terbanyak
+            ORDER BY id DESC 
+            LIMIT 4
+        ";
 
     $result = $conn->query($sql);
     $products = [];
@@ -109,27 +109,33 @@ $featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 <?php foreach ($products as $product): ?>
                     <div class="col">
-                        <div class="card h-100 product-card">
-                            <div class="card-img-top bg-light text-center"
-                                style="height: 250px;">
+                        <div class="card h-100 product-card shadow-sm">
+                            <div class="card-img-top">
                                 <?php if (!empty($product['image_url'])): ?>
-                                    <img src="uploads/product/<?php echo $product['image_url']; ?>" alt="<?php echo $product['name']; ?>"
-                                        class="product-image-thumb">
+                                    <img src="uploads/product/<?php echo $product['image_url']; ?>"
+                                        alt="<?php echo $product['name']; ?>" class="product-image-thumb">
                                 <?php else: ?>
-                                    <i class="fas fa-image me-2 text-muted"></i>
+                                    <i class="fas fa-image fa-3x text-muted"></i>
                                 <?php endif; ?>
                             </div>
-                            <div class="card-body text-center">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-1 text-muted small">
+                                    <?php echo htmlspecialchars($product['category_name'] ?? 'Tanpa Kategori'); ?>
+                                </h6>
                                 <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
-                                <p class="card-text text-success fw-bold">Rp
+                                <p class="product-price fw-bold">Rp
                                     <?php echo number_format($product['price'], 0, ',', '.'); ?>
                                 </p>
-                                <p class="card-text small text-muted">Stok:
-                                    <?php echo number_format($product['stock'], 0); ?> (ID:
-                                    <?php echo $product['id']; ?>)
+                                <p class="card-text small text-muted">
+                                    Stok:
+                                    <span class="fw-bold text-<?php echo ($product['stock'] > 0) ? 'success' : 'danger'; ?>">
+                                        <?php echo number_format($product['stock'], 0); ?>
+                                    </span>
                                 </p>
-                                <a href="product_detail.php?id=<?php echo $product['id']; ?>"
-                                    class="btn btn-primary btn-sm mt-2">Beli Sekarang</a>
+                                <button class="btn btn-primary w-100 btn-detail-produk"
+                                    data-product-id="<?php echo $product['id']; ?>">
+                                    Lihat Detail Produk
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -146,6 +152,33 @@ $featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
 
     <?php include 'footer.php' ?>
 
+    <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productDetailModalLabel"><i class="fas fa-info-circle me-2"></i> Detail
+                        Produk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-product-content">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Memuat detail produk...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="modal-product-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         /* START: JS Halaman Pengguna (Dark Mode) */
@@ -182,6 +215,186 @@ $featured_title = $is_connected ? "Produk Unggulan" : "Status Sistem";
             applyTheme(newTheme);
         });
         /* END: JS Halaman Pengguna (Dark Mode) */
+
+        // ====================================================
+        // 2. Logic Tampilkan Modal Detail Produk (Menggunakan AJAX)
+        // ====================================================
+
+        const currentUrl = encodeURIComponent(window.location.href);
+
+        document.querySelectorAll('.btn-detail-produk').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.getAttribute('data-product-id');
+                showProductDetailModal(productId);
+            });
+        });
+
+        /**
+         * Fungsi pembantu untuk menghasilkan ikon rating bintang
+         * @param {number} rating - Nilai rating (0.0 hingga 5.0)
+         * @returns {string} HTML string untuk ikon bintang
+         */
+        function generateStarRating(rating) {
+            const ratingValue = parseFloat(rating) || 0;
+            const fullStars = Math.floor(ratingValue);
+            const halfStar = ratingValue % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+            let starsHtml = '';
+
+            // Bintang Penuh
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += '<i class="fas fa-star text-warning"></i>';
+            }
+            // Bintang Setengah
+            if (halfStar) {
+                starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
+            }
+            // Bintang Kosong
+            for (let i = 0; i < emptyStars; i++) {
+                starsHtml += '<i class="far fa-star text-warning"></i>';
+            }
+
+            return starsHtml;
+        }
+
+        function showProductDetailModal(productId) {
+            const modalElement = document.getElementById('productDetailModal');
+            const modal = new bootstrap.Modal(modalElement);
+            const contentArea = $('#modal-product-content');
+            const footerArea = $('#modal-product-footer');
+
+            // 1. Tampilkan loading state di modal
+            contentArea.html(`
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Memuat detail produk...</p>
+            </div>
+            `);
+            footerArea.html('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>');
+            modal.show();
+
+            // 2. Lakukan panggilan AJAX untuk mengambil data produk
+            $.ajax({
+                url: 'proses/get_product-detail.php',
+                method: 'GET',
+                data: { id: productId },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success && response.data) {
+                        const product = response.data;
+
+                        // Buat HTML rating rata-rata
+                        const ratingHtml = product.avg_rating > 0
+                            ? `<div class="mb-3">
+                                ${generateStarRating(product.avg_rating)} 
+                                <span class="fw-bold me-2 ms-1">${product.avg_rating.toFixed(1)}</span>
+                                <span class="text-muted small">(${product.total_reviews} Ulasan)</span>
+                            </div>`
+                            : `<p class="text-muted small">Belum ada ulasan.</p>`;
+
+                        // --- GENERATE ULASAN BARU ---
+                        let reviewsHtml = '';
+                        if (product.reviews && product.reviews.length > 0) {
+                            reviewsHtml += '<h6><i class="fas fa-comments me-1"></i> Ulasan Terbaru:</h6>';
+                            // Tambahkan scrollbar jika ulasan banyak
+                            reviewsHtml += '<div class="list-group list-group-flush review-list" style="max-height: 180px; overflow-y: auto;">';
+
+                            product.reviews.forEach(review => {
+                                const reviewStars = generateStarRating(review.rating);
+                                const date = new Date(review.created_at);
+                                const formattedDate = date.toLocaleDateString('id-ID'); // Format tanggal Indonesia
+
+                                reviewsHtml += `
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 fw-bold text-pink">${review.reviewer_name || 'Pengguna Anonim'}</h6>
+                                        <small class="text-muted">${formattedDate}</small>
+                                    </div>
+                                    <div class="mb-1">${reviewStars}</div>
+                                    <p class="mb-1 small">${review.comment_text}</p>
+                                </div>
+                            `;
+                            });
+
+                            reviewsHtml += '</div>';
+                        } else {
+                            reviewsHtml = '<h6 class="mt-3"><i class="fas fa-comments me-1"></i> Ulasan Terbaru:</h6><p class="text-muted small">Jadilah yang pertama memberikan ulasan!</p>';
+                        }
+                        // --- END ULASAN BARU ---
+
+
+                        // Konten Modal (HTML yang disusun ulang)
+                        let htmlContent = `
+                        <div class="row mb-3">
+                            <div class="col-md-5">
+                                <img src="uploads/product/${product.image_url}" alt="${product.name}" class="modal-product-image mb-3 w-100 shadow-sm">
+                            </div>
+                            <div class="col-md-7">
+                                <h2 class="text-pink">${product.name}</h2>
+                                
+                                ${ratingHtml} 
+
+                                <h3 class="fw-bold mb-3">Rp ${new Intl.NumberFormat('id-ID').format(product.price)}</h3>
+                                
+                                <p class="text-muted small mb-1">SKU: ${product.sku || 'N/A'}</p>
+                                <p class="text-muted small mb-3">Kategori: ${product.category_name || 'N/A'}</p>
+                                
+                                <p>Stok Tersedia: 
+                                    <span class="fw-bold text-${product.stock > 0 ? 'success' : 'danger'}">
+                                        ${new Intl.NumberFormat('id-ID').format(product.stock)}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-align-left me-1"></i> Deskripsi Produk:</h6>
+                                <div class="modal-description" style="max-height: 180px; overflow-y: auto;">
+                                    <p class="mb-4 small">${product.description || 'Tidak ada deskripsi yang tersedia.'}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                ${reviewsHtml}
+                            </div>
+                        </div>
+                    `;
+                        contentArea.html(htmlContent);
+
+                        // Footer Modal (Tombol Aksi)
+                        let footerHtml = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+
+                        if (isUserLoggedIn) {
+                            // Tampilkan tombol Beli/Tambah Keranjang jika sudah login
+                            footerHtml += `
+                            <button class="btn btn-primary" data-product-id="${product.id}" onclick="addToCart(this.getAttribute('data-product-id'))">
+                                <i class="fas fa-cart-plus me-1"></i> Tambah ke Keranjang
+                            </button>
+                        `;
+                        } else {
+                            // Tampilkan tombol Login jika belum login
+                            footerHtml += `
+                            <a href="login.php?redirect_to=${currentUrl}" class="btn btn-modal-sign">
+                                <i class="fas fa-lock me-1"></i> Masuk untuk Beli
+                            </a>
+                        `;
+                        }
+                        footerArea.html(footerHtml);
+
+                    } else {
+                        contentArea.html('<div class="alert alert-danger text-center">Gagal memuat detail produk. ' + (response.message || 'Data tidak ditemukan.') + '</div>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    contentArea.html('<div class="alert alert-danger text-center">Terjadi kesalahan saat menghubungi server. Pastikan file `fetch_product_detail.php` sudah tersedia dan berfungsi.</div>');
+                    console.error("AJAX Error:", status, error);
+                }
+            });
+        }
     </script>
 </body>
 
