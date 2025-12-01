@@ -3,9 +3,6 @@
 session_start();
 
 include '../db_connect.php';
-// Asumsi: File ini mendefinisikan $orders, get_status_data(), dan format_rupiah()
-include 'proses/get_orders.php';
-
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -13,10 +10,27 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
-// Logika pembatalan pesanan (diambil dari get_orders.php yang Anda berikan sebelumnya)
-// ... (Logika pembatalan berada di get_orders.php atau di atas ini)
+// --- NEW LOGIC FOR STATUS FILTERING ---
+$allowed_statuses = [
+    'Semua',
+    'Menunggu Pembayaran',
+    'Diproses',
+    'Dikirim',
+    'Selesai',
+    'Dibatalkan'
+];
+$current_status = 'Semua';
 
-// Placeholder untuk fungsi format_rupiah (pastikan ini ada di salah satu file include)
+if (isset($_GET['status']) && in_array($_GET['status'], $allowed_statuses)) {
+    $current_status = $_GET['status'];
+}
+// Variabel $current_status kini tersedia untuk diakses oleh get_orders.php
+
+// Include file proses (yang sekarang akan menggunakan $current_status)
+include 'proses/get_orders.php';
+
+
+// Placeholder untuk fungsi format_rupiah (tetap di sini agar tersedia untuk HTML)
 if (!function_exists('format_rupiah')) {
     function format_rupiah($angka)
     {
@@ -50,6 +64,125 @@ if (!function_exists('format_rupiah')) {
         .rating-stars i:hover {
             color: #ffc107;
         }
+
+        /* === NEW STYLES FOR REDESIGN === */
+        :root {
+            --pink-primary: #e83e8c;
+            /* Assuming this is the existing pink color */
+            --card-border-radius: 10px;
+        }
+
+        /* Status Bar/Tabs */
+        .status-filter-bar {
+            background-color: #f8f9fa;
+            /* Light gray background */
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            margin-bottom: 25px;
+        }
+
+        .status-filter-bar .btn {
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        /* Order Card Redesign */
+        .order-card {
+            border: 1px solid #dee2e6;
+            border-radius: var(--card-border-radius);
+            margin-bottom: 20px;
+            padding: 20px;
+            transition: box-shadow 0.3s;
+            background-color: #fff;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .order-header {
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .order-header .order-code {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #495057;
+            /* Darker text for code */
+        }
+
+        .order-header .order-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .order-summary .total-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--pink-primary);
+            /* Use pink for total */
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        /* Status Badge Colors (Varied Custom Colors) */
+        .badge-status {
+            font-size: 0.85rem;
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Custom Colors for Statuses (Disesuaikan dengan status di get_orders.php) */
+        .status-menunggu {
+            background-color: #ffc107;
+            color: #343a40 !important;
+        }
+
+        /* Yellow/Warning */
+        .status-diproses {
+            background-color: #007bff;
+            color: #fff !important;
+        }
+
+        /* Blue/Primary */
+        .status-dikirim {
+            background-color: #17a2b8;
+            color: #fff !important;
+        }
+
+        /* Cyan/Info */
+        .status-selesai {
+            background-color: #28a745;
+            color: #fff !important;
+        }
+
+        /* Green/Success */
+        .status-dibatalkan {
+            background-color: #6c757d;
+            color: #fff !important;
+        }
+
+        /* Gray/Secondary */
+        .status-gagal {
+            background-color: #dc3545;
+            color: #fff !important;
+        }
+
+        /* Red/Danger */
     </style>
 </head>
 
@@ -65,65 +198,101 @@ if (!function_exists('format_rupiah')) {
     </div>
 
     <main class="container mb-5">
-        <div class="container">
-            <?php if (!empty($notification)): ?>
-                <div class="alert <?= strpos($notification, 'gagal') !== false ? 'alert-error' : 'alert-success' ?>">
-                    <?= htmlspecialchars($notification) ?>
-                </div>
-            <?php endif; ?>
+        <div class="row">
+            <div class="col-12">
+                <?php if (!empty($notification)): ?>
+                    <div class="alert <?= strpos($notification, 'gagal') !== false ? 'alert-danger' : 'alert-success' ?>"
+                        role="alert">
+                        <?= htmlspecialchars($notification) ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
 
-            <?php if (!empty($error_message) && empty($orders)): ?>
-                <div class="alert alert-info text-center py-4" role="alert">
-                    <i class="fas fa-info-circle me-2"></i> <?= htmlspecialchars($error_message) ?>
-                    <p>Yuk, <a href="products.php" class="alert-link">mulai belanja!</a></p>
-                </div>
-            <?php else: ?>
-                <div class="order-list">
-                    <?php foreach ($orders as $order):
-                        // Ambil status yang sudah dipetakan
-                        $status_data = get_status_data($order['order_status']);
-                        ?>
-                        <div class="order-card">
-                            <div class="order-card-header">
-                                <span class="order-code"><?= htmlspecialchars($order['order_code']) ?></span>
-                                <span class="order-date">Tanggal Pesan: <?= htmlspecialchars($order['date']) ?></span>
+        <div class="status-filter-bar d-flex justify-content-center flex-wrap">
+            <?php
+            $all_statuses_map = [
+                'Semua' => ['display' => 'Semua Pesanan', 'class' => 'light'],
+                'Menunggu Pembayaran' => ['display' => 'Menunggu Pembayaran', 'class' => 'warning'],
+                'Diproses' => ['display' => 'Diproses', 'class' => 'primary'],
+                'Dikirim' => ['display' => 'Dikirim', 'class' => 'info'],
+                'Selesai' => ['display' => 'Selesai', 'class' => 'success'],
+                'Dibatalkan' => ['display' => 'Dibatalkan', 'class' => 'secondary'],
+            ];
+
+            foreach ($all_statuses_map as $status_code => $status_info):
+                // Cek status aktif untuk tombol yang berbeda
+                $isActive = ($status_code === $current_status) ? 'btn-dark active' : 'btn-outline-' . $status_info['class'];
+                // Warna teks untuk tombol dengan background terang (e.g., Warning)
+                $btn_text_color = ($status_code === 'Menunggu Pembayaran' && $status_code === $current_status) ? 'text-dark' : '';
+                ?>
+                <a href="?status=<?= urlencode($status_code) ?>" class="btn btn-sm <?= $isActive ?> <?= $btn_text_color ?>">
+                    <?= htmlspecialchars($status_info['display']) ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+        <?php if (!empty($error_message) && empty($orders)): ?>
+            <div class="alert alert-info text-center py-4" role="alert">
+                <i class="fas fa-info-circle me-2"></i> <?= htmlspecialchars($error_message) ?>
+                <p>Yuk, <a href="products.php" class="alert-link">mulai belanja!</a></p>
+            </div>
+        <?php else: ?>
+            <div class="order-list">
+                <?php
+
+                foreach ($orders as $order):
+                    // Ambil status yang sudah dipetakan
+                    $status_data = get_status_data($order['order_status']);
+                    // Tentukan kelas CSS kustom untuk status badge dari fungsi get_status_data
+                    $custom_status_class = $status_data['class'];
+                    ?>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <i class="fas fa-receipt me-2 text-muted"></i>
+                                <span class="order-code me-3"><?= htmlspecialchars($order['order_code']) ?></span>
                             </div>
+                            <span class="badge badge-status <?= $custom_status_class ?>">
+                                <?= htmlspecialchars($status_data['display']) ?>
+                            </span>
+                        </div>
 
-                            <div class="order-detail-row">
-                                <span class="order-detail-label">Jumlah Produk</span>
-                                <span class="order-detail-value"><?= htmlspecialchars($order['items_count']) ?> Item</span>
+                        <div class="order-summary row align-items-center">
+                            <div class="col-8">
+                                <p class="mb-0 small text-muted">Tanggal Pesan: <?= htmlspecialchars($order['date']) ?></p>
+                                <p class="mb-0 small text-muted">Total Produk: <?= htmlspecialchars($order['items_count']) ?>
+                                    Item</p>
                             </div>
-
-                            <div class="order-detail-row">
-                                <span class="order-detail-label">Status Pesanan</span>
-                                <span
-                                    class="order-status <?= $status_data['class'] ?>"><?= htmlspecialchars($status_data['display']) ?></span>
-                            </div>
-
-                            <div class="order-detail-row">
-                                <span class="order-detail-label">Total Pembayaran</span>
-                                <span class="order-detail-value"
-                                    style="color: var(--pink-primary); font-size: 1.2em;"><?= format_rupiah($order['total_amount']) ?></span>
-                            </div>
-
-                            <div class="order-actions">
-                                <a href="#" class="btn btn-outline" data-bs-toggle="modal" data-bs-target="#orderDetailModal"
-                                    onclick="loadOrderDetail(<?= $order['id'] ?>)">Lihat Detail</a>
-                                <?php
-                                // Hanya tampilkan tombol batal jika statusnya Pending Payment
-                                if ($order['order_status'] === 'Menunggu Pembayaran'):
-                                    ?>
-                                    <button class="btn btn-pink"
-                                        onclick="confirmCancel('<?= htmlspecialchars($order['order_code']) ?>', <?= $order['id'] ?>)">Batalkan
-                                        Pesanan</button>
-                                <?php endif; ?>
+                            <div class="col-4 text-end">
+                                <p class="mb-0 small text-muted">Total Pembayaran</p>
+                                <span class="total-price"><?= format_rupiah($order['total_amount']) ?></span>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
 
-        </div>
+                        <div class="order-actions">
+                            <a href="#" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                data-bs-target="#orderDetailModal" onclick="loadOrderDetail(<?= $order['id'] ?>)">Lihat
+                                Detail</a>
+
+                            <?php
+                            // Aksi dinamis berdasarkan status
+                            if ($order['order_status'] === 'Menunggu Pembayaran'):
+                                // Asumsi Anda memiliki halaman payment.php
+                                ?>
+                                <a href="payment.php?order_id=<?= $order['id'] ?>" class="btn btn-sm btn-pink">Bayar Sekarang</a>
+                                <button class="btn btn-sm btn-outline-danger"
+                                    onclick="confirmCancel('<?= htmlspecialchars($order['order_code']) ?>', <?= $order['id'] ?>)">Batalkan
+                                    Pesanan</button>
+                            <?php elseif ($order['order_status'] === 'Dikirim'): ?>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-check"></i> Pesanan Diterima</button>
+                                <a href="#" class="btn btn-sm btn-outline-info">Lacak Pesanan</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
     </main>
 
     <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel"
@@ -251,18 +420,31 @@ if (!function_exists('format_rupiah')) {
             return 'Rp ' + angka.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
-        // --- 1. FUNGSI UNTUK DETAIL PESANAN (REVISI) ---
+        // --- 1. FUNGSI UNTUK DETAIL PESANAN (REVISI KECIL) ---
         function renderOrderDetail(order) {
+
+            // Status Class Map for Modal Detail (Disesuaikan dengan CSS)
+            const statusClassMap = {
+                'Menunggu Pembayaran': 'status-menunggu',
+                'Diproses': 'status-diproses',
+                'Dikirim': 'status-dikirim',
+                'Selesai': 'status-selesai',
+                'Dibatalkan': 'status-dibatalkan',
+                'Gagal': 'status-gagal'
+            };
+            const customStatusClass = statusClassMap[order.order_status] || 'status-dibatalkan';
+
+
             let html = `
             <div class="row mb-4">
                 <div class="col-md-6">
                     <p class="mb-1"><strong>Kode Pesanan:</strong> <span class="fw-bold text-pink">${order.order_code}</span></p>
                     <p class="mb-1"><strong>Tanggal Pesan:</strong> ${order.order_date}</p>
-                    <p class="mb-1"><strong>Status:</strong> <span class="badge bg-${order.status_class}">${order.status_display}</span></p>
+                    <p class="mb-1"><strong>Status:</strong> <span class="badge badge-status ${customStatusClass}">${order.status_display}</span></p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p class="mb-1"><strong>Metode Bayar:</strong> ${order.payment_method}</p>
-                    <p class="mb-1"><strong>Total Bayar:</strong> <span class="fw-bold text-success fs-5">${formatRupiahJs(order.total_amount)}</span></p>
+                    <p class="mb-1"><strong>Total Bayar:</strong> <span class="fw-bold total-price">${formatRupiahJs(order.total_amount)}</span></p>
                 </div>
             </div>
             <hr>
@@ -285,18 +467,19 @@ if (!function_exists('format_rupiah')) {
                         </tr>
                     </thead>
                     <tbody>
-        `;
+            `;
 
             order.items.forEach(item => {
                 // Tentukan tombol ulasan
                 let reviewAction = '';
-                if (order.order_status === 'Completed' && item.has_reviewed === 0) {
+                // Gunakan 'Selesai' untuk status check
+                if (order.order_status === 'Selesai' && item.has_reviewed === 0) {
                     reviewAction = `
                     <button class="btn btn-sm btn-outline-pink mt-1" 
                             onclick="openReviewModal(${order.id}, ${item.product_id}, '${item.product_name}')">
                         <i class="fas fa-pen"></i> Ulas
                     </button>
-                `;
+                    `;
                 } else if (item.has_reviewed === 1) {
                     reviewAction = `<span class="badge bg-success mt-1"><i class="fas fa-check"></i> Sudah Diulas</span>`;
                 } else {
@@ -306,7 +489,7 @@ if (!function_exists('format_rupiah')) {
                 html += `
                 <tr>
                     <td>
-                        <img src="../uploads/product/${item.image_url || 'default.jpg'}" alt="${item.product_name}" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                        <img src="../uploads/product/${item.image_url || 'default.jpg'}" alt="${item.product_name}" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
                         <span class="fw-bold">${item.product_name}</span>
                         ${item.has_reviewed === 1 ? `<br><small class="text-warning">${getStarRating(item.user_rating)}</small>` : ''}
                     </td>
@@ -315,14 +498,14 @@ if (!function_exists('format_rupiah')) {
                     <td class="text-end">${formatRupiahJs(item.subtotal)}</td>
                     <td class="text-center">${reviewAction}</td>
                 </tr>
-            `;
+                `;
             });
 
             html += `
                     </tbody>
                 </table>
             </div>
-        `;
+            `;
             return html;
         }
 
@@ -341,6 +524,8 @@ if (!function_exists('format_rupiah')) {
                 .then(data => {
                     if (data.success) {
                         currentOrderDetail = data.order; // Simpan data order
+                        // Catatan: Pastikan data.order.order_status dari backend adalah string 
+                        // seperti 'Selesai', 'Dikirim', dll., bukan 'Completed', 'Shipped'
                         modalBody.innerHTML = renderOrderDetail(data.order);
                     } else {
                         modalBody.innerHTML = '<div class="alert alert-danger" role="alert"><i class="fas fa-times-circle me-2"></i>' + data.message + '</div>';
