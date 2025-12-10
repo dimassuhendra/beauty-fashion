@@ -5,7 +5,29 @@ $orders = [];
 $userId = $_SESSION['user_id'] ?? 1;
 
 function fetchUserCompletedOrders($conn, $userId) {
-    $stmt = $conn->prepare("SELECT id, order_code, order_date FROM orders WHERE user_id = ? AND order_status IN ('Shipped', 'Completed') ORDER BY order_date DESC");
+    // MODIFIKASI: Ambil data di level produk (bukan order).
+    $sql = "SELECT
+                o.id AS order_id,
+                o.order_code,
+                p.name AS product_name
+            FROM
+                orders o
+            JOIN
+                order_details od ON o.id = od.order_id
+            JOIN
+                products p ON od.product_id = p.id
+            WHERE
+                o.user_id = ? AND o.order_status IN ('Dikirim', 'Selesai')
+            ORDER BY
+                o.order_date DESC, o.id DESC, p.name ASC"; 
+    // Diurutkan berdasarkan order date dan id agar pesanan yang sama selalu berdekatan.
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("SQL Prepare Error in fetchUserCompletedOrders: " . $conn->error);
+        return [];
+    }
+    
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();

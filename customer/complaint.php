@@ -84,14 +84,38 @@ include 'proses/get_complaint.php';
                             <div class="mb-3">
                                 <label for="order_id" class="form-label">Terkait Pesanan (Opsional)</label>
                                 <select class="form-select" id="order_id" name="order_id">
-                                    <option value="">-- Pilih Kode Pesanan --</option>
-                                    <?php foreach ($orders as $order): ?>
-                                        <option value="<?= $order['id']; ?>">
-                                            <?= htmlspecialchars($order['order_code']); ?>
+                                    <option value="">-- Pilih Kode Pesanan / Produk yang Dikeluhkan --</option>
+
+                                    <?php
+                                    $current_order_id = null;
+                                    foreach ($orders as $item):
+
+                                        // LOGIKA PENGELOMPOKAN DENGAN <OPTGROUP>
+                                        // Jika ID pesanan berubah, tutup optgroup sebelumnya dan buka yang baru
+                                        if ($current_order_id !== $item['order_id']) {
+                                            if ($current_order_id !== null) {
+                                                echo "</optgroup>"; // Tutup optgroup sebelumnya
+                                            }
+                                            $current_order_id = $item['order_id'];
+
+                                            // Membuat penanda/group baru dengan Kode Order
+                                            echo "<optgroup label='" . htmlspecialchars($item['order_code']) . "'>";
+                                        }
+                                        ?>
+                                        <option value="<?= $item['order_id']; ?>">
+                                            <?= htmlspecialchars($item['product_name']); ?>
                                         </option>
                                     <?php endforeach; ?>
+
+                                    <?php
+                                    // Tutup optgroup terakhir
+                                    if ($current_order_id !== null) {
+                                        echo "</optgroup>";
+                                    }
+                                    ?>
                                 </select>
                             </div>
+
 
                             <div class="mb-3">
                                 <label for="subject" class="form-label">Subjek Komplain</label>
