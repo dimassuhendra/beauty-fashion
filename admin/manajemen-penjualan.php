@@ -81,7 +81,7 @@ include 'proses/get_manajemen-penjualan.php';
                         <div class="d-flex align-items-center">
                             <i class="fas fa-chart-line fa-3x text-pink-primary me-3"></i>
                             <div>
-                                <p class="card-text small text-muted mb-0">Total Pendapatan (Gross)</p>
+                                <p class="card-text small text-muted mb-0">Total Pendapatan</p>
                                 <h4 class="card-title mb-0 text-pink-primary">
                                     Rp<?php echo number_format($summary['total_revenue_gross'] ?? 0, 0, ',', '.'); ?>
                                 </h4>
@@ -91,7 +91,7 @@ include 'proses/get_manajemen-penjualan.php';
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-12 col-12">
+            <!-- <div class="col-lg-4 col-md-12 col-12">
                 <div class="card shadow-sm report-summary-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -104,7 +104,7 @@ include 'proses/get_manajemen-penjualan.php';
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="card shadow-sm p-4">
@@ -117,8 +117,7 @@ include 'proses/get_manajemen-penjualan.php';
                             <th scope="col" style="width: 15%;">Tanggal</th>
                             <th scope="col">Total Pesanan</th>
                             <th scope="col">Pesanan Selesai</th>
-                            <th scope="col">Pendapatan Kotor (Rp)</th>
-                            <th scope="col">Pendapatan Bersih (Rp)</th>
+                            <th scope="col">Pendapatan (Rp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,9 +133,6 @@ include 'proses/get_manajemen-penjualan.php';
                             </td>
                             <td class="text-end fw-bold text-pink-primary">
                                 <?php echo number_format($d['daily_revenue'], 0, ',', '.'); ?>
-                            </td>
-                            <td class="text-end fw-bold text-success">
-                                <?php echo number_format($d['daily_net_revenue'], 0, ',', '.'); ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
