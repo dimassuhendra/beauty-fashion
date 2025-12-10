@@ -83,7 +83,7 @@ include 'proses/get_manajemen-penjualan.php';
                             <div>
                                 <p class="card-text small text-muted mb-0">Total Pendapatan</p>
                                 <h4 class="card-title mb-0 text-pink-primary">
-                                    Rp<?php echo number_format($summary['total_revenue_gross'] ?? 0, 0, ',', '.'); ?>
+                                    Rp<?php echo number_format($summary['total_revenue'] ?? 0, 0, ',', '.'); ?>
                                 </h4>
                             </div>
                         </div>
