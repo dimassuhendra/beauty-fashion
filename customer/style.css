@@ -10,9 +10,12 @@
 
 /* --- 1. CSS ROOT VARIABLES (Nuansa Pink) --- */
 :root {
-    --pink-primary: #ff69b4; /* Hot Pink/Deep Pink (Utama) */
-    --pink-light: #ffc0cb; /* Light Pink/Pink Muda */
-    --pink-dark: #cc5599; /* Darker Pink/Hover */
+    --pink-primary: #ff69b4;
+    /* Hot Pink/Deep Pink (Utama) */
+    --pink-light: #ffc0cb;
+    /* Light Pink/Pink Muda */
+    --pink-dark: #cc5599;
+    /* Darker Pink/Hover */
     --text-light: #fff;
     --text-dark: #333;
 }
@@ -20,13 +23,13 @@
 /* --- 2. GLOBAL & UTILITY (Sticky Footer Setup & Margin Reset) --- */
 html {
     height: 100%;
-    margin: 0; 
-    padding: 0; 
+    margin: 0;
+    padding: 0;
 }
 
 body {
     min-height: 100%;
-    margin: 0; 
+    margin: 0;
     padding: 0;
     padding-top: 70px;
     display: flex;
@@ -65,7 +68,7 @@ main {
 
 /* Tombol Keranjang */
 .btn-cart {
-    color: #fff0f5; 
+    color: #fff0f5;
     border: none;
     background: none;
     font-weight: 500;
@@ -81,7 +84,8 @@ main {
 #cart-count {
     font-size: 0.65rem;
     padding: 0.35em 0.65em;
-    background-color: #e91e63 !important; /* Hot Pink yang kontras */
+    background-color: #e91e63 !important;
+    /* Hot Pink yang kontras */
 }
 
 /* Tombol Logout */
@@ -163,7 +167,7 @@ main {
     transform: rotate(30deg);
 }
 
-.footer-hero > .container {
+.footer-hero>.container {
     position: relative;
     z-index: 1;
 }
@@ -330,21 +334,24 @@ main {
     border-color: var(--pink-primary);
 }
 
-.modal-header , .modal-footer {
+.modal-header,
+.modal-footer {
     background-color: var(--pink-primary);
     color: var(--text-light);
 }
 
 /* Tombol Belanja Langsung (Pink Lebih Gelap/Tegas) */
 .btn-quick-buy {
-    background-color: #e91e63; /* Hot Pink yang lebih tegas */
+    background-color: #e91e63;
+    /* Hot Pink yang lebih tegas */
     border: none;
     color: white;
     transition: background-color 0.3s;
 }
 
 .btn-quick-buy:hover {
-    background-color: #c2185b; /* Dark Pink saat hover */
+    background-color: #c2185b;
+    /* Dark Pink saat hover */
 }
 
 .product-card .stock-label {
@@ -452,45 +459,47 @@ main {
 }
 
 .card-bayar {
-    max-height: 250px; 
+    max-height: 250px;
     width: auto;
 }
 
 .qris-container {
-    text-align: center; 
+    text-align: center;
     max-width: 250px;
     margin: 0 auto;
 }
 
-.form-check-input[data-bs-toggle="collapse"]:checked ~ .collapse {
-}
+.form-check-input[data-bs-toggle="collapse"]:checked~.collapse {}
 
 .checkout-summary-card {
     border: 1px solid var(--pink-light);
     border-radius: 0.75rem;
-    background-color: white; /* Pastikan background putih */
+    background-color: white;
+    /* Pastikan background putih */
 }
 
 /* *** MODIFIKASI KHUSUS UNTUK ALAMAT (DIPERKUAT) *** */
 .form-check.p-3.mb-2.border.rounded {
     /* Gaya dasar card alamat */
-    border-color: #f06292 !important; 
+    border-color: #f06292 !important;
     transition: box-shadow 0.2s, border 0.2s;
     background-color: #fffafc;
-    
+
     /* KUNCI PERBAIKAN: Menggunakan flexbox untuk alignment yang lebih baik, menimpa default form-check */
-    display: flex; 
-    align-items: flex-start; /* Sejajarkan ke atas */
-    padding: 1rem !important; /* Kurangi padding dari p-3 (1rem) */
+    display: flex;
+    align-items: flex-start;
+    /* Sejajarkan ke atas */
+    padding: 1rem !important;
+    /* Kurangi padding dari p-3 (1rem) */
 }
 
 /* Mengatur posisi radio button secara spesifik di dalam container alamat */
-.form-check.p-3.mb-2.border.rounded > .form-check-input {
+.form-check.p-3.mb-2.border.rounded>.form-check-input {
     /* Menimpa properti posisi dan margin default form-check-input */
-    position: static; 
+    position: static;
     margin-left: 0;
-    margin-right: 15px; 
-    margin-top: 0.2rem; 
+    margin-right: 15px;
+    margin-top: 0.2rem;
     flex-shrink: 0;
 }
 
@@ -498,16 +507,19 @@ main {
 .form-check.p-3.mb-2.border.rounded .form-check-label {
     flex-grow: 1;
     cursor: pointer;
-    padding-left: 0; /* Pastikan tidak ada padding kiri tambahan dari Bootstrap */
+    padding-left: 0;
+    /* Pastikan tidak ada padding kiri tambahan dari Bootstrap */
 }
 
 /* Style untuk radio button yang dipilih */
 .form-check.p-3.mb-2.border.rounded:has(input:checked) {
     border-color: var(--pink-primary) !important;
     border-width: 2px !important;
-    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25); /* Glow pink */
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+    /* Glow pink */
     background-color: #fff5f9;
 }
+
 /* *** AKHIR MODIFIKASI ALAMAT *** */
 
 
@@ -518,12 +530,13 @@ main {
 }
 
 .summary-item.total {
-    border-top: 2px solid var(--pink-light); /* Garis pemisah yang lebih jelas */
+    border-top: 2px solid var(--pink-light);
+    /* Garis pemisah yang lebih jelas */
     padding-top: 15px;
     margin-top: 15px;
 }
 
-.form-floating > label {
+.form-floating>label {
     color: #6c757d;
 }
 
@@ -532,26 +545,29 @@ main {
     height: 50px;
     object-fit: cover;
     border-radius: 8px;
-    border: 1px solid #eee; /* Tambahkan border tipis agar terlihat rapi */
-    flex-shrink: 0; /* Penting: jangan biarkan gambar mengecil */
+    border: 1px solid #eee;
+    /* Tambahkan border tipis agar terlihat rapi */
+    flex-shrink: 0;
+    /* Penting: jangan biarkan gambar mengecil */
 }
 
 /* Perbaikan item di Ringkasan Pesanan */
 .d-flex.mb-2.align-items-center {
     /* Tambahkan sedikit ruang antar kolom di item pesanan */
-    gap: 10px; 
+    gap: 10px;
 }
 
 .text-truncate {
     /* Meningkatkan batas lebar agar nama produk tidak terlalu terpotong */
-    max-width: 180px; 
+    max-width: 180px;
 }
 
 /* Sticky Top Adjustment for Summary Card */
 @media (min-width: 992px) {
     .sticky-top {
         position: sticky;
-        top: 85px; /* Sesuaikan dengan tinggi navbar (70px) + margin (15px) */
+        top: 85px;
+        /* Sesuaikan dengan tinggi navbar (70px) + margin (15px) */
     }
 }
 
@@ -648,115 +664,140 @@ main {
 | H. HALAMAN PESANAN SAYA (ORDERS.PHP)
 |--------------------------------------------------------------------------
 */
-.order-header {
-    text-align: center;
-    margin-bottom: 30px;
-    color: var(--pink-primary);
-    border-bottom: 3px solid var(--pink-primary);
-    padding-bottom: 15px;
-    font-size: 2em;
+/* Gaya tambahan untuk modal ulasan */
+.rating-stars i {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
 }
 
-.order-list {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+.rating-stars i.selected {
+    color: #ffc107;
 }
 
+.rating-stars i:hover {
+    color: #ffc107;
+}
+
+/* === NEW STYLES FOR REDESIGN === */
+:root {
+    --pink-primary: #e83e8c;
+    /* Assuming this is the existing pink color */
+    --card-border-radius: 10px;
+}
+
+/* Status Bar/Tabs */
+.status-filter-bar {
+    background-color: #f8f9fa;
+    /* Light gray background */
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    margin-bottom: 25px;
+}
+
+.status-filter-bar .btn {
+    font-weight: 600;
+    margin: 5px;
+}
+
+/* Order Card Redesign */
 .order-card {
-    background-color: #fff;
-    border: 1px solid var(--pink-light);
-    border-left: 5px solid var(--pink-primary);
-    /* Garis pink penanda */
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid #dee2e6;
+    border-radius: var(--card-border-radius);
+    margin-bottom: 20px;
     padding: 20px;
-    transition: transform 0.3s;
+    transition: box-shadow 0.3s;
+    background-color: #fff;
 }
 
 .order-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
 }
 
-.order-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px dashed var(--pink-light);
-    padding-bottom: 10px;
+.order-header {
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 15px;
     margin-bottom: 15px;
-}
-
-.order-code {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: var(--pink-primary);
-}
-
-.order-date {
-    font-size: 0.9em;
-    color: #666;
-}
-
-.order-detail-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    padding: 5px 0;
+    flex-wrap: wrap;
 }
 
-.order-detail-label {
-    font-weight: 500;
+.order-header .order-code {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #495057;
+    /* Darker text for code */
 }
 
-.order-detail-value {
-    font-weight: 600;
+.order-header .order-date {
+    color: #6c757d;
+    font-size: 0.9rem;
 }
 
-.order-status {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: bold;
-    color: var(--text-light);
-    text-align: center;
-    min-width: 120px;
-}
-
-/* Pewarnaan Status - Disesuaikan dengan ENUM Database (orders.order_status) */
-.status-PendingPayment {
-    background-color: #FFD700;
-    /* Gold */
-    color: var(--text-dark) !important;
-}
-
-.status-Processing {
-    background-color: #6495ED;
-    /* Cornflower Blue */
-}
-
-.status-Shipped {
-    background-color: var(--pink-primary);
-}
-
-.status-Completed {
-    background-color: #3CB371;
-    /* Medium Sea Green */
-}
-
-.status-Cancelled {
-    background-color: #DC143C;
-    /* Crimson */
+.order-summary .total-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--pink-primary);
+    /* Use pink for total */
 }
 
 .order-actions {
-    margin-top: 20px;
-    border-top: 1px solid var(--pink-light);
-    padding-top: 15px;
-    text-align: right;
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: flex-end;
 }
+
+/* Status Badge Colors (Varied Custom Colors) */
+.badge-status {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+    border-radius: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Custom Colors for Statuses (Disesuaikan dengan status di get_orders.php) */
+.status-menunggu {
+    background-color: #ffc107;
+    color: #343a40 !important;
+}
+
+/* Yellow/Warning */
+.status-diproses {
+    background-color: #007bff;
+    color: #fff !important;
+}
+
+/* Blue/Primary */
+.status-dikirim {
+    background-color: #17a2b8;
+    color: #fff !important;
+}
+
+/* Cyan/Info */
+.status-selesai {
+    background-color: #28a745;
+    color: #fff !important;
+}
+
+/* Green/Success */
+.status-dibatalkan {
+    background-color: #dc3545;
+    color: #fff !important;
+}
+
+/* Gray/Secondary */
+.status-gagal {
+    background-color: #dc3545;
+    color: #fff !important;
+}
+
+/* Red/Danger */
 
 /* Reusable Button Style (Untuk Order Action, diluar Bootstrap default) */
 .btn {

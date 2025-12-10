@@ -10,6 +10,50 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
+// --- LOGIC FOR CANCELLATION ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order_id'])) {
+    $order_to_cancel_id = (int) $_POST['cancel_order_id'];
+
+    if ($order_to_cancel_id > 0) {
+        // Ambil koneksi DB dari file yang di-include
+        global $conn;
+
+        // Cek status pesanan terlebih dahulu (HANYA 'Menunggu Pembayaran' yang bisa dibatalkan)
+        $stmt_check = $conn->prepare("SELECT order_status FROM orders WHERE id = ? AND user_id = ?");
+        $stmt_check->bind_param("ii", $order_to_cancel_id, $user_id);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+        $order_data = $result_check->fetch_assoc();
+        $stmt_check->close();
+
+        if ($order_data && $order_data['order_status'] === 'Menunggu Pembayaran') {
+            // Lakukan pembaruan status
+            $new_status = 'Dibatalkan';
+            $stmt_update = $conn->prepare("UPDATE orders SET order_status = ?, updated_at = NOW() WHERE id = ? AND user_id = ?");
+            $stmt_update->bind_param("sii", $new_status, $order_to_cancel_id, $user_id);
+
+            if ($stmt_update->execute()) {
+                $notification = "Pesanan " . htmlspecialchars($order_data['order_code'] ?? 'N/A') . " berhasil dibatalkan.";
+            } else {
+                $notification = "Gagal membatalkan pesanan. Coba lagi.";
+            }
+            $stmt_update->close();
+        } else {
+            $notification = "Gagal: Pesanan tidak ditemukan atau statusnya tidak 'Menunggu Pembayaran'.";
+        }
+    } else {
+        $notification = "Gagal: ID pesanan tidak valid.";
+    }
+    // Redirect untuk menghindari pengiriman ulang form
+    header("Location: orders.php?notification=" . urlencode($notification));
+    exit;
+}
+
+// Tambahkan notifikasi dari URL (setelah redirect)
+if (isset($_GET['notification'])) {
+    $notification = htmlspecialchars($_GET['notification']);
+}
+
 // --- NEW LOGIC FOR STATUS FILTERING ---
 $allowed_statuses = [
     'Semua',
@@ -48,142 +92,6 @@ if (!function_exists('format_rupiah')) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Gaya tambahan untuk modal ulasan */
-        .rating-stars i {
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #ccc;
-            transition: color 0.2s;
-        }
-
-        .rating-stars i.selected {
-            color: #ffc107;
-        }
-
-        .rating-stars i:hover {
-            color: #ffc107;
-        }
-
-        /* === NEW STYLES FOR REDESIGN === */
-        :root {
-            --pink-primary: #e83e8c;
-            /* Assuming this is the existing pink color */
-            --card-border-radius: 10px;
-        }
-
-        /* Status Bar/Tabs */
-        .status-filter-bar {
-            background-color: #f8f9fa;
-            /* Light gray background */
-            border-radius: var(--card-border-radius);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 10px;
-            margin-bottom: 25px;
-        }
-
-        .status-filter-bar .btn {
-            font-weight: 600;
-            margin: 5px;
-        }
-
-        /* Order Card Redesign */
-        .order-card {
-            border: 1px solid #dee2e6;
-            border-radius: var(--card-border-radius);
-            margin-bottom: 20px;
-            padding: 20px;
-            transition: box-shadow 0.3s;
-            background-color: #fff;
-        }
-
-        .order-card:hover {
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .order-header {
-            border-bottom: 1px dashed #eee;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .order-header .order-code {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #495057;
-            /* Darker text for code */
-        }
-
-        .order-header .order-date {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .order-summary .total-price {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--pink-primary);
-            /* Use pink for total */
-        }
-
-        .order-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: flex-end;
-        }
-
-        /* Status Badge Colors (Varied Custom Colors) */
-        .badge-status {
-            font-size: 0.85rem;
-            padding: 0.4em 0.8em;
-            border-radius: 20px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        /* Custom Colors for Statuses (Disesuaikan dengan status di get_orders.php) */
-        .status-menunggu {
-            background-color: #ffc107;
-            color: #343a40 !important;
-        }
-
-        /* Yellow/Warning */
-        .status-diproses {
-            background-color: #007bff;
-            color: #fff !important;
-        }
-
-        /* Blue/Primary */
-        .status-dikirim {
-            background-color: #17a2b8;
-            color: #fff !important;
-        }
-
-        /* Cyan/Info */
-        .status-selesai {
-            background-color: #28a745;
-            color: #fff !important;
-        }
-
-        /* Green/Success */
-        .status-dibatalkan {
-            background-color: #6c757d;
-            color: #fff !important;
-        }
-
-        /* Gray/Secondary */
-        .status-gagal {
-            background-color: #dc3545;
-            color: #fff !important;
-        }
-
-        /* Red/Danger */
-    </style>
 </head>
 
 <body>
@@ -212,12 +120,12 @@ if (!function_exists('format_rupiah')) {
         <div class="status-filter-bar d-flex justify-content-center flex-wrap">
             <?php
             $all_statuses_map = [
-                'Semua' => ['display' => 'Semua Pesanan', 'class' => 'light'],
+                'Semua' => ['display' => 'Semua Pesanan', 'class' => 'secondary'],
                 'Menunggu Pembayaran' => ['display' => 'Menunggu Pembayaran', 'class' => 'warning'],
                 'Diproses' => ['display' => 'Diproses', 'class' => 'primary'],
                 'Dikirim' => ['display' => 'Dikirim', 'class' => 'info'],
                 'Selesai' => ['display' => 'Selesai', 'class' => 'success'],
-                'Dibatalkan' => ['display' => 'Dibatalkan', 'class' => 'secondary'],
+                'Dibatalkan' => ['display' => 'Dibatalkan', 'class' => 'danger'],
             ];
 
             foreach ($all_statuses_map as $status_code => $status_info):
@@ -279,7 +187,8 @@ if (!function_exists('format_rupiah')) {
                             if ($order['order_status'] === 'Menunggu Pembayaran'):
                                 // Asumsi Anda memiliki halaman payment.php
                                 ?>
-                                <a href="payment.php?order_id=<?= $order['id'] ?>" class="btn btn-sm btn-pink">Bayar Sekarang</a>
+                                <a href="payment.php?order_id=<?= $order['id'] ?>" class="btn btn-sm btn-pink">Konfirmasi
+                                    Pembayaran</a>
                                 <button class="btn btn-sm btn-outline-danger"
                                     onclick="confirmCancel('<?= htmlspecialchars($order['order_code']) ?>', <?= $order['id'] ?>)">Batalkan
                                     Pesanan</button>
