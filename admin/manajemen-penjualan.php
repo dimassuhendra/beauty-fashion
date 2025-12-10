@@ -45,12 +45,12 @@ include 'proses/get_manajemen-penjualan.php';
                     <button type="submit" class="btn btn-pink w-100"><i class="fas fa-filter me-1"></i> Terapkan
                         Filter</button>
                 </div>
-                <div class="col-md-3 col-sm-6">
+                <!-- <div class="col-md-3 col-sm-6">
                     <a href="proses/export_sales.php?start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"
                         class="btn btn-outline-success w-100 export-btn">
                         <i class="fas fa-file-excel me-1"></i> Ekspor (.XLSX)
                     </a>
-                </div>
+                </div> -->
             </form>
             <small class="mt-3 text-muted">
                 Menampilkan data penjualan dari <b><?php echo format_date_indo($start_date); ?></b> sampai

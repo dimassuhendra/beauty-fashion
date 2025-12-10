@@ -5,7 +5,7 @@ if (!isset($conn) || $conn->connect_error) {
 }
 
 // --------------------------------------------------------------------
-// 2. PENGATURAN FILTER TANGGAL
+// 2. PENGATURAN FILTER TANGGAL (TIDAK ADA PERUBAHAN)
 // --------------------------------------------------------------------
 
 // Default: Ambil data mulai dari awal bulan hingga hari ini
@@ -25,14 +25,15 @@ $date_filter_clause = " WHERE DATE(order_date) BETWEEN '$start_date' AND '$end_d
 
 
 // --------------------------------------------------------------------
-// 3. QUERY RINGKASAN (SUMMARY CARDS)
+// 3. QUERY RINGKASAN (SUMMARY CARDS) - LOGIKA DIREVISI
 // --------------------------------------------------------------------
 
 $sql_summary = "
     SELECT 
+        -- Menghitung total order (apapun statusnya)
         COUNT(id) as total_orders,
-        SUM(final_amount) as total_revenue_gross,
-        SUM(CASE WHEN order_status = 'Completed' THEN final_amount ELSE 0 END) as total_revenue_net
+        -- Menghitung Revenue HANYA dari order_status = 'Selesai'
+        SUM(CASE WHEN order_status = 'Selesai' THEN final_amount ELSE 0 END) as total_revenue
     FROM orders
     $date_filter_clause
 ";
@@ -42,16 +43,18 @@ $summary = $summary_result->fetch_assoc();
 
 
 // --------------------------------------------------------------------
-// 4. QUERY LAPORAN HARIAN (TABEL)
+// 4. QUERY LAPORAN HARIAN (TABEL) - LOGIKA DIREVISI
 // --------------------------------------------------------------------
 
 $sql_daily = "
     SELECT 
         DATE(order_date) as report_date,
+        -- Menghitung orders yang dicatat hari itu (apapun statusnya)
         COUNT(id) as daily_orders,
-        SUM(final_amount) as daily_revenue,
-        SUM(CASE WHEN order_status = 'Completed' THEN final_amount ELSE 0 END) as daily_net_revenue,
-        SUM(CASE WHEN order_status = 'Completed' THEN 1 ELSE 0 END) as daily_completed_orders
+        -- Menghitung Revenue HANYA dari order_status = 'Selesai'
+        SUM(CASE WHEN order_status = 'Selesai' THEN final_amount ELSE 0 END) as daily_revenue,
+        -- Menghitung jumlah pesanan yang Selesai
+        SUM(CASE WHEN order_status = 'Selesai' THEN 1 ELSE 0 END) as daily_completed_orders
     FROM orders
     $date_filter_clause
     GROUP BY report_date
@@ -66,7 +69,7 @@ if ($daily_result) {
     }
 }
 
-// Fungsi pembantu untuk memformat tanggal
+// Fungsi pembantu untuk memformat tanggal (TIDAK ADA PERUBAHAN)
 function format_date_indo($date_str) {
     $bulan = [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 

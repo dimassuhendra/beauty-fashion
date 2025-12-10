@@ -1,4 +1,6 @@
 <?php 
+// ... (Bagian PENGAMANAN SESI, formatRupiah, dan Bagian 1. AMBIL DATA PROFIL CUSTOMER tetap sama) ...
+
 // --- PENGAMANAN SESI ---
 // Ganti baris di bawah ini dengan kode Anda yang sebenarnya setelah login:
 $userId = $_SESSION['user_id'] ?? 1; // Menggunakan 1 sebagai simulasi user ID jika sesi belum diatur
@@ -32,26 +34,40 @@ if (!$customerData) {
 }
 
 // ----------------------------------------------------
-// 2. AMBIL STATISTIK AKUN (dari tabel `orders`)
+// 2. AMBIL STATISTIK AKUN (dari tabel `orders`) - LOGIKA DIREVISI
 // ----------------------------------------------------
-// Pengecualian status 'Cancelled'
-$statsQuery = "
+
+// 2A. Ambil Total Pesanan & Pesanan Terakhir (Kriteria: status TIDAK 'Dibatalkan')
+$statsOrdersQuery = "
     SELECT 
         COUNT(id) AS totalOrders,
-        SUM(final_amount) AS totalSpending,
         MAX(order_date) AS lastOrderDate
     FROM orders 
-    WHERE user_id = ? AND order_status != 'Cancelled'
+    WHERE user_id = ? AND order_status != 'Dibatalkan'
 ";
-$stmt = $conn->prepare($statsQuery);
+$stmt = $conn->prepare($statsOrdersQuery);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
-$statsResult = $stmt->get_result();
-$orderStats = $statsResult->fetch_assoc();
+$statsOrdersResult = $stmt->get_result();
+$orderStats = $statsOrdersResult->fetch_assoc();
+$stmt->close();
+
+// 2B. Ambil Total Pembelanjaan (Kriteria: status HARUS 'Selesai')
+$statsSpendingQuery = "
+    SELECT 
+        SUM(final_amount) AS totalSpending
+    FROM orders 
+    WHERE user_id = ? AND order_status = 'Selesai'
+";
+$stmt = $conn->prepare($statsSpendingQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$statsSpendingResult = $stmt->get_result();
+$spendingStats = $statsSpendingResult->fetch_assoc();
 $stmt->close();
 
 // ----------------------------------------------------
-// 3. AMBIL 3 PESANAN TERKINI (dari tabel `orders`)
+// 3. AMBIL 3 PESANAN TERKINI (dari tabel `orders`) - Logika tetap sama
 // ----------------------------------------------------
 $recentOrdersQuery = "
     SELECT order_code, order_status, order_date
@@ -70,7 +86,8 @@ $stmt->close();
 // 4. SUSUN DATA UNTUK TAMPILAN
 // ----------------------------------------------------
 $totalOrders = $orderStats['totalOrders'] ?? 0;
-$totalSpending = $orderStats['totalSpending'] ?? 0;
+// Menggunakan data dari query 2B yang baru
+$totalSpending = $spendingStats['totalSpending'] ?? 0; 
 $lastOrderDate = $orderStats['lastOrderDate'] ? date('d F Y', strtotime($orderStats['lastOrderDate'])) : 'Belum Ada Pesanan';
 $unreadNotifications = 0; // Sebaiknya ambil dari tabel notifikasi, sementara diset 0.
 
@@ -81,6 +98,5 @@ $stats = [
     ['icon' => 'fa-bell', 'title' => 'Notifikasi Baru', 'value' => $unreadNotifications . ' Pesan'],
 ];
 
-// Catatan: Jika $conn adalah objek global dari db_connect.php, biarkan koneksi terbuka
-// jika diperlukan oleh file lain, atau tutup di sini: $conn->close();
+// ... (Bagian penutup kode) ...
 ?>
