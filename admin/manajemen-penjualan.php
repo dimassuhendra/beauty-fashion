@@ -155,9 +155,9 @@ include 'proses/get_manajemen-penjualan.php';
                                 ?>
                             </td>
                             <td class="text-end fw-bold text-pink-primary">
-                                Rp<?php echo number_format($summary['total_revenue_gross'] ?? 0, 0, ',', '.'); ?></td>
-                            <td class="text-end fw-bold text-success">
-                                Rp<?php echo number_format($summary['total_revenue_net'] ?? 0, 0, ',', '.'); ?></td>
+                                Rp<?php echo number_format($summary['total_revenue'] ?? 0, 0, ',', '.'); ?></td>
+                            <!-- <td class="text-end fw-bold text-success">
+                                Rp<?php echo number_format($summary['total_revenue_net'] ?? 0, 0, ',', '.'); ?></td> -->
                         </tr>
                     </tbody>
                 </table>
